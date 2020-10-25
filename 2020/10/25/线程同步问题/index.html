@@ -20,16 +20,17 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="在多线程编程中，对于同属一个线程的进程，它们是共享进程的大部分资源的，比如内存，文件等数据。若多个线程同时对某一资源进行读写，则可能导致冲突。为此就引入了线程同步。本质来说线程同步是对某一资源的独自访问，需要借助于某种机制。  在存在数据竞争的代码中，就要加锁， 但是又有所谓的”无锁”，但本质上还是锁的操作，即使原子操作，也是最小单位的互斥锁，只不过原子操作不可中断。  线程同步的方式  锁：为">
+  <meta name="description" content="在多线程编程中，对于同属一个线程的进程，它们是共享进程的大部分资源的，比如内存，文件等数据。若多个线程同时对某一资源进行读写，则可能导致冲突。为此就引入了线程同步。本质来说线程同步是对某一资源的独自访问，需要借助于某种机制。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="线程同步问题">
 <meta property="og:url" content="http://example.com/2020/10/25/%E7%BA%BF%E7%A8%8B%E5%90%8C%E6%AD%A5%E9%97%AE%E9%A2%98/index.html">
 <meta property="og:site_name" content="Teemo-Tristana">
-<meta property="og:description" content="在多线程编程中，对于同属一个线程的进程，它们是共享进程的大部分资源的，比如内存，文件等数据。若多个线程同时对某一资源进行读写，则可能导致冲突。为此就引入了线程同步。本质来说线程同步是对某一资源的独自访问，需要借助于某种机制。  在存在数据竞争的代码中，就要加锁， 但是又有所谓的”无锁”，但本质上还是锁的操作，即使原子操作，也是最小单位的互斥锁，只不过原子操作不可中断。  线程同步的方式  锁：为">
+<meta property="og:description" content="在多线程编程中，对于同属一个线程的进程，它们是共享进程的大部分资源的，比如内存，文件等数据。若多个线程同时对某一资源进行读写，则可能导致冲突。为此就引入了线程同步。本质来说线程同步是对某一资源的独自访问，需要借助于某种机制。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2020-10-25T04:15:42.000Z">
-<meta property="article:modified_time" content="2020-10-25T04:55:11.745Z">
+<meta property="article:modified_time" content="2020-10-25T05:36:35.583Z">
 <meta property="article:author" content="Han Cheng">
+<meta property="article:tag" content="C++,python，图像处理">
 <meta name="twitter:card" content="summary">
 
 <link rel="canonical" href="http://example.com/2020/10/25/%E7%BA%BF%E7%A8%8B%E5%90%8C%E6%AD%A5%E9%97%AE%E9%A2%98/">
@@ -99,6 +100,7 @@
       <h1 class="site-title">Teemo-Tristana</h1>
       <span class="logo-line-after"><i></i></span>
     </a>
+      <p class="site-subtitle" itemprop="description">每日进步一点</p>
   </div>
 
   <div class="site-nav-right">
@@ -168,9 +170,9 @@
     <link itemprop="mainEntityOfPage" href="http://example.com/2020/10/25/%E7%BA%BF%E7%A8%8B%E5%90%8C%E6%AD%A5%E9%97%AE%E9%A2%98/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="/images/teemo.png">
       <meta itemprop="name" content="Han Cheng">
-      <meta itemprop="description" content="">
+      <meta itemprop="description" content="记录平日所学">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -189,7 +191,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2020-10-25 12:15:42 / 修改时间：12:55:11" itemprop="dateCreated datePublished" datetime="2020-10-25T12:15:42+08:00">2020-10-25</time>
+              <time title="创建时间：2020-10-25 12:15:42 / 修改时间：13:36:35" itemprop="dateCreated datePublished" datetime="2020-10-25T12:15:42+08:00">2020-10-25</time>
             </span>
 
           
@@ -205,7 +207,7 @@
       
         <ul>
 <li><p>在多线程编程中，对于同属一个线程的进程，它们是共享进程的大部分资源的，比如内存，文件等数据。若多个线程同时对某一资源进行读写，则可能导致冲突。为此就引入了线程同步。本质来说线程同步是对某一资源的独自访问，需要借助于某种机制。</p>
-</li>
+<a id="more"></a></li>
 <li><p>在存在数据竞争的代码中，就要加锁， 但是又有所谓的”无锁”，但本质上还是锁的操作，即使原子操作，也是最小单位的互斥锁，只不过原子操作不可中断。</p>
 </li>
 <li><p>线程同步的方式</p>
@@ -251,8 +253,8 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2020/10/24/C-%E9%9D%A2%E8%AF%95%E7%9F%A5%E8%AF%86%E7%82%B9/" rel="prev" title="C++面试知识点">
-      <i class="fa fa-chevron-left"></i> C++面试知识点
+    <a href="/2020/10/24/C-%E9%9D%A2%E8%AF%95%E7%9F%A5%E8%AF%86%E7%82%B9/" rel="prev" title="C++ review">
+      <i class="fa fa-chevron-left"></i> C++ review
     </a></div>
       <div class="post-nav-item"></div>
     </div>
@@ -319,9 +321,9 @@
       <div class="site-overview-wrap sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <img class="site-author-image" itemprop="image" alt="Han Cheng"
-      src="/images/avatar.gif">
+      src="/images/teemo.png">
   <p class="site-author-name" itemprop="name">Han Cheng</p>
-  <div class="site-description" itemprop="description"></div>
+  <div class="site-description" itemprop="description">记录平日所学</div>
 </div>
 <div class="site-state-wrap motion-element">
   <nav class="site-state">
@@ -331,6 +333,10 @@
           <span class="site-state-item-count">3</span>
           <span class="site-state-item-name">日志</span>
         </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">标签</span>
       </div>
   </nav>
 </div>
