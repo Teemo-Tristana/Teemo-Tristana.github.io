@@ -20,16 +20,18 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="传输层： 概述  传输层的作用 提传输层提供进程和进程间的逻辑通信， 网络层提供主机之间的逻辑通信 分用和复用     传输层主要有个两个协议： TCP和UDP   寻址与端口： 端口号 16 bit , 端口号是本地唯一标识用户进程 共 2^16 - 1 &#x3D; 65535 个 端口，是逻辑上的端口号 知名端口: 0-1023 FTP 21 TELNET 23 SMTP 25 DNS 53 HTTP">
+  <meta name="description" content="传输层： 概述  传输层的作用 提传输层提供进程和进程间的逻辑通信， 网络层提供主机之间的逻辑通信 分用和复用     传输层主要有个两个协议： TCP和UDP">
 <meta property="og:type" content="article">
 <meta property="og:title" content="计算机网络之传输层">
 <meta property="og:url" content="http://example.com/2020/10/25/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E4%B9%8B%E4%BC%A0%E8%BE%93%E5%B1%82/index.html">
 <meta property="og:site_name" content="Teemo-Tristana">
-<meta property="og:description" content="传输层： 概述  传输层的作用 提传输层提供进程和进程间的逻辑通信， 网络层提供主机之间的逻辑通信 分用和复用     传输层主要有个两个协议： TCP和UDP   寻址与端口： 端口号 16 bit , 端口号是本地唯一标识用户进程 共 2^16 - 1 &#x3D; 65535 个 端口，是逻辑上的端口号 知名端口: 0-1023 FTP 21 TELNET 23 SMTP 25 DNS 53 HTTP">
+<meta property="og:description" content="传输层： 概述  传输层的作用 提传输层提供进程和进程间的逻辑通信， 网络层提供主机之间的逻辑通信 分用和复用     传输层主要有个两个协议： TCP和UDP">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/2020/10/25/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E4%B9%8B%E4%BC%A0%E8%BE%93%E5%B1%82/images/UDP-header.png">
+<meta property="og:image" content="http://example.com/2020/10/25/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E4%B9%8B%E4%BC%A0%E8%BE%93%E5%B1%82/images/TCP%E5%8F%AF%E9%9D%A0.png">
+<meta property="og:image" content="http://example.com/2020/10/25/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E4%B9%8B%E4%BC%A0%E8%BE%93%E5%B1%82/images/TCP-header.png">
 <meta property="article:published_time" content="2020-10-25T14:14:04.000Z">
-<meta property="article:modified_time" content="2020-10-25T15:02:17.522Z">
+<meta property="article:modified_time" content="2020-10-25T15:32:23.925Z">
 <meta property="article:author" content="Han Cheng">
 <meta property="article:tag" content="计算机网络,传输层">
 <meta name="twitter:card" content="summary">
@@ -193,7 +195,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2020-10-25 22:14:04 / 修改时间：23:02:17" itemprop="dateCreated datePublished" datetime="2020-10-25T22:14:04+08:00">2020-10-25</time>
+              <time title="创建时间：2020-10-25 22:14:04 / 修改时间：23:32:23" itemprop="dateCreated datePublished" datetime="2020-10-25T22:14:04+08:00">2020-10-25</time>
             </span>
 
           
@@ -217,11 +219,11 @@
 </li>
 </ul>
 <ul>
-<li>传输层主要有个两个协议： TCP和UDP</li>
+<li>传输层主要有个两个协议： TCP和UDP<a id="more"></a></li>
 </ul>
 <ul>
 <li>寻址与端口：<ul>
-<li>端口号 16 bit , <font color="#006600">端口号是本地唯一标识用户进程</font><br><ul>
+<li>端口号 16 bit , 端口用来区分上层应用协议<font color="#006600">端口号是本地唯一标识用户进程</font><br><ul>
 <li>共 2^16 - 1 = 65535 个 端口，是逻辑上的端口号</li>
 <li>知名端口: <strong>0-1023</strong><ul>
 <li>FTP 21</li>
@@ -274,7 +276,178 @@
 </li>
 </ul>
 </li>
-<li><p>UDP 首部格式：<br>  <img src="images/UDP-header.png" alt="UDP-header.png"></p>
+<li><p>UDP 首部格式：</p>
+<ul>
+<li>UDP首部只有 8B, 开销小<br><img src="images/UDP-header.png" alt="UDP-header.png"></li>
+</ul>
+</li>
+<li><p>UDP校验</p>
+</li>
+<li><p>无连接的UDP适合广播和多播</p>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p><font color="#dd0000">TCP：TCP是端到端的面向连接协议</font><br> </p>
+<ul>
+<li><p><strong>TCP特点</strong>:</p>
+<ul>
+<li><p>基于面向连接的可靠的字节流服务</p>
+<ul>
+<li><p><strong>面向连接</strong></p>
+<ul>
+<li>通信双方维持一个连接</li>
+<li>通信双方必须建立连接，然后才能进行数据传输</li>
+<li>通信双方必须为该挎包护额分配资源比如发送缓冲区和接收缓冲区，以管理连接的状态和数据传输</li>
+</ul>
+</li>
+<li><p><strong>可靠传输</strong></p>
+<ul>
+<li><p><font color="#00dddd">校验和</font><br></p>
+<ul>
+<li>校验释放是有效数据</li>
+<li>利用CRC算法，<font color="#dd0000">头部和数据部分都需要校验</font><br> </li>
+</ul>
+</li>
+<li><p><font color="#00dddd">序号seq</font><br></p>
+<ul>
+<li>为每个字节都编号，<font color="#00dd00">用于解决乱序问题</font><br></li>
+<li>RFC793规则：每次当一个新连接建立的时候，初始序列号生成器会生成一个32位的ISN(initial sequence number),范围在 0 ~ 2^32-1之间，绑定到一个32位时钟，低阶位大约每4微秒增加一次，因此ISN大于在4.5小时循环一次。<em>而一个包在网络中生成时间都不会大于MSL,因此可以认为ISN是唯一的</em>。</li>
+<li>seq+1，因为SYN会占用一个序号</li>
+</ul>
+</li>
+<li><p><font color="#00dddd">滑动窗口</font><br></p>
+<ul>
+<li>滑动窗口用于解决流量控制问题</li>
+</ul>
+</li>
+<li><p><font color="#00dddd">重传</font><br></p>
+<ul>
+<li><strong>超时重传</strong>:发送报文段后，立即计时，若时间到期仍然为收到确认，就重传该报文</li>
+<li><strong>冗余重传</strong>：连续三次收到相同的ack时，就立即该报文段重传[在快重传中用到]</li>
+</ul>
+</li>
+<li><p><font color="#00dddd">确定机制ack</font><br></p>
+<ul>
+<li>对收到的报文段进行确认</li>
+<li><font color="#00dd00">用于解决丢包问题</font><br></li>
+</ul>
+<p><img src="images/TCP%E5%8F%AF%E9%9D%A0.png" alt="TCP可靠体现"></p>
+</li>
+</ul>
+</li>
+<li><p><strong>字节流</strong> </p>
+<ul>
+<li>发送端执行的写操作次数和接收端执行的读操作之间没有任何对应关系</li>
+<li>数据的发送和接收是没有任何边界限制的</li>
+<li>类似 <strong>水流</strong> 一样     </li>
+</ul>
+<ul>
+<li>字节流可能导致<font color="#00dddd">TCP粘包问题</font><br><ul>
+<li><strong>原因</strong>：粘包问题是由TCP是字节流协议，没有消息边界所引起的</li>
+</ul>
+<ul>
+<li>解决思路：解决粘包的方法应该由应用层进行分包处理，本质上由应用层来维护消息和消息的边界<ul>
+<li>方法1：以特殊字符作为消息的分节符</li>
+<li>方法2：在消息头部加入消息的长度信息</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>TCP是点多点通信</p>
+</li>
+</ul>
+</li>
+<li><p><font color="#00dd00">&gt;TCP首部格式:</font>&lt;br /</p>
+<ul>
+<li><p><img src="images/TCP-header.png" alt="TCP首部格式"></p>
+</li>
+<li><p>TCP首部至少 20 字节， 至多 60 字节</p>
+</li>
+<li><p>TCP报文段和UDP数据报都是通过其头部中的 16位端口号来区分上层应用程序</p>
+</li>
+<li><p>头部字段</p>
+<ul>
+<li>16位 源端口号 </li>
+<li>16位 目的端口号</li>
+</ul>
+<ul>
+<li><p>32位 序列号seq sequence number</p>
+<ul>
+<li>TCP报文段传输过程中，会为每一个字节编号</li>
+<li>序号的初始值是随机值，后续的TCP报文段加上该随机值</li>
+</ul>
+</li>
+<li><p>32为 确认号ack acknowledge number</p>
+<ul>
+<li>对接收到的TCP报文段的响应</li>
+<li>在收到的TCP报文段序号值基础上+1，表示下一次期待接收的序号</li>
+</ul>
+</li>
+<li><p><font color="#00dddd">&gt;4位 首部长度</font><br></p>
+<ul>
+<li>标识 该TCP头部有多少给32bit（4字节）</li>
+<li>4位最大值为15=16-1，因此TCP头部最长是60Byte</li>
+</ul>
+</li>
+<li><p>6位 保留位 </p>
+</li>
+<li><p>6位 标志位 </p>
+<ul>
+<li>URG 表示紧急指针是否有效</li>
+</ul>
+<ul>
+<li>ACK<ul>
+<li>表示确认号是否有效</li>
+<li>携带ACK标识的TCP报文段称位确认报文段</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li>PSH 提示接收端立即从TCP缓冲区读取该数据</li>
+</ul>
+<ul>
+<li>RST<ul>
+<li>表示要求对方重新建立连接</li>
+<li>携带RST的TCP报文段称位复位报文段</li>
+</ul>
+</li>
+<li>SYN<ul>
+<li>请求建立连接</li>
+<li>携带SYN的TCP报文段称位同步报文段</li>
+</ul>
+</li>
+<li>FIN<ul>
+<li>通知对方本段要关闭连接</li>
+<li>携带FIN的TCP报文段称位结束报文段</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>16位 窗口</p>
+<ul>
+<li>窗口是TCP流量控制的一种方式</li>
+<li>这里的<strong>16位窗口表示接收窗口Receiver Window  RWND</strong></li>
+<li>告知对方本段TCP的接收缓冲区还能容纳多少字节的数据，从而调节对方发送速度</li>
+</ul>
+</li>
+<li><p>16位 校验和</p>
+<ul>
+<li>由发送端填充，接收端对TCP报文段执行CRC算法，以检验传输过程种是否由损坏</li>
+<li><font color="#00dddd">头部和数据部分都需要检验</font><br> </li>
+<li>是TCP可靠传输的一部分</li>
+</ul>
+</li>
+<li><p>16位 紧急指针</p>
+</li>
+</ul>
+</li>
+</ul>
 </li>
 </ul>
 </li>
