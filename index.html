@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>Teemo-Tristana</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="Teemo-Tristana">
+<meta property="og:url" content="http://example.com/index.html">
+<meta property="og:site_name" content="Teemo-Tristana">
+<meta property="og:locale">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="Teemo-Tristana" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.2.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Teemo-Tristana</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://example.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main">
+  
+    <article id="post-线程同步问题" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/10/25/%E7%BA%BF%E7%A8%8B%E5%90%8C%E6%AD%A5%E9%97%AE%E9%A2%98/" class="article-date">
+  <time datetime="2020-10-25T04:15:42.000Z" itemprop="datePublished">2020-10-25</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/10/25/%E7%BA%BF%E7%A8%8B%E5%90%8C%E6%AD%A5%E9%97%AE%E9%A2%98/">线程同步问题</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <ul>
+<li><p>在多线程编程中，对于同属一个线程的进程，它们是共享进程的大部分资源的，比如内存，文件等数据。若多个线程同时对某一资源进行读写，则可能导致冲突。为此就引入了线程同步。本质来说线程同步是对某一资源的独自访问，需要借助于某种机制。</p>
+</li>
+<li><p>在存在数据竞争的代码中，就要加锁， 但是又有所谓的”无锁”，但本质上还是锁的操作，即使原子操作，也是最小单位的互斥锁，只不过原子操作不可中断。</p>
+</li>
+<li><p>线程同步的方式</p>
+<ul>
+<li><p>锁：为了确保同一时间只有一个线程访问数据，在访问共享资源前需要 对互斥量上锁,锁又可以分为互斥锁、自旋锁、读写锁</p>
+<ol>
+<li><p>互斥锁(mutex): 线程对资源操作前会尝试加锁，加锁成功才能操作，操作结束时释放锁。<strong>若加锁失败，则会该线程被阻塞</strong>，进入阻塞队列。若资源可用时，操作系统会激活那个被挂起的线程，让其投入运行。[加锁失败，被阻塞进入等待队列]</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Linux 互斥锁的相关函数 */</span></span><br><span class="line">    pthread_mutex_init()    <span class="comment">//初始化mutex</span></span><br><span class="line">    pthread_mutex_lock()    <span class="comment">//加锁，加锁不成功，一直阻塞等待</span></span><br><span class="line">    pthread_mutex_trylock() <span class="comment">//尝试加锁，加锁不成功，直接返回</span></span><br><span class="line">    pthread_mutex_unlock()  <span class="comment">// 解锁</span></span><br><span class="line">    pthread_mutex_destroy() <span class="comment">//销毁锁</span></span><br><span class="line"><span class="comment">//成功都返回0， 失败返回错误码</span></span><br></pre></td></tr></table></figure></li>
+<li><p>自旋锁：自旋锁(spinclock)：线程尝试对访问资源继续加锁，加锁成功，继续操作，最后释放锁；若失败，则会不断的尝试加锁，消耗cpu。因而，<strong>自旋锁不会被挂起，而是处于忙的忙等状态。</strong>,这是于互斥锁主要的区别。适用于多核处理器、临界区无阻塞情况，其中一个  CPU 上的线程进入临界区，另一个 CPU 上的线程尝试获取锁会自旋，因为它不会阻塞，所以只要稍稍等一下下就能进入临界区（预计线程等待锁的时间很短，短到比线程两次上下文切换时间要少的情况下），对于多核 CPU 来说，会提高并发率。[加锁失败，不被阻塞，而是忙等]</p>
+</li>
+<li><p>读写锁(read-write-clock)：可以多个线程同时读，但是不能多个线程同时写，锁处于读模式时可以线程共享，而锁处于写 模式时只能独占，所以读写锁又叫做<strong>共享-独占锁</strong>，读写锁比互斥锁更加具有适用性和并行性，最适用于对数据结构的读操作读操作次数多余写操作次数的场合[适合读多写少的场景]</p>
+</li>
+</ol>
+</li>
+<li><p>信号量(sem)：<br>信号量的实现中一般具有两种操作，分别是P操作和V操作。对一个信号量进行P操作时，首先检查其值是否大于0，如果大于0，则将其值减一之后返回进行后续操作，如果值小于等于0，则该进程将进行阻塞。(P，V都是原子操作)<br>信号量（sem）和互斥锁的区别：互斥锁只允许一个线程进入临界区，而信号量允许多个线程 进入临界区。</p>
+</li>
+<li><p>条件变量(cond)：当线程在等待满足某些条件时使线程进入睡眠状态，一旦条件满足，就唤醒线程在条件变量的内部，<strong>有一次解锁加锁过程</strong>，条件不满足，将本线程加入等待队列，同时将传入的   mutex变量解锁，一旦等待队列中的线程被唤醒，会再次对传入的  mutex变量加锁！[条件不满足时，将线程放入队列中，对mutex变量进行解锁（这两步都是原子操作）一旦线程被唤醒，就对mutex变量进行加锁]</p>
+<ul>
+<li>条件变量产生的原因：互斥量不是万能的，比如某个线程正在等待共享数据内某个条件出现，可能需要重复对数 据对象加锁和解锁（轮询），但是这样轮询非常耗费时间和资源，而且效率非常低，所以互斥锁不太适 合这种情况</li>
+</ul>
+<ul>
+<li>惊群效应:<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*  </span></span><br><span class="line"><span class="comment">某一条件发生后，条件变量 有两种通知线程的方式，一是broadcast，一个是signal，前者是以广播的方式通知所有等待该条件变量的线程，会产生 惊群效应， 后者只把条件信号发送给某一等待该资源的线程。</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">pthread_cond_broadcast() <span class="comment">//广播通知所有，会产生惊群效应</span></span><br><span class="line">pthread_cond_signal()   <span class="comment">// 至多只给一个线程发信号</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2020/10/25/%E7%BA%BF%E7%A8%8B%E5%90%8C%E6%AD%A5%E9%97%AE%E9%A2%98/" data-id="ckgon4hhl00029gvkd9pb7asw" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-C-面试知识点" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/10/24/C-%E9%9D%A2%E8%AF%95%E7%9F%A5%E8%AF%86%E7%82%B9/" class="article-date">
+  <time datetime="2020-10-24T15:26:17.000Z" itemprop="datePublished">2020-10-24</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/10/24/C-%E9%9D%A2%E8%AF%95%E7%9F%A5%E8%AF%86%E7%82%B9/">C++面试知识点</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="1-语言基础-C-C"><a href="#1-语言基础-C-C" class="headerlink" title="1. 语言基础 (C/C++)"></a>1. 语言基础 (C/C++)</h1><h4 id="（0）-指针和引用的区别"><a href="#（0）-指针和引用的区别" class="headerlink" title="（0） 指针和引用的区别"></a>（0） 指针和引用的区别</h4><ul>
+<li>指针是一个新的变量，指向另一个变量的地址，我们可以通过访问这个地址来修改另一个变量；而引用是一个别名，对引用的操作就是对变量的本身进行操作</li>
+<li>指针可以有多级，引用只有一级</li>
+<li>传参的时候，使用指针的话需要解引用才能对参数进行修改，而使用引用可以直接对参数进行修改</li>
+<li>指针的大小一般是4个字节，引用的大小取决于被引用对象的大小</li>
+<li>指针可以为空，引用不可以[引用声明时必须初始化]。</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2020/10/24/C-%E9%9D%A2%E8%AF%95%E7%9F%A5%E8%AF%86%E7%82%B9/" data-id="ckgon4hh900009gvk46rg44qn" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-hello-world" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/10/24/hello-world/" class="article-date">
+  <time datetime="2020-10-24T15:04:47.393Z" itemprop="datePublished">2020-10-24</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/10/24/hello-world/">Hello World</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
+<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
+<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
+<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
+<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2020/10/24/hello-world/" data-id="ckgon4hhd00019gvkgzlnaq4w" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/10/">October 2020</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2020/10/25/%E7%BA%BF%E7%A8%8B%E5%90%8C%E6%AD%A5%E9%97%AE%E9%A2%98/">线程同步问题</a>
+          </li>
+        
+          <li>
+            <a href="/2020/10/24/C-%E9%9D%A2%E8%AF%95%E7%9F%A5%E8%AF%86%E7%82%B9/">C++面试知识点</a>
+          </li>
+        
+          <li>
+            <a href="/2020/10/24/hello-world/">Hello World</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2020 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>
