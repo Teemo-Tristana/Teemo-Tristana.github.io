@@ -20,13 +20,15 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="传输层  概述 传输层的作用 提传输层提供进程和进程间的逻辑通信， 网络层提供主机之间的逻辑通信 分用和复用   传输层主要有个两个协议： TCP和UDP">
+  <meta name="description" content="原子操作">
 <meta property="og:type" content="article">
 <meta property="og:title" content="计算机网络之传输层">
 <meta property="og:url" content="http://example.com/2020/10/25/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E4%B9%8B%E4%BC%A0%E8%BE%93%E5%B1%82/index.html">
 <meta property="og:site_name" content="Teemo-Tristana">
-<meta property="og:description" content="传输层  概述 传输层的作用 提传输层提供进程和进程间的逻辑通信， 网络层提供主机之间的逻辑通信 分用和复用   传输层主要有个两个协议： TCP和UDP">
+<meta property="og:description" content="原子操作">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://teemo-tristana.github.io/images/%E5%8E%9F%E5%AD%90%E6%93%8D%E4%BD%9C.png">
+<meta property="og:image" content="https://teemo-tristana.github.io/images/http-https.png">
 <meta property="og:image" content="https://teemo-tristana.github.io/images/UDP-header.png">
 <meta property="og:image" content="https://teemo-tristana.github.io/images/TCP%E5%8F%AF%E9%9D%A0.png">
 <meta property="og:image" content="https://teemo-tristana.github.io/images/TCP-header.png">
@@ -34,13 +36,13 @@
 <meta property="og:image" content="https://teemo-tristana.github.io/images/TCP-feishou.png">
 <meta property="og:image" content="https://teemo-tristana.github.io/images/TCP-%E7%8A%B6%E6%80%81%E8%BD%AC%E7%A7%BB%E5%9B%BE.png">
 <meta property="og:image" content="https://teemo-tristana.github.io/images/TCP-%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6.png">
-<meta property="og:image" content="https://teemo-tristana.github.io/images/%E5%8E%9F%E5%AD%90%E6%93%8D%E4%BD%9C.png">
+<meta property="og:image" content="https://teemo-tristana.github.io/images/IP-header.png">
 <meta property="article:published_time" content="2020-10-25T14:14:04.000Z">
-<meta property="article:modified_time" content="2020-10-26T03:31:21.111Z">
+<meta property="article:modified_time" content="2020-10-26T03:43:24.761Z">
 <meta property="article:author" content="Han Cheng">
 <meta property="article:tag" content="计算机网络,传输层">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://teemo-tristana.github.io/images/UDP-header.png">
+<meta name="twitter:image" content="https://teemo-tristana.github.io/images/%E5%8E%9F%E5%AD%90%E6%93%8D%E4%BD%9C.png">
 
 <link rel="canonical" href="http://example.com/2020/10/25/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E4%B9%8B%E4%BC%A0%E8%BE%93%E5%B1%82/">
 
@@ -206,7 +208,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-10-26 11:31:21" itemprop="dateModified" datetime="2020-10-26T11:31:21+08:00">2020-10-26</time>
+                <time title="修改时间：2020-10-26 11:43:24" itemprop="dateModified" datetime="2020-10-26T11:43:24+08:00">2020-10-26</time>
               </span>
 
           
@@ -220,20 +222,237 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="传输层"><a href="#传输层" class="headerlink" title="传输层"></a>传输层</h1><!-- ## 1.1段落标题
+        <!-- ## 1.1段落标题
 ## 1.2段落标题
 ### 1.2.1段落标题
 ### 1.2.2段落标题
 # 2.段落标题
 # 3.传输层 -->
 
-<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><ul>
+<h1 id="原子操作"><a href="#原子操作" class="headerlink" title="原子操作"></a>原子操作</h1><p><img src="https://teemo-tristana.github.io/images/%E5%8E%9F%E5%AD%90%E6%93%8D%E4%BD%9C.png" alt="原子操作"></p>
+<a id="more"></a>
+
+<h1 id="应用层"><a href="#应用层" class="headerlink" title="应用层"></a>应用层</h1><ul>
+<li><p>作用：负责应用程序的逻辑，在用户空间实现</p>
+</li>
+<li><p>常用协议</p>
+<ul>
+<li><p>HTTP协议</p>
+<ul>
+<li><p>概念：Hypertext Transfer Peotocol 超文本传输协议 HTTP</p>
+</li>
+<li><p>作用：规定浏览器与服务器之间通信的规则</p>
+</li>
+<li><p>HTTP是一种协议，只要通信双方都遵循这个协议，就可以使用http进行通信</p>
+</li>
+<li><p>HTTP1.1之前默认短连接，HTTP1.1及其之后默认长连接</p>
+</li>
+<li><p>HTTP和HTTPS<br>  <img src="https://teemo-tristana.github.io/images/http-https.png" alt="http和http协议对比"></p>
+<ul>
+<li><p>http和https使用的是完全不同的连接方式，用的端口也不一样，http端口是80，https端口是443</p>
+</li>
+<li><p>http是超文本传输协议，信息是明文传输，https则是具有安全性的ssl加密传输协议</p>
+</li>
+<li><p>HTTP默认端口是80， HTTPS默认端口是 443</p>
+</li>
+<li><p>HTTP是基于TCP的协议，HTTPS是在http和TLS/SSL结合的协议</p>
+</li>
+<li><p>https是针对http不足做出改进的</p>
+<ul>
+<li>窃听风险  -&gt; 对传输的信息加密， 使用混合加密</li>
+<li>篡改风险 -&gt; 采用完整性校验，使用数字签名</li>
+<li>冒充风险 -&gt; 采用身份验证， 使用数字证数</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>HTTP组成</p>
+<ul>
+<li><p>判断 HTTP头部结束的依据是遇到一个 空行\r\n</p>
+<ul>
+<li>HTTP协议是基于行的协议，每一行以回车换行符(\r\n)作为分隔符.空行及其之前的部分是头部，消息实体是body部分</li>
+</ul>
+</li>
+<li><p>请求报文</p>
+<ul>
+<li>请求行</li>
+<li>首部行</li>
+<li>空行</li>
+<li>消息实体body（可选）</li>
+</ul>
+</li>
+<li><p>响应报文</p>
+<ul>
+<li>响应行</li>
+<li>首部行</li>
+<li>空行</li>
+<li>消息实体body（可选）</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>HTTPS</p>
+<ul>
+<li><p>加密算法</p>
+<ul>
+<li><p>对称加密</p>
+<ul>
+<li>加密的密钥和解密的密钥是相同的，如AES和TEA，计算量小，但存在破解的风险。</li>
+</ul>
+</li>
+<li><p>非对称加密</p>
+<ul>
+<li>加密和解密的密钥不同，公钥和私钥成对出现，公钥用于加密，私钥用于解密。计算量大，安全性强，常用的如RSA，ECC。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>HTTP + SSL/TLS</p>
+</li>
+</ul>
+</li>
+<li><p>HTTPS四次握手</p>
+<ul>
+<li><p>SSL/TLS的四次握手</p>
+<ul>
+<li><p>四次握手过程</p>
+<ul>
+<li><p>1.客户端发出请求ClientHello  -&gt;</p>
+<ul>
+<li><p>客户端首先向服务器Client Hello消息，消息包含</p>
+<ul>
+<li>SSL协议版本号，比如TLS1.0</li>
+<li>加密算法种类，以及其所需信息，如压缩方法</li>
+<li>包含客户端的一个随机数，用于生成对话密钥</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><ol start="2">
+<li><p>服务器响应ServerHello &lt;-</p>
+<ul>
+<li><p>服务器然后响应</p>
+<ul>
+<li>验证客户端的证书</li>
+<li>发送 Server Hello消息包含协议版本，加密方式等和服务端生成的一个随机数</li>
+<li>发送服务器端证书</li>
+<li>发送server key exchange消息，包含公钥和签名消息</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+</li>
+<li><p>3.客户端再回应 -&gt;</p>
+<ul>
+<li>发送 client key exhange，包含一个随机数，即预主密钥</li>
+<li>发送 change cipher spec消息，通知服务器端之后的数据段会加密传输</li>
+<li>发送finished消息，包含加密后的握手信息</li>
+</ul>
+</li>
+<li><p>4.服务器响应 &lt;-</p>
+<ul>
+<li>使用私钥将信息解密取出密码，再使用密码对消息解密并验证。之后发送消息时都会使用密钥进行加密，然后发送</li>
+<li>发送 chang cipher spec消息，通知客户端之后的数据段会加密传输</li>
+<li>发送finished消息，验证客户端的Finished消息并完成TLS握手</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>注意事项</p>
+<ul>
+<li><p>3个随机数</p>
+<ul>
+<li>client 会发送2个</li>
+<li>server会发送1个</li>
+<li>作用：用于生成密钥</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>HTTPS整个过程需要完成7次握手： SSL四次握手 + TCP三次握手 </p>
+</li>
+<li><p>HTTP/3 基于UDP的QUIC协议进行握手，将TCP和TLS的握手过程组合起来，从而只需要3次握手就可以建立安全的连接。</p>
+<ul>
+<li><p>QUIC</p>
+<ul>
+<li><p>概念： quick udp internet connetion 快速UDP互联网连接（google提出的使用udp进行多路并发传输的协议）</p>
+</li>
+<li><p>相比于http+tcp+TLS的优势</p>
+<ul>
+<li>减少了TCP三次握手及TLS的握手时间</li>
+<li>改进了拥塞控制</li>
+<li>避队头阻塞的多路复用</li>
+<li>连接迁移</li>
+<li>前向冗余纠错</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>请求方法,方法名称区分大小写</p>
+<ul>
+<li><p><strong>get 与 post的区别</strong></p>
+<ul>
+<li>get方法不会修改服务器上的资源，它的等幂操作，而post是非等幂操作，可能会修改服务器的资源</li>
+<li>get可以保存为书签，可以用来缓存，而post不可以</li>
+<li>get把请求附在url上，而post把请求放在body里</li>
+<li>get的长度一般有限制，不同的浏览器可能不同，但都在2k左右，post一般来说没有限制</li>
+<li>get参数只支持ASCII，post的参数要广一些，比如可以用来传输二进制编码的信息</li>
+</ul>
+</li>
+<li><p>header</p>
+</li>
+<li><p>put</p>
+</li>
+<li><p>delete</p>
+</li>
+<li><p>trace</p>
+</li>
+<li><p>connect</p>
+</li>
+<li><p>patch</p>
+</li>
+<li><p>options</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>telnet 远程登录协议</p>
+</li>
+<li><p>OSPF(Open Shortest Path Furst 开放最短路径优先)</p>
+<ul>
+<li>动态路由更新协议</li>
+<li>用于路由器之间通信，告知对方各自的路由消息</li>
+</ul>
+</li>
+<li><p>DNS(Domain Name Service) 域名服务</p>
+<ul>
+<li>将域名转换到IP地址</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>ping ：是一个应用程序，不是协议</p>
+<ul>
+<li>用于检测网络是否联通</li>
+<li>利用ICMP报文检测网络连接情况</li>
+</ul>
+</li>
+</ul>
+<h1 id="传输层"><a href="#传输层" class="headerlink" title="传输层"></a>传输层</h1><h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><ul>
 <li>传输层的作用<ul>
 <li><font color="#006600">提传输层提供进程和进程间的逻辑通信， 网络层提供主机之间的逻辑通信</font><br><ul>
 <li>分用和复用</li>
 </ul>
 </li>
-<li>传输层主要有个两个协议： TCP和UDP<a id="more"></a></li>
+<li>传输层主要有个两个协议： TCP和UDP<!--more--></li>
 </ul>
 <ul>
 <li>寻址与端口：<ul>
@@ -621,221 +840,6 @@
 <li><strong>Nagle算法主要是避免发送小的数据包</strong>，要求TCP连接上最多只能有一个未被确认的小分组，在该分组的确认到达之前不能发送其他的小分组。</li>
 </ul>
 </li>
-</ul>
-</li>
-</ul>
-<h1 id="原子操作"><a href="#原子操作" class="headerlink" title="原子操作"></a>原子操作</h1><p><img src="https://teemo-tristana.github.io/images/%E5%8E%9F%E5%AD%90%E6%93%8D%E4%BD%9C.png" alt="原子操作"></p>
-<h1 id="应用层"><a href="#应用层" class="headerlink" title="应用层"></a>应用层</h1><ul>
-<li><p>作用：负责应用程序的逻辑，在用户空间实现</p>
-</li>
-<li><p>常用协议</p>
-<ul>
-<li><p>HTTP协议</p>
-<ul>
-<li><p>概念：Hypertext Transfer Peotocol 超文本传输协议 HTTP</p>
-</li>
-<li><p>作用：规定浏览器与服务器之间通信的规则</p>
-</li>
-<li><p>HTTP是一种协议，只要通信双方都遵循这个协议，就可以使用http进行通信</p>
-</li>
-<li><p>HTTP1.1之前默认短连接，HTTP1.1及其之后默认长连接</p>
-</li>
-<li><p>HTTP和HTTPS</p>
-<ul>
-<li><p>http和https使用的是完全不同的连接方式，用的端口也不一样，http端口是80，https端口是443</p>
-</li>
-<li><p>http是超文本传输协议，信息是明文传输，https则是具有安全性的ssl加密传输协议</p>
-</li>
-<li><p>HTTP默认端口是80， HTTPS默认端口是 443</p>
-</li>
-<li><p>HTTP是基于TCP的协议，HTTPS是在http和TLS/SSL结合的协议</p>
-</li>
-<li><p>https是针对http不足做出改进的</p>
-<ul>
-<li>窃听风险  -&gt; 对传输的信息加密， 使用混合加密</li>
-<li>篡改风险 -&gt; 采用完整性校验，使用数字签名</li>
-<li>冒充风险 -&gt; 采用身份验证， 使用数字证数</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>HTTP组成</p>
-<ul>
-<li><p>判断 HTTP头部结束的依据是遇到一个 空行\r\n</p>
-<ul>
-<li>HTTP协议是基于行的协议，每一行以回车换行符(\r\n)作为分隔符.空行及其之前的部分是头部，消息实体是body部分</li>
-</ul>
-</li>
-<li><p>请求报文</p>
-<ul>
-<li>请求行</li>
-<li>首部行</li>
-<li>空行</li>
-<li>消息实体body（可选）</li>
-</ul>
-</li>
-<li><p>响应报文</p>
-<ul>
-<li>响应行</li>
-<li>首部行</li>
-<li>空行</li>
-<li>消息实体body（可选）</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>HTTPS</p>
-<ul>
-<li><p>加密算法</p>
-<ul>
-<li><p>对称加密</p>
-<ul>
-<li>加密的密钥和解密的密钥是相同的，如AES和TEA，计算量小，但存在破解的风险。</li>
-</ul>
-</li>
-<li><p>非对称加密</p>
-<ul>
-<li>加密和解密的密钥不同，公钥和私钥成对出现，公钥用于加密，私钥用于解密。计算量大，安全性强，常用的如RSA，ECC。</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>HTTP + SSL/TLS</p>
-</li>
-</ul>
-</li>
-<li><p>HTTPS四次握手</p>
-<ul>
-<li><p>SSL/TLS的四次握手</p>
-<ul>
-<li><p>四次握手过程</p>
-<ul>
-<li><p>1.客户端发出请求ClientHello  -&gt;</p>
-<ul>
-<li><p>客户端首先向服务器Client Hello消息，消息包含</p>
-<ul>
-<li>SSL协议版本号，比如TLS1.0</li>
-<li>加密算法种类，以及其所需信息，如压缩方法</li>
-<li>包含客户端的一个随机数，用于生成对话密钥</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><ol start="2">
-<li><p>服务器响应ServerHello &lt;-</p>
-<ul>
-<li><p>服务器然后响应</p>
-<ul>
-<li>验证客户端的证书</li>
-<li>发送 Server Hello消息包含协议版本，加密方式等和服务端生成的一个随机数</li>
-<li>发送服务器端证书</li>
-<li>发送server key exchange消息，包含公钥和签名消息</li>
-</ul>
-</li>
-</ul>
-</li>
-</ol>
-</li>
-<li><p>3.客户端再回应 -&gt;</p>
-<ul>
-<li>发送 client key exhange，包含一个随机数，即预主密钥</li>
-<li>发送 change cipher spec消息，通知服务器端之后的数据段会加密传输</li>
-<li>发送finished消息，包含加密后的握手信息</li>
-</ul>
-</li>
-<li><p>4.服务器响应 &lt;-</p>
-<ul>
-<li>使用私钥将信息解密取出密码，再使用密码对消息解密并验证。之后发送消息时都会使用密钥进行加密，然后发送</li>
-<li>发送 chang cipher spec消息，通知客户端之后的数据段会加密传输</li>
-<li>发送finished消息，验证客户端的Finished消息并完成TLS握手</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>注意事项</p>
-<ul>
-<li><p>3个随机数</p>
-<ul>
-<li>client 会发送2个</li>
-<li>server会发送1个</li>
-<li>作用：用于生成密钥</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>HTTPS整个过程需要完成7次握手： SSL四次握手 + TCP三次握手 </p>
-</li>
-<li><p>HTTP/3 基于UDP的QUIC协议进行握手，将TCP和TLS的握手过程组合起来，从而只需要3次握手就可以建立安全的连接。</p>
-<ul>
-<li><p>QUIC</p>
-<ul>
-<li><p>概念： quick udp internet connetion 快速UDP互联网连接（google提出的使用udp进行多路并发传输的协议）</p>
-</li>
-<li><p>相比于http+tcp+TLS的优势</p>
-<ul>
-<li>减少了TCP三次握手及TLS的握手时间</li>
-<li>改进了拥塞控制</li>
-<li>避队头阻塞的多路复用</li>
-<li>连接迁移</li>
-<li>前向冗余纠错</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>请求方法,方法名称区分大小写</p>
-<ul>
-<li><p>get 与 post的区别</p>
-<ul>
-<li>get方法不会修改服务器上的资源，它的等幂操作，而post是非等幂操作，可能会修改服务器的资源</li>
-<li>get可以保存为书签，可以用来缓存，而post不可以</li>
-<li>get把请求附在url上，而post把请求放在body里</li>
-<li>get的长度一般有限制，不同的浏览器可能不同，但都在2k左右，post一般来说没有限制</li>
-<li>get参数只支持ASCII，post的参数要广一些，比如可以用来传输二进制编码的信息</li>
-</ul>
-</li>
-<li><p>header</p>
-</li>
-<li><p>put</p>
-</li>
-<li><p>delete</p>
-</li>
-<li><p>trace</p>
-</li>
-<li><p>connect</p>
-</li>
-<li><p>patch</p>
-</li>
-<li><p>options</p>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>telnet 远程登录协议</p>
-</li>
-<li><p>OSPF(Open Shortest Path Furst 开放最短路径优先)</p>
-<ul>
-<li>动态路由更新协议</li>
-<li>用于路由器之间通信，告知对方各自的路由消息</li>
-</ul>
-</li>
-<li><p>DNS(Domain Name Service) 域名服务</p>
-<ul>
-<li>将域名转换到IP地址</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>ping ：是一个应用程序，不是协议</p>
-<ul>
-<li>用于检测网络是否联通</li>
-<li>利用ICMP报文检测网络连接情况</li>
 </ul>
 </li>
 </ul>
@@ -1443,7 +1447,7 @@
 </li>
 <li><p>IP数据报</p>
 <ul>
-<li><p>IP头部：至少长20B，至多60B</p>
+<li><p>IP头部：至少长20B，至多60B<br>  <img src="https://teemo-tristana.github.io/images/IP-header.png" alt="IP头部"></p>
 <ul>
 <li><p>4位 版本 </p>
 <ul>
@@ -1757,7 +1761,10 @@
     <a href="/2020/10/25/C++-Review-02/" rel="prev" title="C++ Review 02">
       <i class="fa fa-chevron-left"></i> C++ Review 02
     </a></div>
-      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/2020/10/26/my-project/" rel="next" title="my-project">
+      my-project <i class="fa fa-chevron-right"></i>
+    </a></div>
     </div>
       </footer>
     
@@ -1816,18 +1823,18 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BC%A0%E8%BE%93%E5%B1%82"><span class="nav-number">1.</span> <span class="nav-text">传输层</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#UDP%E5%8D%8F%E8%AE%AE-User-Datagram-Protocol"><span class="nav-number">1.2.</span> <span class="nav-text">UDP协议(User Datagram Protocol)
-</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#UDP%E7%89%B9%E7%82%B9"><span class="nav-number">1.2.1.</span> <span class="nav-text">UDP特点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#UDP-%E9%A6%96%E9%83%A8%E6%A0%BC%E5%BC%8F"><span class="nav-number">1.2.2.</span> <span class="nav-text">UDP 首部格式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP%EF%BC%9ATCP%E6%98%AF%E7%AB%AF%E5%88%B0%E7%AB%AF%E7%9A%84%E9%9D%A2%E5%90%91%E8%BF%9E%E6%8E%A5%E5%8D%8F%E8%AE%AE"><span class="nav-number">1.3.</span> <span class="nav-text">TCP：TCP是端到端的面向连接协议
-</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#TCP%E7%89%B9%E7%82%B9"><span class="nav-number">1.3.1.</span> <span class="nav-text">TCP特点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TCP%E9%A6%96%E9%83%A8%E6%A0%BC%E5%BC%8F"><span class="nav-number">1.3.2.</span> <span class="nav-text">TCP首部格式:
-</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TCP%E8%BF%9E%E6%8E%A5%E7%AE%A1%E7%90%86"><span class="nav-number">1.3.3.</span> <span class="nav-text">TCP连接管理
-</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#TCP%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B"><span class="nav-number">1.3.3.1.</span> <span class="nav-text">TCP三次握手
-</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#TCP%E5%9B%9B%E6%AC%A1%E6%8C%A5%E6%89%8B"><span class="nav-number">1.3.3.2.</span> <span class="nav-text">TCP四次挥手
-</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#TCP%E7%8A%B6%E6%80%81%E8%BD%AC%E7%A7%BB"><span class="nav-number">1.3.3.3.</span> <span class="nav-text">TCP状态转移
-</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#TCP%E6%B5%81%E9%87%8F%E6%8E%A7%E5%88%B6%EF%BC%9A%E5%88%A9%E7%94%A8%E6%BB%91%E5%8A%A8%E7%AA%97%E5%8F%A3%E5%AE%9E%E7%8E%B0%E6%B5%81%E9%87%8F%E6%8E%A7%E5%88%B6wnd-min-rwnd-cwnd"><span class="nav-number">1.3.3.4.</span> <span class="nav-text">TCP流量控制：利用滑动窗口实现流量控制wnd &#x3D; min(rwnd, cwnd)
-</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#TCP%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95"><span class="nav-number">1.3.3.5.</span> <span class="nav-text">TCP拥塞控制算法
-</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%B5%81%E9%87%8F%E6%8E%A7%E5%88%B6%E5%92%8C%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%8C%BA%E5%88%AB"><span class="nav-number">1.3.3.6.</span> <span class="nav-text">流量控制和拥塞控区别
-</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Nagle%E7%AE%97%E6%B3%95"><span class="nav-number">1.3.3.7.</span> <span class="nav-text">Nagle算法
-</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8E%9F%E5%AD%90%E6%93%8D%E4%BD%9C"><span class="nav-number">2.</span> <span class="nav-text">原子操作</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BA%94%E7%94%A8%E5%B1%82"><span class="nav-number">3.</span> <span class="nav-text">应用层</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BC%A0%E8%BE%93%E5%B1%82-1"><span class="nav-number">4.</span> <span class="nav-text">传输层</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BD%91%E7%BB%9C%E5%B1%82"><span class="nav-number">5.</span> <span class="nav-text">网络层</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E9%93%BE%E8%B7%AF%E5%B1%82"><span class="nav-number">6.</span> <span class="nav-text">数据链路层</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8E%9F%E5%AD%90%E6%93%8D%E4%BD%9C"><span class="nav-number">1.</span> <span class="nav-text">原子操作</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BA%94%E7%94%A8%E5%B1%82"><span class="nav-number">2.</span> <span class="nav-text">应用层</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BC%A0%E8%BE%93%E5%B1%82"><span class="nav-number">3.</span> <span class="nav-text">传输层</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">3.1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#UDP%E5%8D%8F%E8%AE%AE-User-Datagram-Protocol"><span class="nav-number">3.2.</span> <span class="nav-text">UDP协议(User Datagram Protocol)
+</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#UDP%E7%89%B9%E7%82%B9"><span class="nav-number">3.2.1.</span> <span class="nav-text">UDP特点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#UDP-%E9%A6%96%E9%83%A8%E6%A0%BC%E5%BC%8F"><span class="nav-number">3.2.2.</span> <span class="nav-text">UDP 首部格式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP%EF%BC%9ATCP%E6%98%AF%E7%AB%AF%E5%88%B0%E7%AB%AF%E7%9A%84%E9%9D%A2%E5%90%91%E8%BF%9E%E6%8E%A5%E5%8D%8F%E8%AE%AE"><span class="nav-number">3.3.</span> <span class="nav-text">TCP：TCP是端到端的面向连接协议
+</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#TCP%E7%89%B9%E7%82%B9"><span class="nav-number">3.3.1.</span> <span class="nav-text">TCP特点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TCP%E9%A6%96%E9%83%A8%E6%A0%BC%E5%BC%8F"><span class="nav-number">3.3.2.</span> <span class="nav-text">TCP首部格式:
+</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TCP%E8%BF%9E%E6%8E%A5%E7%AE%A1%E7%90%86"><span class="nav-number">3.3.3.</span> <span class="nav-text">TCP连接管理
+</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#TCP%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B"><span class="nav-number">3.3.3.1.</span> <span class="nav-text">TCP三次握手
+</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#TCP%E5%9B%9B%E6%AC%A1%E6%8C%A5%E6%89%8B"><span class="nav-number">3.3.3.2.</span> <span class="nav-text">TCP四次挥手
+</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#TCP%E7%8A%B6%E6%80%81%E8%BD%AC%E7%A7%BB"><span class="nav-number">3.3.3.3.</span> <span class="nav-text">TCP状态转移
+</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#TCP%E6%B5%81%E9%87%8F%E6%8E%A7%E5%88%B6%EF%BC%9A%E5%88%A9%E7%94%A8%E6%BB%91%E5%8A%A8%E7%AA%97%E5%8F%A3%E5%AE%9E%E7%8E%B0%E6%B5%81%E9%87%8F%E6%8E%A7%E5%88%B6wnd-min-rwnd-cwnd"><span class="nav-number">3.3.3.4.</span> <span class="nav-text">TCP流量控制：利用滑动窗口实现流量控制wnd &#x3D; min(rwnd, cwnd)
+</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#TCP%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95"><span class="nav-number">3.3.3.5.</span> <span class="nav-text">TCP拥塞控制算法
+</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%B5%81%E9%87%8F%E6%8E%A7%E5%88%B6%E5%92%8C%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%8C%BA%E5%88%AB"><span class="nav-number">3.3.3.6.</span> <span class="nav-text">流量控制和拥塞控区别
+</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Nagle%E7%AE%97%E6%B3%95"><span class="nav-number">3.3.3.7.</span> <span class="nav-text">Nagle算法
+</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BC%A0%E8%BE%93%E5%B1%82-1"><span class="nav-number">4.</span> <span class="nav-text">传输层</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BD%91%E7%BB%9C%E5%B1%82"><span class="nav-number">5.</span> <span class="nav-text">网络层</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E9%93%BE%E8%B7%AF%E5%B1%82"><span class="nav-number">6.</span> <span class="nav-text">数据链路层</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -1843,12 +1850,12 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">5</span>
+          <span class="site-state-item-count">6</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-count">3</span>
         <span class="site-state-item-name">标签</span>
       </div>
   </nav>
