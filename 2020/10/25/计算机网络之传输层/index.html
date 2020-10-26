@@ -20,19 +20,20 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="传输层 概述  传输层的作用 提传输层提供进程和进程间的逻辑通信， 网络层提供主机之间的逻辑通信 分用和复用     传输层主要有个两个协议： TCP和UDP">
+  <meta name="description" content="传输层  概述 传输层的作用 提传输层提供进程和进程间的逻辑通信， 网络层提供主机之间的逻辑通信 分用和复用   传输层主要有个两个协议： TCP和UDP">
 <meta property="og:type" content="article">
 <meta property="og:title" content="计算机网络之传输层">
 <meta property="og:url" content="http://example.com/2020/10/25/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E4%B9%8B%E4%BC%A0%E8%BE%93%E5%B1%82/index.html">
 <meta property="og:site_name" content="Teemo-Tristana">
-<meta property="og:description" content="传输层 概述  传输层的作用 提传输层提供进程和进程间的逻辑通信， 网络层提供主机之间的逻辑通信 分用和复用     传输层主要有个两个协议： TCP和UDP">
+<meta property="og:description" content="传输层  概述 传输层的作用 提传输层提供进程和进程间的逻辑通信， 网络层提供主机之间的逻辑通信 分用和复用   传输层主要有个两个协议： TCP和UDP">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://teemo-tristana.github.io/images/UDP-header.png">
 <meta property="og:image" content="https://teemo-tristana.github.io/images/TCP%E5%8F%AF%E9%9D%A0.png">
 <meta property="og:image" content="https://teemo-tristana.github.io/images/TCP-header.png">
 <meta property="og:image" content="https://teemo-tristana.github.io/images/TCP_woshou.png">
+<meta property="og:image" content="https://teemo-tristana.github.io/images/TCP-feishou.png">
 <meta property="article:published_time" content="2020-10-25T14:14:04.000Z">
-<meta property="article:modified_time" content="2020-10-26T01:45:26.676Z">
+<meta property="article:modified_time" content="2020-10-26T02:28:40.713Z">
 <meta property="article:author" content="Han Cheng">
 <meta property="article:tag" content="计算机网络,传输层">
 <meta name="twitter:card" content="summary">
@@ -202,7 +203,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-10-26 09:45:26" itemprop="dateModified" datetime="2020-10-26T09:45:26+08:00">2020-10-26</time>
+                <time title="修改时间：2020-10-26 10:28:40" itemprop="dateModified" datetime="2020-10-26T10:28:40+08:00">2020-10-26</time>
               </span>
 
           
@@ -216,16 +217,19 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h3 id="传输层"><a href="#传输层" class="headerlink" title="传输层"></a>传输层</h3><ul>
-<li><p>概述</p>
-<ul>
+        <h1 id="传输层"><a href="#传输层" class="headerlink" title="传输层"></a>传输层</h1><!-- ## 1.1段落标题
+## 1.2段落标题
+### 1.2.1段落标题
+### 1.2.2段落标题
+# 2.段落标题
+# 3.传输层 -->
+
+<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><ul>
 <li>传输层的作用<ul>
-<li><font color="#006600">提传输层提供进程和进程间的逻辑通信， 网络层提供主机之间的逻辑通信</font><br></li>
+<li><font color="#006600">提传输层提供进程和进程间的逻辑通信， 网络层提供主机之间的逻辑通信</font><br><ul>
 <li>分用和复用</li>
 </ul>
 </li>
-</ul>
-<ul>
 <li>传输层主要有个两个协议： TCP和UDP<a id="more"></a></li>
 </ul>
 <ul>
@@ -253,17 +257,17 @@
 </li>
 </ul>
 </li>
-<li><p><font color="#dd0000">UDP协议(User=Datagram-Protocol)</font><br> </p>
-<ul>
-<li><p><strong>UDP特点</strong></p>
-<ul>
+</ul>
+<h2 id="UDP协议-User-Datagram-Protocol"><a href="#UDP协议-User-Datagram-Protocol" class="headerlink" title="UDP协议(User Datagram Protocol)"></a><font color="#dd0000">UDP协议(User Datagram Protocol)</font><br></h2><ul>
+<li><h3 id="UDP特点"><a href="#UDP特点" class="headerlink" title="UDP特点"></a><strong>UDP特点</strong></h3><ul>
 <li><p><font color="#006600">UDP是基于数据报的不可靠的无连接服务</font><br></p>
 <ul>
-<li><strong>数据报</strong>:<ul>
+<li><p><strong>数据报</strong>:</p>
+<ul>
 <li>每个UDP数据报都有一定长度，接收端必须以该长度为最小段位将所有内容一次性读出，<strong>否则数据将被截断</strong></li>
 <li>发送和接受的数据报的次数是相同的</li>
 </ul>
-</li>
+<ul>
 <li><strong>不可靠</strong><ul>
 <li>尽量最努力交付“：不保证可靠交付</li>
 <li>UDP无法保证数据从发送端正确地传输到目的端</li>
@@ -283,8 +287,7 @@
 </li>
 </ul>
 </li>
-<li><p>UDP 首部格式：</p>
-<ul>
+<li><h3 id="UDP-首部格式"><a href="#UDP-首部格式" class="headerlink" title="UDP 首部格式"></a>UDP 首部格式</h3><ul>
 <li>UDP首部只有 8B, 开销小<br><img src="https://teemo-tristana.github.io/images/UDP-header.png" alt="UDP-header.png"></li>
 </ul>
 </li>
@@ -295,11 +298,8 @@
 </ul>
 </li>
 </ul>
-<ul>
-<li><p><font color="#dd0000">TCP：TCP是端到端的面向连接协议</font><br> </p>
-<ul>
-<li><p><strong>TCP特点</strong>:</p>
-<ul>
+<h2 id="TCP：TCP是端到端的面向连接协议"><a href="#TCP：TCP是端到端的面向连接协议" class="headerlink" title="TCP：TCP是端到端的面向连接协议"></a><font color="#dd0000">TCP：TCP是端到端的面向连接协议</font><br></h2><ul>
+<li><h3 id="TCP特点"><a href="#TCP特点" class="headerlink" title="TCP特点"></a><strong>TCP特点</strong></h3><ul>
 <li><p>基于面向连接的可靠的字节流服务</p>
 <ul>
 <li><p><strong>面向连接</strong></p>
@@ -311,38 +311,37 @@
 </li>
 <li><p><strong>可靠传输</strong></p>
 <ul>
-<li><p><font color="#00dddd">校验和</font><br></p>
-<ul>
+<li><font color="#00dddd">校验和</font><br><ul>
 <li>校验释放是有效数据</li>
 <li>利用CRC算法，<font color="#dd0000">头部和数据部分都需要校验</font><br> </li>
 </ul>
 </li>
-<li><p><font color="#00dddd">序号seq</font><br></p>
-<ul>
+<li><font color="#00dddd">序号seq</font><br><ul>
 <li>为每个字节都编号，<font color="#00dd00">用于解决乱序问题</font><br></li>
 <li>RFC793规则：每次当一个新连接建立的时候，初始序列号生成器会生成一个32位的ISN(initial sequence number),范围在 0 ~ 2^32-1之间，绑定到一个32位时钟，低阶位大约每4微秒增加一次，因此ISN大于在4.5小时循环一次。<em>而一个包在网络中生成时间都不会大于MSL,因此可以认为ISN是唯一的</em>。</li>
-<li>seq+1，因为SYN会占用一个序号</li>
 </ul>
 </li>
-<li><p><font color="#00dddd">滑动窗口</font><br></p>
+</ul>
 <ul>
+<li>seq+1，因为SYN会占用一个序号</li>
+</ul>
+<ul>
+<li><font color="#00dddd">滑动窗口</font><br><ul>
 <li>滑动窗口用于解决流量控制问题</li>
 </ul>
 </li>
-<li><p><font color="#00dddd">重传</font><br></p>
-<ul>
+<li><font color="#00dddd">重传</font><br><ul>
 <li><strong>超时重传</strong>:发送报文段后，立即计时，若时间到期仍然为收到确认，就重传该报文</li>
 <li><strong>冗余重传</strong>：连续三次收到相同的ack时，就立即该报文段重传[在快重传中用到]</li>
 </ul>
 </li>
-<li><p><font color="#00dddd">确定机制ack</font><br></p>
-<ul>
+<li><font color="#00dddd">确定机制ack</font><br><ul>
 <li>对收到的报文段进行确认</li>
 <li><font color="#00dd00">用于解决丢包问题</font><br></li>
 </ul>
-<p><img src="https://teemo-tristana.github.io/images/TCP%E5%8F%AF%E9%9D%A0.png" alt="TCP可靠体现"></p>
 </li>
 </ul>
+<p><img src="https://teemo-tristana.github.io/images/TCP%E5%8F%AF%E9%9D%A0.png" alt="TCP可靠体现"></p>
 </li>
 <li><p><strong>字节流</strong> </p>
 <ul>
@@ -370,15 +369,15 @@
 </li>
 </ul>
 </li>
-<li><p><font color="#00dd00">&gt;TCP首部格式:</font><br></p>
-<ul>
+<li><h3 id="TCP首部格式"><a href="#TCP首部格式" class="headerlink" title="TCP首部格式:"></a><font color="#00dd00">TCP首部格式:</font><br></h3><ul>
 <li><p><img src="https://teemo-tristana.github.io/images/TCP-header.png" alt="TCP首部格式"></p>
 </li>
 <li><p>TCP首部至少 20 字节， 至多 60 字节</p>
 </li>
 <li><p>TCP报文段和UDP数据报都是通过其头部中的 16位端口号来区分上层应用程序</p>
-</li>
-<li><p>头部字段</p>
+<ul>
+<li>头部字段</li>
+</ul>
 <ul>
 <li>16位 源端口号 </li>
 <li>16位 目的端口号</li>
@@ -412,13 +411,9 @@
 <li>ACK<ul>
 <li>表示确认号是否有效</li>
 <li>携带ACK标识的TCP报文段称位确认报文段</li>
-</ul>
-</li>
-</ul>
-<ul>
 <li>PSH 提示接收端立即从TCP缓冲区读取该数据</li>
 </ul>
-<ul>
+</li>
 <li>RST<ul>
 <li>表示要求对方重新建立连接</li>
 <li>携带RST的TCP报文段称位复位报文段</li>
@@ -456,12 +451,11 @@
 </li>
 </ul>
 </li>
-<li><p><font color="#00dd00">TCP连接管理</font><br></p>
-<ul>
-<li><p>TCP通信双方必须建立TCP连接，并在内核中为该连接分配一定的资源<br>  -比如连接状态管理，读写缓冲区，定时器等</p>
+<li><h3 id="TCP连接管理"><a href="#TCP连接管理" class="headerlink" title="TCP连接管理"></a><font color="#00dd00">TCP连接管理</font><br></h3><ul>
+<li><p>TCP通信双方必须建立TCP连接，并在内核中为该连接分配一定的资源</p>
+<pre><code>  -比如连接状态管理，读写缓冲区，定时器等</code></pre>
 </li>
-<li><p><font color="#dd0000">TCP三次握手</font><br> </p>
-<ul>
+<li><h4 id="TCP三次握手"><a href="#TCP三次握手" class="headerlink" title="TCP三次握手"></a><font color="#dd0000">TCP三次握手</font><br></h4><ul>
 <li><img src="https://teemo-tristana.github.io/images/TCP_woshou.png" alt="TCP三次握手"></li>
 <li>所谓TCP三次握手是指建立一个TCP连接时，客户端和服务器需要总共发出3个包，三次握手的<strong>目的是</strong>连接服务器指定端口，建立TCP连接，并同步连接算法的序列号和确认，交换TCP窗口大小等。在socket编程中，客户端执行**connect()**时，将触发三次握手。</li>
 <li><font color="#dd0000">三次握手的过程：</font><br> <ul>
@@ -470,7 +464,109 @@
 <li><strong>第三次握手</strong>：客户端再次发送确认包(ACK)，SYN 标志位为0，ACK 标志位为1，并且把服务器发来 ACK 的序号字段+1，放在确定字段中发送给对方，并且在数据段放写ISN的+1[ACK=1，ACKnum=y+1]。发送完毕后，<font color="#00dddd"> 客户端进入ESTABLISHED状态，服务器收到该包后，也进入ESTABLISHED状态</font><br> </li>
 </ul>
 </li>
+<li>一般都是clien通过**connect()**系统调用，主动与服务器建立连接<ul>
+<li><font color="#dd0000">connect()失败原因</font><br> <ul>
+<li><em>connect连接的端口不存在(未被任何进程监听)</em></li>
+<li><em>connect连接的端口仍然被TIME_WAIT状态的连接所占用</em></li>
+<li><em>端口存在，但connect()连接超时</em></li>
 </ul>
+</li>
+<li>连接在connect()失败后立即返回<strong>CLOSED状态</strong></li>
+</ul>
+</li>
+<li><font color="#00dd00">SYN烘泛攻击</font><br> <ul>
+<li>半连接: <font color="#660066">在client处于SYN_SEND,服务器端处于SYN_RECV这样的状态,也即在TCP二次握手后三次握手前</font><br> </li>
+</ul>
+<ul>
+<li>概念：<ul>
+<li>TCP处于半连接时：client端发送syn包请求连接，服务器为其分配系统资源，并回复确认包并等待对方确认的状态这种半连接状态会消耗系统资源</li>
+<li>SYN洪泛攻击就是利用 <font color="#dd0000">半连接状态消耗系统资源的特性</font><br> 在短时间内伪造大量不存在的ip发送syn包，从而占用未连接队列，使得正常的SYN包别丢弃导致服务器资源消耗殆尽，严重时导致系统瘫痪。</li>
+</ul>
+</li>
+<li><strong>解决方法</strong><ul>
+<li>增加半连接数量</li>
+<li>缩短超时时间</li>
+</ul>
+<ul>
+<li><font color="#00dd00">SYN-cookies技术</font><br> </li>
+</ul>
+<ul>
+<li>服务器收到SYN包并返回ACK和AYN时，不分配专门的数据区，而实根据收到的SYN计算出一个cookie值。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><h4 id="TCP四次挥手"><a href="#TCP四次挥手" class="headerlink" title="TCP四次挥手"></a><font color="#dd0000">TCP四次挥手</font><br></h4><ul>
+<li>TCP是全双工的，因此发送方和接收方都需要FIN和ACK,四次挥手细看实则是两次</li>
+</ul>
+<ul>
+<li><p><img src="https://teemo-tristana.github.io/images/TCP-feishou.png" alt="TCP三次握手"></p>
+</li>
+<li><p>半连接状态：</p>
+<ul>
+<li>TCP是全双工，因此它允许两个方向的数据传输被独立关闭</li>
+<li>一个方向连接被关闭，另一个方向仍然可以传输数据的状态比如<strong>FIN_WAIT_2状态</strong></li>
+</ul>
+<ul>
+<li><p>shutdown()是真正的关闭，可以指定关闭选项</p>
+<ul>
+<li><p><font color="#dd0000">SHUT_RD 关闭读端</font><br> </p>
+<ul>
+<li>不能再执行读操作，若再对该套接字read则直接返回<strong>EOF</strong></li>
+<li><strong>读缓冲区已有的数据被全部丢弃</strong></li>
+<li> <font color="#00dd00">如果有新数据到达，会对数据进行ack，然后悄悄的丢弃</font><br> </li>
+</ul>
+</li>
+<li><p><font color="#dd0000">SHUT_WT 关闭写端</font><br> </p>
+<ul>
+<li>不能再对该fd进行写操作，若再进行写操作，则会<strong>触发SIGPIPE信号</strong></li>
+<li><font color="#00dd00">发送缓冲区已有的数据将被全部发送出去，最后在发送一个 FIN报文 给对端。</font><br> </li>
+<li>关闭写端方向，常称为半关闭。</li>
+</ul>
+</li>
+<li><p>SHUT_RDWT 读写都关闭</p>
+<ul>
+<li>相当于 SHUT_RD和SHUT_WR操作各一次</li>
+<li>关闭套接字的read和write方向</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>可能导致的问题: <strong>孤儿连接</strong></p>
+<ul>
+<li><strong>孤儿连接</strong>：处于半关闭状态时，client未等服务器关闭连接就强行退出，导致该处于半连接状态的连接成为孤儿连接</li>
+<li>font color=”#dd0000”&gt;孤儿连接由内核来接管<br> </li>
+</ul>
+<ul>
+<li><strong>解决方法</strong>:<ul>
+<li>未防止孤儿连接长时存在内中，有2个内核变量来控制<strong>孤儿连接到数量和生存时间</strong></li>
+<li>tcp_max_orphans : 内核中最大的孤儿连接数目</li>
+<li>tcp_fin_timeout:孤儿连接的生存时间</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>MSL(Maximum Segment Life 报文段最大生存时间)</p>
+<ul>
+<li>MSL是TCP报文段在网络中的最大生存时间</li>
+<li>2min或60s</li>
+</ul>
+</li>
+<li><p><font color="##0000dd">TIME_WAIT状态为什么等待2MSL</font><br></p>
+<ul>
+<li>可靠地终止TCP连接, <strong>保证第三次挥手被正确的接收</strong></li>
+<li>保证让迟到的TCP报文段有足够的时间被识别并丢弃</li>
+</ul>
+</li>
+<li><p>判断对方是否关闭连接的方法</p>
+<ol>
+<li> read()系统调用读取时返回 0(表示收到结束报文)</li>
+<li></li>
+</ol>
 </li>
 </ul>
 </li>
@@ -557,7 +653,13 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BC%A0%E8%BE%93%E5%B1%82"><span class="nav-number">1.</span> <span class="nav-text">传输层</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BC%A0%E8%BE%93%E5%B1%82"><span class="nav-number">1.</span> <span class="nav-text">传输层</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#UDP%E5%8D%8F%E8%AE%AE-User-Datagram-Protocol"><span class="nav-number">1.2.</span> <span class="nav-text">UDP协议(User Datagram Protocol)
+</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#UDP%E7%89%B9%E7%82%B9"><span class="nav-number">1.2.1.</span> <span class="nav-text">UDP特点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#UDP-%E9%A6%96%E9%83%A8%E6%A0%BC%E5%BC%8F"><span class="nav-number">1.2.2.</span> <span class="nav-text">UDP 首部格式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP%EF%BC%9ATCP%E6%98%AF%E7%AB%AF%E5%88%B0%E7%AB%AF%E7%9A%84%E9%9D%A2%E5%90%91%E8%BF%9E%E6%8E%A5%E5%8D%8F%E8%AE%AE"><span class="nav-number">1.3.</span> <span class="nav-text">TCP：TCP是端到端的面向连接协议
+</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#TCP%E7%89%B9%E7%82%B9"><span class="nav-number">1.3.1.</span> <span class="nav-text">TCP特点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TCP%E9%A6%96%E9%83%A8%E6%A0%BC%E5%BC%8F"><span class="nav-number">1.3.2.</span> <span class="nav-text">TCP首部格式:
+</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TCP%E8%BF%9E%E6%8E%A5%E7%AE%A1%E7%90%86"><span class="nav-number">1.3.3.</span> <span class="nav-text">TCP连接管理
+</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#TCP%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B"><span class="nav-number">1.3.3.1.</span> <span class="nav-text">TCP三次握手
+</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#TCP%E5%9B%9B%E6%AC%A1%E6%8C%A5%E6%89%8B"><span class="nav-number">1.3.3.2.</span> <span class="nav-text">TCP四次挥手
+</span></a></li></ol></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
