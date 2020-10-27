@@ -20,24 +20,25 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="Redis基本类型数据结构 Redis有6种基本类型的数据结构，分别是字符串string、列表linklist、哈希(字典)hastable、跳跃表skiplist、压缩列表ziplist和整数列表intset。  Redis有5种数据类型，分别是:字符串String、列表List、哈希表Hash、集合Set和有序集合SortSet  Redis的基本类型和数据类型对应关系如下:">
+  <meta name="description" content="Redis基本数据结构类型 Redis有6种基本类型的数据结构，分别是字符串string、列表linklist、哈希(字典)hastable、跳跃表skiplist、压缩列表ziplist和整数列表intset。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Redis学习笔记">
 <meta property="og:url" content="http://example.com/2020/10/27/Redis%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/index.html">
 <meta property="og:site_name" content="Teemo-Tristana">
-<meta property="og:description" content="Redis基本类型数据结构 Redis有6种基本类型的数据结构，分别是字符串string、列表linklist、哈希(字典)hastable、跳跃表skiplist、压缩列表ziplist和整数列表intset。  Redis有5种数据类型，分别是:字符串String、列表List、哈希表Hash、集合Set和有序集合SortSet  Redis的基本类型和数据类型对应关系如下:">
+<meta property="og:description" content="Redis基本数据结构类型 Redis有6种基本类型的数据结构，分别是字符串string、列表linklist、哈希(字典)hastable、跳跃表skiplist、压缩列表ziplist和整数列表intset。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://teemo-tristana.github.io/images/Redis%E5%BA%95%E5%B1%82%E7%BB%93%E6%9E%84%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E5%AF%B9%E5%BA%94%E5%85%B3%E7%B3%BB.jpg">
 <meta property="og:image" content="https://teemo-tristana.github.io/images/sds-c.png">
 <meta property="og:image" content="https://teemo-tristana.github.io/images/redis%E7%9A%84hash%E8%A1%A8%E7%9A%84%E5%93%88%E5%B8%8C%E5%86%B2%E7%AA%81.jpg">
 <meta property="og:image" content="https://teemo-tristana.github.io/images/redis%E7%9A%84%E8%B7%B3%E8%A1%A8%E7%9A%84%E6%9F%A5%E6%89%BE%E8%BF%87%E7%A8%8B.jpg">
 <meta property="og:image" content="https://teemo-tristana.github.io/images/redis%E7%9A%84%E5%8E%8B%E7%BC%A9%E5%88%97%E8%A1%A8%E7%9A%84%E6%9F%A5%E6%89%BE%E8%BF%87%E7%A8%8B.jpg">
+<meta property="og:image" content="https://teemo-tristana.github.io/images/Redis%E5%BA%95%E5%B1%82%E7%BB%93%E6%9E%84%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E5%AF%B9%E5%BA%94%E5%85%B3%E7%B3%BB.jpg">
+<meta property="og:image" content="https://teemo-tristana.github.io/images/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%8E%E7%B3%BB%E7%BB%9F%E5%90%9E%E5%90%90%E7%8E%87.jpg">
 <meta property="article:published_time" content="2020-10-27T01:41:38.000Z">
-<meta property="article:modified_time" content="2020-10-27T06:47:40.059Z">
+<meta property="article:modified_time" content="2020-10-27T07:27:48.805Z">
 <meta property="article:author" content="Han Cheng">
 <meta property="article:tag" content="Redis">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://teemo-tristana.github.io/images/Redis%E5%BA%95%E5%B1%82%E7%BB%93%E6%9E%84%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E5%AF%B9%E5%BA%94%E5%85%B3%E7%B3%BB.jpg">
+<meta name="twitter:image" content="https://teemo-tristana.github.io/images/sds-c.png">
 
 <link rel="canonical" href="http://example.com/2020/10/27/Redis%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">
 
@@ -197,7 +198,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2020-10-27 09:41:38 / 修改时间：14:47:40" itemprop="dateCreated datePublished" datetime="2020-10-27T09:41:38+08:00">2020-10-27</time>
+              <time title="创建时间：2020-10-27 09:41:38 / 修改时间：15:27:48" itemprop="dateCreated datePublished" datetime="2020-10-27T09:41:38+08:00">2020-10-27</time>
             </span>
 
           
@@ -211,14 +212,11 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="Redis基本类型数据结构"><a href="#Redis基本类型数据结构" class="headerlink" title="Redis基本类型数据结构"></a>Redis基本类型数据结构</h1><ul>
-<li><p>Redis有6种基本类型的数据结构，分别是字符串string、列表linklist、哈希(字典)hastable、跳跃表skiplist、压缩列表ziplist和整数列表intset。</p>
-</li>
-<li><p>Redis有5种数据类型，分别是:字符串String、列表List、哈希表Hash、集合Set和有序集合SortSet</p>
-</li>
-<li><p>Redis的基本类型和数据类型对应关系如下:<br><img src="https://teemo-tristana.github.io/images/Redis%E5%BA%95%E5%B1%82%E7%BB%93%E6%9E%84%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E5%AF%B9%E5%BA%94%E5%85%B3%E7%B3%BB.jpg" alt="Redis底层结构与数据类型对应关系"></p>
+        <h1 id="Redis基本数据结构类型"><a href="#Redis基本数据结构类型" class="headerlink" title="Redis基本数据结构类型"></a>Redis基本数据结构类型</h1><ul>
+<li>Redis有6种基本类型的数据结构，分别是字符串string、列表linklist、哈希(字典)hastable、跳跃表skiplist、压缩列表ziplist和整数列表intset。</li>
+</ul>
 <a id="more"></a>
-<h2 id="字符串string"><a href="#字符串string" class="headerlink" title="字符串string"></a><font color="#dd0000">字符串string</font><br></h2></li>
+<h2 id="字符串string"><a href="#字符串string" class="headerlink" title="字符串string"></a><font color="#dd0000">字符串string</font><br></h2><ul>
 <li><p>redis 没有直接使用 C 语言原生的字符串表示，而是使用自己实现了简单动态字符串(simple-dynamic-string)</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> sds 定义的 5 种不同类型，之所以定义不同类型，是为了让不同的字符串使用不同的header，从而节省内存，因为redis是一种内存k-v数据库，而内存又是一种宝贵的资源</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> __<span class="title">attribute__</span>((__<span class="title">packed__</span>)) <span class="title">sdshdr5</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">char</span> flags; <span class="comment">/* 3 lsb of type, and 5 msb of string length */</span></span><br><span class="line">    <span class="keyword">char</span> buf[];</span><br><span class="line">&#125;;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> __<span class="title">attribute__</span>((__<span class="title">packed__</span>)) <span class="title">sdshdr8</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">uint8_t</span> len; <span class="comment">/* used */</span></span><br><span class="line">    <span class="keyword">uint8_t</span> alloc; <span class="comment">/* excluding the header and null terminator */</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">char</span> flags; <span class="comment">/* 3 lsb of type, 5 unused bits */</span></span><br><span class="line">    <span class="keyword">char</span> buf[];</span><br><span class="line">&#125;;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> __<span class="title">attribute__</span>((__<span class="title">packed__</span>)) <span class="title">sdshdr16</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">uint16_t</span> len;        <span class="comment">/* used */</span></span><br><span class="line">    <span class="keyword">uint16_t</span> alloc;      <span class="comment">/* excluding the header and null terminator */</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">char</span> flags; <span class="comment">/* 3 lsb of type, 5 unused bits */</span></span><br><span class="line">    <span class="keyword">char</span> buf[];</span><br><span class="line">&#125;;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> __<span class="title">attribute__</span>((__<span class="title">packed__</span>)) <span class="title">sdshdr32</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">uint32_t</span> len;        <span class="comment">/* used */</span></span><br><span class="line">    <span class="keyword">uint32_t</span> alloc;      <span class="comment">/* excluding the header and null terminator */</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">char</span> flags; <span class="comment">/* 3 lsb of type, 5 unused bits */</span></span><br><span class="line">    <span class="keyword">char</span> buf[];</span><br><span class="line">&#125;;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> __<span class="title">attribute__</span>((__<span class="title">packed__</span>)) <span class="title">sdshdr64</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="comment">/* 记录buf数组中已使用的字节数量 */</span></span><br><span class="line">    <span class="keyword">uint64_t</span> len;        <span class="comment">/* used */</span> </span><br><span class="line">    <span class="comment">/* 分配的buf数组长度，不包括头和空字符结尾 */</span></span><br><span class="line">    <span class="keyword">uint64_t</span> alloc;      <span class="comment">/* excluding the header and null terminator */</span></span><br><span class="line">    <span class="comment">/*标志位 低三位表示类型， 前5位未被使用*/</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">char</span> flags; <span class="comment">/* 3 lsb of type, 5 unused bits */</span></span><br><span class="line">    <span class="comment">/* buf数组用于存放字符串 */</span></span><br><span class="line">    <span class="keyword">char</span> buf[];</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// flags的bit可以表示以下5种类型</span></span><br><span class="line"><span class="comment">/* sds 类型 : 共 5 种类型*/</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> SDS_TYPE_5  0</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> SDS_TYPE_8  1</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> SDS_TYPE_16 2</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> SDS_TYPE_32 3</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> SDS_TYPE_64 4</span></span><br></pre></td></tr></table></figure></li>
 <li><p>SDS 相对于 C 原生字符串的好处：<br>  <img src="https://teemo-tristana.github.io/images/sds-c.png" alt="sds相对于传统的C字符串优点"></p>
@@ -271,8 +269,8 @@
     - c 字符串 只能保存文本数据，字符串里面不能包含空字符，否则会被认为时字符串结尾长度。
     - sds 字符串可以保存文本以及图片、音频、视频、压缩文件这样的二进制数据，sds的API是二进制安全的。</code></pre>
 <h2 id="列表linklist"><a href="#列表linklist" class="headerlink" title="列表linklist"></a><font color="#dd0000">列表linklist</font><br></h2><ul>
-<li>redis链表是一个双向无环链表结构，在 <em>发布订阅，慢查询，监听器</em>等功能都用到了链表。链表的每个节点有两个指针，一个前向指针指向前序节点和一个后置指针指向后继节点，头结点和尾节点的前向和后置指针都指向NULL。<h2 id="哈希-字典-hastable"><a href="#哈希-字典-hastable" class="headerlink" title="哈希(字典)hastable"></a><font color="#dd0000">哈希(字典)hastable</font><br></h2></li>
-<li>用于保存键值对的抽象数据结构，redis底层使用hash表作为底层实现，每个哈希(字典)带有两个hash表。一个在平时使用，一个在rehash时使用;hash表采用<font color="#00dd00">链地址法</font><br>来解决冲突,被分配到同一个位置的多个键值对会形成一个单向链表;<br><img src="https://teemo-tristana.github.io/images/redis%E7%9A%84hash%E8%A1%A8%E7%9A%84%E5%93%88%E5%B8%8C%E5%86%B2%E7%AA%81.jpg" alt="redis的hash表的哈希冲突-链地址法"></li>
+<li>redis链表是一个<strong>双向无环链表</strong>结构，在 <em>发布订阅，慢查询，监听器</em>等功能都用到了链表。链表的每个节点有两个指针，一个前向指针指向前序节点和一个后置指针指向后继节点，头结点和尾节点的前向和后置指针都指向NULL。<h2 id="哈希-字典-hastable"><a href="#哈希-字典-hastable" class="headerlink" title="哈希(字典)hastable"></a><font color="#dd0000">哈希(字典)hastable</font><br></h2></li>
+<li>用于保存键值对的抽象数据结构，redis底层使用hash表作为底层实现，每个哈希(字典)带有两个hash表。一个在平时使用，一个在rehash时使用;hash表采用<font color="#dd00dd">链地址法</font>来解决冲突,被分配到同一个位置的多个键值对会形成一个单向链表<br><img src="https://teemo-tristana.github.io/images/redis%E7%9A%84hash%E8%A1%A8%E7%9A%84%E5%93%88%E5%B8%8C%E5%86%B2%E7%AA%81.jpg" alt="redis的hash表的哈希冲突-链地址法"></li>
 </ul>
 <ul>
 <li>若哈希冲突过多，就可能导致某些哈希冲突链过长，进而导致链表上元素查找过长，效率降低，从而影响效率。因此，<font color="#dd0000">Redis会对哈希表做rehash 操作</font><br>rehash也即是增加现有哈希桶的数量，逐个让增多的entry元素能够在更多的桶之间分散保存。</li>
@@ -286,9 +284,46 @@
 </li>
 </ul>
 <h2 id="跳跃表skiplist"><a href="#跳跃表skiplist" class="headerlink" title="跳跃表skiplist"></a><font color="#dd0000">跳跃表skiplist</font><br></h2><ul>
-<li>是在链表基础上，增加了多级索引，通过索引位置的跳转，实现数据的快速定位，跳表的查找复杂度是O(lonN)<br><img src="https://teemo-tristana.github.io/images/redis%E7%9A%84%E8%B7%B3%E8%A1%A8%E7%9A%84%E6%9F%A5%E6%89%BE%E8%BF%87%E7%A8%8B.jpg" alt="redis的hash表的哈希冲突-链地址法"><h2 id="压缩列表ziplist"><a href="#压缩列表ziplist" class="headerlink" title="压缩列表ziplist"></a><font color="#dd0000">压缩列表ziplist</font><br></h2></li>
-<li>压缩列表是为了节省内存而开发的<strong>顺序性数据结构</strong>。类似一个数组，数组中每个元素对应保存一个数据，每个数据有三个字段 zlbytes， zltail， zllen，分别表示列表长度，列表尾，列表中entry个数；压缩列表在表尾还有一个zlend，表示列表结束。<br><img src="https://teemo-tristana.github.io/images/redis%E7%9A%84%E5%8E%8B%E7%BC%A9%E5%88%97%E8%A1%A8%E7%9A%84%E6%9F%A5%E6%89%BE%E8%BF%87%E7%A8%8B.jpg" alt="redis的hash表的哈希冲突-链地址法"><h2 id="整数列表intset"><a href="#整数列表intset" class="headerlink" title="整数列表intset"></a><font color="#dd0000">整数列表intset</font><br></h2></li>
+<li>是在链表基础上，增加了多级索引，通过索引位置的跳转，实现数据的快速定位，跳表的查找复杂度是O(lonN)<br><img src="https://teemo-tristana.github.io/images/redis%E7%9A%84%E8%B7%B3%E8%A1%A8%E7%9A%84%E6%9F%A5%E6%89%BE%E8%BF%87%E7%A8%8B.jpg" alt="redis跳表的查找过程"><h2 id="压缩列表ziplist"><a href="#压缩列表ziplist" class="headerlink" title="压缩列表ziplist"></a><font color="#dd0000">压缩列表ziplist</font><br></h2></li>
+<li>压缩列表是为了节省内存而开发的<strong>顺序性数据结构</strong>。类似一个数组，数组中每个元素对应保存一个数据，每个数据有三个字段 zlbytes， zltail， zllen，分别表示列表长度，列表尾，列表中entry个数；压缩列表在表尾还有一个zlend，表示列表结束。<br><img src="https://teemo-tristana.github.io/images/redis%E7%9A%84%E5%8E%8B%E7%BC%A9%E5%88%97%E8%A1%A8%E7%9A%84%E6%9F%A5%E6%89%BE%E8%BF%87%E7%A8%8B.jpg" alt="redis的压缩列表的查找过程"><h2 id="整数列表intset"><a href="#整数列表intset" class="headerlink" title="整数列表intset"></a><font color="#dd0000">整数列表intset</font><br></h2></li>
 <li>用于保存整数值的集合抽象数据结构，<strong>不会出现重复元素</strong>，底层是用<strong>数组</strong>实现，</li>
+</ul>
+<h1 id="Redis数据类型"><a href="#Redis数据类型" class="headerlink" title="Redis数据类型"></a>Redis数据类型</h1><ul>
+<li>基于上述6种基本类型，Redis封装了自己的5种数据对象，每个对象至少用到了一种基本的数据结构.</li>
+</ul>
+<ul>
+<li><p>Redis有5种数据类型，分别是:字符串String、列表List、哈希表Hash、集合Set和有序集合SortSet</p>
+</li>
+<li><p>redis通过 <strong>encoding</strong> 属性来设置编码形式，从而提升灵活性和效率，基于不同的应用场景redis自动做出优化具体如下</p>
+<ol>
+<li>字符串对象string: int整数、embstr编码的简单动态字符串、raw简单动态字符串</li>
+<li>列表对象list: linklist、ziplist </li>
+<li>哈希对象hash: hashtable、ziplist</li>
+<li>集合对象set: hashtable、intset</li>
+<li>有序集合对象zset: ziplist、skiplist</li>
+</ol>
+</li>
+<li><p>Redis的基本类型和数据类型对应关系如下:<br><img src="https://teemo-tristana.github.io/images/Redis%E5%BA%95%E5%B1%82%E7%BB%93%E6%9E%84%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E5%AF%B9%E5%BA%94%E5%85%B3%E7%B3%BB.jpg" alt="Redis底层结构与数据类型对应关系"></p>
+</li>
+</ul>
+<h1 id="Redis为什么那么快"><a href="#Redis为什么那么快" class="headerlink" title=" Redis为什么那么快"></a><font color="#dd0000"> Redis为什么那么快</font><br></h1><ul>
+<li><font color="#dd0dd0">Redis可以作为内存数据库</font>，直接在内存种操作，而内存操作本来就快。</li>
+<li><font color="#dd0dd0">Redis优化设计的高效数据结构</font>,比如sds, ziplist;Redis是一个KV数据库，是基于全局哈希表的，通过key值可以很快获取value值。</li>
+<li><font color="#dd0dd0">Redis使用的是单线程</font>，无上下文切换开销。</li>
+<li><font color="#dd0dd0">Redis采用的基于非阻塞的IO多路复用机制</font>，使其在能够处理大量客户，实现高吞吐率。<ul>
+<li>多线程 与 单线程<ul>
+<li>在合理的资源分配情况下，多线程可以增加系统吞吐率。提升系统同时处理并发请求数量。<br><img src="https://teemo-tristana.github.io/images/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%8E%E7%B3%BB%E7%BB%9F%E5%90%9E%E5%90%90%E7%8E%87.jpg" alt="Redis底层结构与数据类型对应关系"></li>
+<li>但是多线程系统中通常存在某些临界资源,对这些临界资源的访问就需要互斥地访问，而为了保证互斥访问，就需要引入额外的机制来加入保障比如锁，但这也会增加额外的开销。</li>
+<li>并发访问控制是多线程编程开发的难点，如果没有精细的设计，比如只是简单采用粗粒度的互斥锁，往往会导致不理想的结果，即使增加了线程，大部分线程也在等待获取访问共享资源的互斥锁，导致并行变串行，使得系统吞吐率没有随着线程的增加而增加。</li>
+<li>多线程开发中一般都会引入 同步原语 来保护共享资源的并发访问， 但这会降低易调试性和可维护性</li>
+</ul>
+</li>
+<li>为避免以上这些问题，<font color="#dd0dd0">Redis直接采用了单线程模式</font>。<ul>
+<li><font color="#0d0">Redis的单线程是指其<font color="#dd0000"><strong>网络IO和数据读写操作</strong></font>采用的是一个单线程，原因在于单线程没有并发控制带来的开销问题。</font></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 
     </div>
@@ -370,13 +405,14 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Redis%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="nav-number">1.</span> <span class="nav-text">Redis基本类型数据结构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%97%E7%AC%A6%E4%B8%B2string"><span class="nav-number">1.1.</span> <span class="nav-text">字符串string
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Redis%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E7%B1%BB%E5%9E%8B"><span class="nav-number">1.</span> <span class="nav-text">Redis基本数据结构类型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%97%E7%AC%A6%E4%B8%B2string"><span class="nav-number">1.1.</span> <span class="nav-text">字符串string
 </span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%97%E8%A1%A8linklist"><span class="nav-number">1.2.</span> <span class="nav-text">列表linklist
 </span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%93%88%E5%B8%8C-%E5%AD%97%E5%85%B8-hastable"><span class="nav-number">1.3.</span> <span class="nav-text">哈希(字典)hastable
 </span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B7%B3%E8%B7%83%E8%A1%A8skiplist"><span class="nav-number">1.4.</span> <span class="nav-text">跳跃表skiplist
 </span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8E%8B%E7%BC%A9%E5%88%97%E8%A1%A8ziplist"><span class="nav-number">1.5.</span> <span class="nav-text">压缩列表ziplist
 </span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B4%E6%95%B0%E5%88%97%E8%A1%A8intset"><span class="nav-number">1.6.</span> <span class="nav-text">整数列表intset
-</span></a></li></ol></li></ol></div>
+</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Redis%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="nav-number">2.</span> <span class="nav-text">Redis数据类型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Redis%E4%B8%BA%E4%BB%80%E4%B9%88%E9%82%A3%E4%B9%88%E5%BF%AB"><span class="nav-number">3.</span> <span class="nav-text"> Redis为什么那么快
+</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
