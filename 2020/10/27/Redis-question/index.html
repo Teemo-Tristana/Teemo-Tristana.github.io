@@ -34,7 +34,7 @@
 <meta property="og:image" content="https://teemo-tristana.github.io/images/redis%E7%9A%84%E7%BC%93%E5%AD%98%E9%9B%AA%E5%B4%A9.jpg">
 <meta property="og:image" content="https://teemo-tristana.github.io/images/redis%E6%83%B0%E6%80%A7%E5%88%A0%E9%99%A4.jpg">
 <meta property="article:published_time" content="2020-10-27T07:44:40.000Z">
-<meta property="article:modified_time" content="2020-10-27T08:12:24.095Z">
+<meta property="article:modified_time" content="2020-10-27T08:17:03.639Z">
 <meta property="article:author" content="Han Cheng">
 <meta property="article:tag" content="Redis">
 <meta name="twitter:card" content="summary">
@@ -198,7 +198,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2020-10-27 15:44:40 / 修改时间：16:12:24" itemprop="dateCreated datePublished" datetime="2020-10-27T15:44:40+08:00">2020-10-27</time>
+              <time title="创建时间：2020-10-27 15:44:40 / 修改时间：16:17:03" itemprop="dateCreated datePublished" datetime="2020-10-27T15:44:40+08:00">2020-10-27</time>
             </span>
 
           
@@ -243,7 +243,10 @@
 <li>惰性删除是当我们查询key的时候才对key进行检测，如果已经达到过期时间，则删除。显然，他有一个<strong>缺点就是如果这些过期的key没有被访问，那么他就一直无法被删除，而且一直占用内存</strong>。<br><img src="https://teemo-tristana.github.io/images/redis%E6%83%B0%E6%80%A7%E5%88%A0%E9%99%A4.jpg" alt="redis惰性删除"><h2 id="定期删除"><a href="#定期删除" class="headerlink" title="定期删除"></a>定期删除</h2></li>
 <li>定期删除指的是redis每隔一段时间对数据库做一次检查，删除里面的过期key。由于不可能对所有key去做轮询来删除，所以redis会每次随机取一些key去做检查和删除。</li>
 </ul>
-<h1 id="Redis持久化方式"><a href="#Redis持久化方式" class="headerlink" title="Redis持久化方式"></a>Redis持久化方式</h1><h2 id="AOF"><a href="#AOF" class="headerlink" title="AOF"></a>AOF</h2><h2 id="RDB"><a href="#RDB" class="headerlink" title="RDB"></a>RDB</h2><h1 id="Redis的高可用"><a href="#Redis的高可用" class="headerlink" title="Redis的高可用"></a>Redis的高可用</h1><h2 id="主从架构"><a href="#主从架构" class="headerlink" title="主从架构"></a>主从架构</h2><h2 id="哨兵"><a href="#哨兵" class="headerlink" title="哨兵"></a>哨兵</h2><h1 id="redis集群的原理"><a href="#redis集群的原理" class="headerlink" title="redis集群的原理"></a>redis集群的原理</h1><h2 id="节点"><a href="#节点" class="headerlink" title="节点"></a>节点</h2><h2 id="槽slot"><a href="#槽slot" class="headerlink" title="槽slot"></a>槽slot</h2><h2 id="故障转移"><a href="#故障转移" class="headerlink" title="故障转移"></a>故障转移</h2><h1 id="Redis事务机制"><a href="#Redis事务机制" class="headerlink" title="Redis事务机制"></a>Redis事务机制</h1>
+<h1 id="Redis持久化方式"><a href="#Redis持久化方式" class="headerlink" title="Redis持久化方式"></a>Redis持久化方式</h1><ul>
+<li>redis持久化<h2 id="AOF"><a href="#AOF" class="headerlink" title="AOF"></a>AOF</h2><h2 id="RDB"><a href="#RDB" class="headerlink" title="RDB"></a>RDB</h2></li>
+</ul>
+<h1 id="Redis的高可用"><a href="#Redis的高可用" class="headerlink" title="Redis的高可用"></a>Redis的高可用</h1><h2 id="主从架构"><a href="#主从架构" class="headerlink" title="主从架构"></a>主从架构</h2><h2 id="哨兵"><a href="#哨兵" class="headerlink" title="哨兵"></a>哨兵</h2><h1 id="redis集群的原理"><a href="#redis集群的原理" class="headerlink" title="redis集群的原理"></a>redis集群的原理</h1><h2 id="节点"><a href="#节点" class="headerlink" title="节点"></a>节点</h2><h2 id="槽slot"><a href="#槽slot" class="headerlink" title="槽slot"></a>槽slot</h2><h2 id="故障转移"><a href="#故障转移" class="headerlink" title="故障转移"></a>故障转移</h2><h1 id="Redis事务机制"><a href="#Redis事务机制" class="headerlink" title="Redis事务机制"></a>Redis事务机制</h1>
     </div>
 
     
