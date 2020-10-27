@@ -20,31 +20,35 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="记录平日所学">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Teemo-Tristana">
-<meta property="og:url" content="http://example.com/index.html">
+  <meta name="description" content="Redis基本类型数据结构 Redis有6种基本类型的数据结构，分别是字符串string、列表linklist、哈希(字典)hastable、跳跃表skiplist、压缩列表ziplist和整数列表intset 字符串string： redis 没有直接使用 C 语言原生的字符串表示，而是使用自己实现了简单动态字符串(simple-dynamic-string) 12345678910111213">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis学习笔记">
+<meta property="og:url" content="http://example.com/2020/10/27/Redis%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/index.html">
 <meta property="og:site_name" content="Teemo-Tristana">
-<meta property="og:description" content="记录平日所学">
+<meta property="og:description" content="Redis基本类型数据结构 Redis有6种基本类型的数据结构，分别是字符串string、列表linklist、哈希(字典)hastable、跳跃表skiplist、压缩列表ziplist和整数列表intset 字符串string： redis 没有直接使用 C 语言原生的字符串表示，而是使用自己实现了简单动态字符串(simple-dynamic-string) 12345678910111213">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://teemo-tristana.github.io/images/sds-c.png">
+<meta property="article:published_time" content="2020-10-27T01:41:38.000Z">
+<meta property="article:modified_time" content="2020-10-27T02:50:43.894Z">
 <meta property="article:author" content="Han Cheng">
-<meta property="article:tag" content="C++,python，图像处理">
+<meta property="article:tag" content="Redis">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://teemo-tristana.github.io/images/sds-c.png">
 
-<link rel="canonical" href="http://example.com/">
+<link rel="canonical" href="http://example.com/2020/10/27/Redis%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">
 
 
 <script id="page-configurations">
   // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
-    isHome : true,
-    isPost : false,
+    isHome : false,
+    isPost : true,
     lang   : 'zh-CN'
   };
 </script>
 
-  <title>Teemo-Tristana</title>
+  <title>Redis学习笔记 | Teemo-Tristana</title>
   
 
 
@@ -158,9 +162,10 @@
         <div class="content-wrap">
           
 
-          <div class="content index posts-expand">
+          <div class="content post posts-expand">
             
-      
+
+    
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
@@ -176,10 +181,9 @@
       <meta itemprop="name" content="Teemo-Tristana">
     </span>
       <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/10/27/Redis%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" class="post-title-link" itemprop="url">Redis学习笔记</a>
-        </h2>
+        <h1 class="post-title" itemprop="name headline">
+          Redis学习笔记
+        </h1>
 
         <div class="post-meta">
             <span class="post-meta-item">
@@ -203,7 +207,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="Redis基本类型数据结构"><a href="#Redis基本类型数据结构" class="headerlink" title="Redis基本类型数据结构"></a>Redis基本类型数据结构</h1><ul>
+        <h1 id="Redis基本类型数据结构"><a href="#Redis基本类型数据结构" class="headerlink" title="Redis基本类型数据结构"></a>Redis基本类型数据结构</h1><ul>
 <li><p>Redis有6种基本类型的数据结构，分别是字符串string、列表linklist、哈希(字典)hastable、跳跃表skiplist、压缩列表ziplist和整数列表intset</p>
 <h2 id="字符串string："><a href="#字符串string：" class="headerlink" title="字符串string："></a>字符串string：</h2></li>
 <li><p>redis 没有直接使用 C 语言原生的字符串表示，而是使用自己实现了简单动态字符串(simple-dynamic-string)</p>
@@ -258,624 +262,33 @@
     - c 字符串 只能保存文本数据，字符串里面不能包含空字符，否则会被认为时字符串结尾长度。
     - sds 字符串可以保存文本以及图片、音频、视频、压缩文件这样的二进制数据，sds的API是二进制安全的。</code></pre>
 <h3 id="redis的-sds类型好处"><a href="#redis的-sds类型好处" class="headerlink" title="redis的 sds类型好处:"></a>redis的 sds类型好处:</h3><h2 id="列表linklist"><a href="#列表linklist" class="headerlink" title="列表linklist"></a>列表linklist</h2><h2 id="哈希-字典-hastable"><a href="#哈希-字典-hastable" class="headerlink" title="哈希(字典)hastable"></a>哈希(字典)hastable</h2><h2 id="跳跃表skiplist"><a href="#跳跃表skiplist" class="headerlink" title="跳跃表skiplist"></a>跳跃表skiplist</h2><h2 id="压缩列表ziplist"><a href="#压缩列表ziplist" class="headerlink" title="压缩列表ziplist"></a>压缩列表ziplist</h2><h2 id="整数列表intset"><a href="#整数列表intset" class="headerlink" title="整数列表intset"></a>整数列表intset</h2>
-      
     </div>
 
     
     
     
+
       <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
+          <div class="post-tags">
+              <a href="/tags/Redis/" rel="tag"># Redis</a>
+          </div>
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/10/26/interview/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/teemo.png">
-      <meta itemprop="name" content="Han Cheng">
-      <meta itemprop="description" content="记录平日所学">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Teemo-Tristana">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/10/26/interview/" class="post-title-link" itemprop="url">interview</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-10-26 17:35:26" itemprop="dateCreated datePublished" datetime="2020-10-26T17:35:26+08:00">2020-10-26</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-10-27 09:33:51" itemprop="dateModified" datetime="2020-10-27T09:33:51+08:00">2020-10-27</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="竞技世界二面"><a href="#竞技世界二面" class="headerlink" title="竞技世界二面:"></a>竞技世界二面:</h1><ul>
-<li>socket编程中 recv 返回 0， 表示什么意思</li>
-<li>项目中定时器的作用？</li>
-<li>项目中主线程的作用</li>
-<li>线程池的概念</li>
-<li>红黑树相关观念</li>
-<li>虚拟内存</li>
-<li>CPU和GPU区别</li>
-<li>字节对齐</li>
-<li>C++11新特性</li>
-<li>auto和decltype</li>
-</ul>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">A</span>&#123;</span></span><br><span class="line">    <span class="keyword">char</span> a;</span><br><span class="line">    <span class="keyword">char</span> b;</span><br><span class="line">    <span class="keyword">int</span> c;</span><br><span class="line">    <span class="keyword">char</span> d;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">//求 A 的大小</span></span><br><span class="line"><span class="keyword">sizeof</span>(A) = <span class="number">12</span> = <span class="number">4</span> +  <span class="number">4</span> </span><br></pre></td></tr></table></figure>
-<ul>
-<li><p>智力题: 买汽水问题，1块钱买一个瓶汽水，2个空瓶可以换1瓶汽水，请问10块钱，最多可以喝汽多少瓶汽水</p>
-  <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">先买10瓶汽水，喝完后10个空瓶可以换5瓶汽水，5瓶汽水可以换2瓶汽水，还剩下一个空瓶A，2瓶汽水喝完可以换1瓶汽水，1瓶汽水喝完，可以和A一起换一个1瓶汽水</span></span><br><span class="line"><span class="comment">然后剩下一个空瓶，若可以借，则可以借一瓶汽水，喝完后，还剩下下2个空瓶，从而换一篇汽水还给商家。</span></span><br><span class="line"><span class="comment">10 + 5 + 2 + 1 + 1 + 1(借一瓶) = 20</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
-<li><p>54张扑克牌初始有序，请将其打乱</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">shufftle</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&amp; nums)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> n = nums.size();</span><br><span class="line">    <span class="keyword">int</span> idx = <span class="number">0</span>;</span><br><span class="line">    srand(time(<span class="literal">NULL</span>)); <span class="comment">//用时间做种子，保证每次产生的数不一样</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i = n<span class="number">-1</span>; i &gt; <span class="number">0</span> ;--i)</span><br><span class="line">    &#123;</span><br><span class="line">        idx = rand() % i; <span class="comment">// 0 ~ i-1</span></span><br><span class="line">        swap(nums[idx], nums[i]);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> ;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>面试管反馈：知识点了解较广，但是不够深入，自己的项目都不熟悉。</p>
-</li>
-<li><p>个人问题：</p>
-<ul>
-<li>项目太久没去回顾了</li>
-<li>某些知识点的确不够深入，有些知识点之前看过，但是记得不清楚了</li>
-</ul>
-</li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/10/26/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9Fnotes/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/teemo.png">
-      <meta itemprop="name" content="Han Cheng">
-      <meta itemprop="description" content="记录平日所学">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Teemo-Tristana">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/10/26/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9Fnotes/" class="post-title-link" itemprop="url">操作系统notes</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2020-10-26 14:00:23 / 修改时间：14:06:34" itemprop="dateCreated datePublished" datetime="2020-10-26T14:00:23+08:00">2020-10-26</time>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="操作系统"><a href="#操作系统" class="headerlink" title="操作系统"></a>操作系统</h1><h2 id="运行机制"><a href="#运行机制" class="headerlink" title="运行机制"></a>运行机制</h2><h3 id="两种指令"><a href="#两种指令" class="headerlink" title="两种指令"></a>两种指令</h3><p>指令：CPU能够识别和执行的命令</p>
-<ul>
-<li><p>指令：CPU能够识别和执行的命令</p>
-</li>
-<li><p>特权指令</p>
-</li>
-<li><p>非特权指令</p></li></ul>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/10/26/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9Fnotes/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
         
-      
-    </div>
 
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/10/26/my-project/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/teemo.png">
-      <meta itemprop="name" content="Han Cheng">
-      <meta itemprop="description" content="记录平日所学">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Teemo-Tristana">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/10/26/my-project/" class="post-title-link" itemprop="url">my-project</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2020-10-26 11:41:53 / 修改时间：13:58:22" itemprop="dateCreated datePublished" datetime="2020-10-26T11:41:53+08:00">2020-10-26</time>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="风力发电数据清理"><a href="#风力发电数据清理" class="headerlink" title="风力发电数据清理"></a>风力发电数据清理</h2><h3 id="思路：将风力发电机采集的数据-风速，功率）的点转为图像，使用图像的方法来做处理"><a href="#思路：将风力发电机采集的数据-风速，功率）的点转为图像，使用图像的方法来做处理" class="headerlink" title="思路：将风力发电机采集的数据(风速，功率）的点转为图像，使用图像的方法来做处理"></a>思路：将风力发电机采集的数据(风速，功率）的点转为图像，使用图像的方法来做处理</h3><h3 id="将风力发电数据转化为图像"><a href="#将风力发电数据转化为图像" class="headerlink" title="将风力发电数据转化为图像"></a>将风力发电数据转化为图像</h3>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/10/26/my-project/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
         
-      
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/10/26/interview/" rel="prev" title="interview">
+      <i class="fa fa-chevron-left"></i> interview
+    </a></div>
+      <div class="post-nav-item"></div>
     </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
       </footer>
+    
   </article>
   
   
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/10/25/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E4%B9%8B%E4%BC%A0%E8%BE%93%E5%B1%82/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/teemo.png">
-      <meta itemprop="name" content="Han Cheng">
-      <meta itemprop="description" content="记录平日所学">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Teemo-Tristana">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/10/25/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E4%B9%8B%E4%BC%A0%E8%BE%93%E5%B1%82/" class="post-title-link" itemprop="url">计算机网络之传输层</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-10-25 22:14:04" itemprop="dateCreated datePublished" datetime="2020-10-25T22:14:04+08:00">2020-10-25</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-10-26 11:43:24" itemprop="dateModified" datetime="2020-10-26T11:43:24+08:00">2020-10-26</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <!-- ## 1.1段落标题
-## 1.2段落标题
-### 1.2.1段落标题
-### 1.2.2段落标题
-# 2.段落标题
-# 3.传输层 -->
-
-<h1 id="原子操作"><a href="#原子操作" class="headerlink" title="原子操作"></a>原子操作</h1><p><img src="https://teemo-tristana.github.io/images/%E5%8E%9F%E5%AD%90%E6%93%8D%E4%BD%9C.png" alt="原子操作"></p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/10/25/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E4%B9%8B%E4%BC%A0%E8%BE%93%E5%B1%82/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/10/25/C++-Review-02/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/teemo.png">
-      <meta itemprop="name" content="Han Cheng">
-      <meta itemprop="description" content="记录平日所学">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Teemo-Tristana">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/10/25/C++-Review-02/" class="post-title-link" itemprop="url">C++ Review 02</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-10-25 15:28:52" itemprop="dateCreated datePublished" datetime="2020-10-25T15:28:52+08:00">2020-10-25</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-10-26 09:41:24" itemprop="dateModified" datetime="2020-10-26T09:41:24+08:00">2020-10-26</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <ol start="16">
-<li><p><font color="#dd0000">new、operator new 和 placement new的区别</font><br></p>
-<ul>
-<li><p>new operator: 不能被重载，</p>
-<ul>
-<li>new的执行过程如下：<ul>
-<li>调用operator new 分配内存</li>
-<li>调用并执行构造函数</li>
-<li>返回相应类型的指针</li>
-</ul>
-</li>
-<li>delete过程 ：<ul>
-<li>调用析构函数 </li>
-<li>调用operator delete,释放空间</li></ul></li></ul></li></ul></li></ol>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/10/25/C++-Review-02/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/10/25/%E7%BA%BF%E7%A8%8B%E5%90%8C%E6%AD%A5%E9%97%AE%E9%A2%98/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/teemo.png">
-      <meta itemprop="name" content="Han Cheng">
-      <meta itemprop="description" content="记录平日所学">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Teemo-Tristana">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/10/25/%E7%BA%BF%E7%A8%8B%E5%90%8C%E6%AD%A5%E9%97%AE%E9%A2%98/" class="post-title-link" itemprop="url">线程同步问题</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2020-10-25 12:15:42 / 修改时间：13:36:35" itemprop="dateCreated datePublished" datetime="2020-10-25T12:15:42+08:00">2020-10-25</time>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <ul>
-<li><p>在多线程编程中，对于同属一个线程的进程，它们是共享进程的大部分资源的，比如内存，文件等数据。若多个线程同时对某一资源进行读写，则可能导致冲突。为此就引入了线程同步。本质来说线程同步是对某一资源的独自访问，需要借助于某种机制。</p></li></ul>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/10/25/%E7%BA%BF%E7%A8%8B%E5%90%8C%E6%AD%A5%E9%97%AE%E9%A2%98/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/10/24/C++-Review-01/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/teemo.png">
-      <meta itemprop="name" content="Han Cheng">
-      <meta itemprop="description" content="记录平日所学">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Teemo-Tristana">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/10/24/C++-Review-01/" class="post-title-link" itemprop="url">C++ Review 01</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-10-24 23:26:17" itemprop="dateCreated datePublished" datetime="2020-10-24T23:26:17+08:00">2020-10-24</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-10-26 14:12:33" itemprop="dateModified" datetime="2020-10-26T14:12:33+08:00">2020-10-26</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="C-Review"><a href="#C-Review" class="headerlink" title="C++ Review"></a>C++ Review</h1><p>在语言层面上：面试C++程序员的时候一般都是3板斧：<br>首先是基础问答<br>然后就是如虚函数、虚函数表、纯虚函数、抽象类、虚函数和析构函数、虚函数和构造函数，以及拷贝构造函数、操作符重载和STL，内存管理，malloc/free与new/delete等问题，<br>最后是C++11新特性比如智能指针，RAII，左值与右值等</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/10/24/C++-Review-01/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/10/24/hello-world/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/teemo.png">
-      <meta itemprop="name" content="Han Cheng">
-      <meta itemprop="description" content="记录平日所学">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Teemo-Tristana">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/10/24/hello-world/" class="post-title-link" itemprop="url">Hello World</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-10-24 23:04:47" itemprop="dateCreated datePublished" datetime="2020-10-24T23:04:47+08:00">2020-10-24</time>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-
   
 
 
@@ -928,6 +341,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Redis%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="nav-number">1.</span> <span class="nav-text">Redis基本类型数据结构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%97%E7%AC%A6%E4%B8%B2string%EF%BC%9A"><span class="nav-number">1.1.</span> <span class="nav-text">字符串string：</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#redis%E7%9A%84-sds%E7%B1%BB%E5%9E%8B%E5%A5%BD%E5%A4%84"><span class="nav-number">1.1.1.</span> <span class="nav-text">redis的 sds类型好处:</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%97%E8%A1%A8linklist"><span class="nav-number">1.2.</span> <span class="nav-text">列表linklist</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%93%88%E5%B8%8C-%E5%AD%97%E5%85%B8-hastable"><span class="nav-number">1.3.</span> <span class="nav-text">哈希(字典)hastable</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B7%B3%E8%B7%83%E8%A1%A8skiplist"><span class="nav-number">1.4.</span> <span class="nav-text">跳跃表skiplist</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8E%8B%E7%BC%A9%E5%88%97%E8%A1%A8ziplist"><span class="nav-number">1.5.</span> <span class="nav-text">压缩列表ziplist</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B4%E6%95%B0%E5%88%97%E8%A1%A8intset"><span class="nav-number">1.6.</span> <span class="nav-text">整数列表intset</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
