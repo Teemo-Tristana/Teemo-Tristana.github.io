@@ -34,7 +34,7 @@
 <meta property="og:image" content="https://teemo-tristana.github.io/images/Redis%E5%BA%95%E5%B1%82%E7%BB%93%E6%9E%84%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E5%AF%B9%E5%BA%94%E5%85%B3%E7%B3%BB.jpg">
 <meta property="og:image" content="https://teemo-tristana.github.io/images/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%8E%E7%B3%BB%E7%BB%9F%E5%90%9E%E5%90%90%E7%8E%87.jpg">
 <meta property="article:published_time" content="2020-10-27T01:41:38.000Z">
-<meta property="article:modified_time" content="2020-10-27T14:12:12.704Z">
+<meta property="article:modified_time" content="2020-10-28T09:31:46.200Z">
 <meta property="article:author" content="Han Cheng">
 <meta property="article:tag" content="Redis">
 <meta name="twitter:card" content="summary">
@@ -196,10 +196,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2020-10-27 09:41:38 / 修改时间：22:12:12" itemprop="dateCreated datePublished" datetime="2020-10-27T09:41:38+08:00">2020-10-27</time>
+              <time title="创建时间：2020-10-27 09:41:38" itemprop="dateCreated datePublished" datetime="2020-10-27T09:41:38+08:00">2020-10-27</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-10-28 17:31:46" itemprop="dateModified" datetime="2020-10-28T17:31:46+08:00">2020-10-28</time>
+              </span>
 
           
 
@@ -269,20 +275,36 @@
 </ul>
 </li>
 </ul>
-<h2 id="列表linklist"><a href="#列表linklist" class="headerlink" title="列表linklist"></a><font color="#dd0000">列表linklist</font><br></h2><ul>
-<li>redis链表是一个<strong>双向无环链表</strong>结构，在 <em>发布订阅，慢查询，监听器</em>等功能都用到了链表。链表的每个节点有两个指针，一个前向指针指向前序节点和一个后置指针指向后继节点，头结点和尾节点的前向和后置指针都指向NULL。</li>
+<h2 id="链表-linklist"><a href="#链表-linklist" class="headerlink" title="链表 linklist"></a><font color="#dd0000">链表 linklist</font><br></h2><ul>
+<li>redis的链表用用于 发布与订阅、慢查询、监视器等功能</li>
+<li>redis的链表是是一个双向无环链表，每个链表节点由一个listNode结构表示。<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 链表节点</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">listNode</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">listNode</span> *<span class="title">prev</span>;</span> <span class="comment">// 前置节点</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">listNode</span> *<span class="title">next</span>;</span> <span class="comment">// 后置节点</span></span><br><span class="line">    <span class="keyword">void</span> *value;           <span class="comment">// 节点值</span></span><br><span class="line">&#125; listNode;</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+<li>redis的链表用 list 表示， 带有表头节点指针、表尾节点指针、链表长度信息等。<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 链表list</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">list</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    listNode *head;                     <span class="comment">// 链表头节点</span></span><br><span class="line">    listNode *tail;                     <span class="comment">// 链表尾节点</span></span><br><span class="line">    <span class="keyword">void</span> *(*dup)(<span class="keyword">void</span> *ptr);            <span class="comment">// 节点值复制函数，指针函数指针</span></span><br><span class="line">    <span class="keyword">void</span> (*<span class="built_in">free</span>)(<span class="keyword">void</span> *ptr);            <span class="comment">// 节点值释放函数, 函数指针</span></span><br><span class="line">    <span class="keyword">int</span> (*match)(<span class="keyword">void</span> *ptr, <span class="keyword">void</span> *key); <span class="comment">// 节点值对比函数, 函数指针</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">long</span> len;                  <span class="comment">// 链表所包含的节点数量</span></span><br><span class="line">&#125; <span class="built_in">list</span>;</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+<li>通过链表设置不同的类型特定函数，Redisd的链表可以用于保存各种不同类型的值[<font color="#dd00dd">类似多态</font>]。<ul>
+<li>链表节点使用 void* 指针来保存节点值</li>
+<li>list的dup，free,matchs三个属性为节点值设置类型的特定函数</li>
+<li>因此链表可以用于保存各种不同类型的值</li>
+</ul>
+</li>
 </ul>
 <h2 id="哈希-字典-hastable"><a href="#哈希-字典-hastable" class="headerlink" title="哈希(字典)hastable"></a><font color="#dd0000">哈希(字典)hastable</font><br></h2><ul>
-<li>用于保存键值对的抽象数据结构，redis底层使用hash表作为底层实现，每个哈希(字典)带有两个hash表。一个在平时使用，一个在rehash时使用;hash表采用<font color="#dd00dd">链地址法</font>来解决冲突,被分配到同一个位置的多个键值对会形成一个单向链表<br><img src="https://teemo-tristana.github.io/images/redis%E7%9A%84hash%E8%A1%A8%E7%9A%84%E5%93%88%E5%B8%8C%E5%86%B2%E7%AA%81.jpg" alt="redis的hash表的哈希冲突-链地址法"></li>
+<li>用于保存 键值对(key-value)的抽象数据结构，值与键关联，键在字典中是<strong>唯一的</strong></li>
+<li>C 语言中没有该内置类型，因此Redis自己实现了字典，底层采用<strong>hash表</strong>。一个哈希表中可以有多个哈希表节点，而哈希表节点就保存了字典中的一个键值对。</li>
+<li>哈希表dictht 结构如下：<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// redis中哈希表定义</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">dictht</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    dictEntry **table;      <span class="comment">// 哈希表数组,每个dictEntry保存着一个键值对</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">long</span> size;     <span class="comment">// 哈希表大小</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">long</span> sizemask; <span class="comment">//哈希表大小掩码，用于计算索引值 总是等于 size - 1</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">long</span> used;     <span class="comment">// 该哈希表已有节点的数量</span></span><br><span class="line">&#125; dictht;</span><br></pre></td></tr></table></figure></li>
+<li>哈希节点dictEntry 的结构如下:<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 哈希表节点 dictEntry定义</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">dictEntry</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">void</span> *key; <span class="comment">// 键</span></span><br><span class="line">    <span class="class"><span class="keyword">union</span>      // 值，是一个结构体类型</span></span><br><span class="line"><span class="class">    &#123;</span></span><br><span class="line">        <span class="keyword">void</span> *val;</span><br><span class="line">        <span class="keyword">uint64_t</span> u64;</span><br><span class="line">        <span class="keyword">int64_t</span> s64;</span><br><span class="line">        <span class="keyword">double</span> d;</span><br><span class="line">    &#125; v;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">dictEntry</span> *<span class="title">next</span>;</span> <span class="comment">// 指向下个哈希表节点，形成链表；redis的哈希冲突采用链地址法来处理。</span></span><br><span class="line">&#125; dictEntry;</span><br></pre></td></tr></table></figure></li>
+<li>字典dict 的结构如下:<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 字典定义</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">dict</span> &#123;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 类型特定函数</span></span><br><span class="line">    dictType *type;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 私有数据</span></span><br><span class="line">    <span class="keyword">void</span> *privdata;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 哈希表</span></span><br><span class="line">    dictht ht[<span class="number">2</span>]; <span class="comment">// 默认情况下使用 ht[0]。ht[1]哈希表只会对ht[0]哈希表进行rehash时才会使用。</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// rehash 索引</span></span><br><span class="line">    <span class="comment">// 当 rehash 不在进行时，值为 -1</span></span><br><span class="line">    <span class="keyword">int</span> rehashidx; <span class="comment">/* rehashing not in progress if rehashidx == -1 */</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 目前正在运行的安全迭代器的数量</span></span><br><span class="line">    <span class="keyword">int</span> iterators; <span class="comment">/* number of iterators currently running */</span></span><br><span class="line"></span><br><span class="line">&#125; dict;</span><br></pre></td></tr></table></figure></li>
+<li>Redis的哈希表使用链地址法(separate chaining)来解决键冲突，每个哈希节点都含有一个next指针，多个哈希节点可以用next指针构成一个单向链表。<ul>
+<li>dictEntry 节点组成的链表是单链表，没有指向性链表尾部的指针，<font color="#dd00dd">出于速度上的考虑</font>，出现冲突时，总是将新节点添加到<font color="#00dd00">链表头部</font>(复杂度为O(1))</li>
 </ul>
-<ul>
-<li>若哈希冲突过多，就可能导致某些哈希冲突链过长，进而导致链表上元素查找过长，效率降低，从而影响效率。因此，<font color="#dd0000">Redis会对哈希表做rehash 操作</font><br>rehash也即是增加现有哈希桶的数量，逐个让增多的entry元素能够在更多的桶之间分散保存。</li>
+</li>
+<li>rehah: 哈希表保存的键值对逐步增加增加或减少，为了让哈希表的装载因子保持在合理范围，会在适当时刻进行扩展或收缩，这项工作可以有 rehash 操作来完成。<br><img src="https://teemo-tristana.github.io/images/redis%E7%9A%84hash%E8%A1%A8%E7%9A%84%E5%93%88%E5%B8%8C%E5%86%B2%E7%AA%81.jpg" alt="redis的hash表的哈希冲突-链地址法"></li>
+<li>Redis默认有<strong>两个全局哈希表</strong>，把ht[0]的数据重新映射并拷贝到ht[1]中(涉及到大量数据的拷贝，若一次性拷贝则可能导致Redis线程拥塞),为避免此问题，<font color="#dd00d">Redis采用了渐进式rehash</font><ol>
+<li>为字典的 ht[1] 哈希表 进行分配空间，大小取决于 ht[0]中键值对数量（ht[0].used属性）<ul>
+<li>扩展: ht[1]的大小是第一个大于等于 ht[0].used*2的 2^n。</li>
+<li>收缩: ht[1]的大小是第一个小于等于 ht[0].used/2的 2^n。</li>
 </ul>
-<ul>
-<li>Redis默认有<strong>两个全局哈希表</strong>：哈希表1 和 哈希表2 ；一开始，当插入数据时，默认使用哈希表1，此时哈希表2没有被分配空间，随着数据逐步增多,Redis开始执行rehash。主要分为三步：<ol>
-<li>给哈希表2分配更大的空间， 比如是哈希表1的两倍</li>
-<li>把哈希表1的数据重新映射并拷贝到哈希表2中（涉及到大量数据的拷贝，若一次性拷贝则可能导致Redis线程拥塞，为避免此问题，<font color="#dd00d">Redis采用了渐进式rehash</font><br>）</li>
-<li>释放哈希表1的空间。</li>
+</li>
+<li>将保持在ht[0]中的所有键值对rehash到ht[1]: 重新计算ht[0]的哈希值和哈希索引，然后将键值对放置到哈希表ht[1]指定的位置中。</li>
+<li>待ht[0]包含的键值对全部迁入ht[1]之后(ht[0]变为空的hash表)，释放ht[0],并将ht[1]设置为ht[0],并新将一个空hash表作为ht[1],为下一次hash做准备。</li>
 </ol>
 </li>
 </ul>
@@ -427,7 +449,7 @@
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
           <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Redis%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E7%B1%BB%E5%9E%8B"><span class="nav-number">1.</span> <span class="nav-text">Redis基本数据结构类型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%97%E7%AC%A6%E4%B8%B2string"><span class="nav-number">1.1.</span> <span class="nav-text">字符串string
-</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%97%E8%A1%A8linklist"><span class="nav-number">1.2.</span> <span class="nav-text">列表linklist
+</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%93%BE%E8%A1%A8-linklist"><span class="nav-number">1.2.</span> <span class="nav-text">链表 linklist
 </span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%93%88%E5%B8%8C-%E5%AD%97%E5%85%B8-hastable"><span class="nav-number">1.3.</span> <span class="nav-text">哈希(字典)hastable
 </span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B7%B3%E8%B7%83%E8%A1%A8skiplist"><span class="nav-number">1.4.</span> <span class="nav-text">跳跃表skiplist
 </span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8E%8B%E7%BC%A9%E5%88%97%E8%A1%A8ziplist"><span class="nav-number">1.5.</span> <span class="nav-text">压缩列表ziplist
