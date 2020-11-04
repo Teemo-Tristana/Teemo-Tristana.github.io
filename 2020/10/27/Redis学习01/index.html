@@ -22,8 +22,8 @@
 
   <meta name="description" content="Redis基本数据结构类型 Redis有6种基本类型的数据结构，分别是字符串string、列表linklist、哈希(字典)hastable、跳跃表skiplist、压缩列表ziplist和整数列表intset。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Redis学习笔记">
-<meta property="og:url" content="http://example.com/2020/10/27/Redis%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/index.html">
+<meta property="og:title" content="Redis学习01">
+<meta property="og:url" content="http://example.com/2020/10/27/Redis%E5%AD%A6%E4%B9%A001/index.html">
 <meta property="og:site_name" content="Teemo-Tristana">
 <meta property="og:description" content="Redis基本数据结构类型 Redis有6种基本类型的数据结构，分别是字符串string、列表linklist、哈希(字典)hastable、跳跃表skiplist、压缩列表ziplist和整数列表intset。">
 <meta property="og:locale" content="zh_CN">
@@ -32,15 +32,14 @@
 <meta property="og:image" content="https://teemo-tristana.github.io/images/redis%E7%9A%84%E8%B7%B3%E8%A1%A8%E7%9A%84%E6%9F%A5%E6%89%BE%E8%BF%87%E7%A8%8B.jpg">
 <meta property="og:image" content="https://teemo-tristana.github.io/images/redis%E7%9A%84%E5%8E%8B%E7%BC%A9%E5%88%97%E8%A1%A8%E7%9A%84%E6%9F%A5%E6%89%BE%E8%BF%87%E7%A8%8B.jpg">
 <meta property="og:image" content="https://teemo-tristana.github.io/images/Redis%E5%BA%95%E5%B1%82%E7%BB%93%E6%9E%84%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E5%AF%B9%E5%BA%94%E5%85%B3%E7%B3%BB.jpg">
-<meta property="og:image" content="https://teemo-tristana.github.io/images/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%8E%E7%B3%BB%E7%BB%9F%E5%90%9E%E5%90%90%E7%8E%87.jpg">
 <meta property="article:published_time" content="2020-10-27T01:41:38.000Z">
-<meta property="article:modified_time" content="2020-10-29T14:56:01.528Z">
+<meta property="article:modified_time" content="2020-11-04T03:37:13.538Z">
 <meta property="article:author" content="Han Cheng">
 <meta property="article:tag" content="Redis">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://teemo-tristana.github.io/images/sds-c.png">
 
-<link rel="canonical" href="http://example.com/2020/10/27/Redis%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">
+<link rel="canonical" href="http://example.com/2020/10/27/Redis%E5%AD%A6%E4%B9%A001/">
 
 
 <script id="page-configurations">
@@ -53,7 +52,7 @@
   };
 </script>
 
-  <title>Redis学习笔记 | Teemo-Tristana</title>
+  <title>Redis学习01 | Teemo-Tristana</title>
   
 
 
@@ -174,7 +173,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/10/27/Redis%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/10/27/Redis%E5%AD%A6%E4%B9%A001/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/teemo.png">
@@ -187,7 +186,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Redis学习笔记
+          Redis学习01
         </h1>
 
         <div class="post-meta">
@@ -204,7 +203,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-10-29 22:56:01" itemprop="dateModified" datetime="2020-10-29T22:56:01+08:00">2020-10-29</time>
+                <time title="修改时间：2020-11-04 11:37:13" itemprop="dateModified" datetime="2020-11-04T11:37:13+08:00">2020-11-04</time>
               </span>
 
           
@@ -339,31 +338,65 @@
 <li><p>Redis的基本类型和数据类型对应关系如下:<br><img src="https://teemo-tristana.github.io/images/Redis%E5%BA%95%E5%B1%82%E7%BB%93%E6%9E%84%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E5%AF%B9%E5%BA%94%E5%85%B3%E7%B3%BB.jpg" alt="Redis底层结构与数据类型对应关系"></p>
 </li>
 </ul>
-<h1 id="Redis为什么那么快"><a href="#Redis为什么那么快" class="headerlink" title=" Redis为什么那么快"></a><font color="#dd0000"> Redis为什么那么快</font></h1><h2 id="单线程"><a href="#单线程" class="headerlink" title="单线程"></a>单线程</h2><ul>
-<li><font color="#dd0dd0">Redis可以作为内存数据库</font>，直接在内存种操作，而内存操作本来就快。</li>
-<li><font color="#dd0dd0">Redis优化设计的高效数据结构</font>,比如sds, ziplist;Redis是一个KV数据库，是基于全局哈希表的，通过key值可以很快获取value值。</li>
-<li><font color="#dd0dd0">Redis使用的是单线程</font>，无上下文切换开销。</li>
-<li><font color="#dd0dd0">Redis采用的基于非阻塞的IO多路复用机制</font>，使其在能够处理大量客户，实现高吞吐率。<ul>
-<li>多线程 与 单线程<ul>
-<li>在合理的资源分配情况下，多线程可以增加系统吞吐率。提升系统同时处理并发请求数量。<br><img src="https://teemo-tristana.github.io/images/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%8E%E7%B3%BB%E7%BB%9F%E5%90%9E%E5%90%90%E7%8E%87.jpg" alt="Redis底层结构与数据类型对应关系"></li>
-<li>但是多线程系统中通常存在某些临界资源,对这些临界资源的访问就需要互斥地访问，而为了保证互斥访问，就需要引入额外的机制来加入保障比如锁，但这也会增加额外的开销。</li>
-<li>并发访问控制是多线程编程开发的难点，如果没有精细的设计，比如只是简单采用粗粒度的互斥锁，往往会导致不理想的结果，即使增加了线程，大部分线程也在等待获取访问共享资源的互斥锁，导致并行变串行，使得系统吞吐率没有随着线程的增加而增加。</li>
-<li>多线程开发中一般都会引入 同步原语 来保护共享资源的并发访问， 但这会降低易调试性和可维护性</li>
+<h1 id="对象"><a href="#对象" class="headerlink" title="对象"></a>对象</h1><h2 id="Redis对象"><a href="#Redis对象" class="headerlink" title="Redis对象"></a>Redis对象</h2><ul>
+<li><p>Redis实现了实现了字节的特定6中数据结构： 简单动态字符串sds、双向链表linklist、跳表skiplist、哈希表hashtable、集合set和有序集合。但是Redis并未直接使用这些基本的数据结构，而是基于这些数据结构实现了一个对象系统，这个系统包含：字符串对象、列表对象、哈希对象、集合对象和有序集合对象。其中，每个对象至少包含了一种基本的数据结构 。</p>
+</li>
+<li><p>Redis在执行命令之前，根据对象的类型来判断对象是否可执行给定的命令。</p>
+</li>
+<li><p>使用对象的好处：</p>
+<ul>
+<li><p>针对不同的应用场景为对象设置多种不同的数据结构实现，从而优化对象在不同场景下的使用效率。<font color="#00dd00">类似多态[void * ptr]</font>(void*)可以转为任意类型，在不同场景选择不同的数据结构。</p>
+</li>
+<li><p>Redis的对象系统实现了 <font color="#00dd00">基于引用计数</font>机制的内存回收机制。</p>
+<ul>
+<li>多个键可以共享一个对象来节约内存</li>
+<li>当引用计数为0[不在使用某个对象]时，该对象所占内存将被释放。</li>
 </ul>
 </li>
-<li>为避免以上这些问题，<font color="#dd0dd0">Redis直接采用了单线程模式</font>。<ul>
-<li><font color="#0d0">Redis的单线程是指其<font color="#dd0000"><strong>网络IO和数据读写操作</strong></font>采用的是一个单线程，原因在于单线程没有并发控制带来的开销问题。</font></li>
+<li><p>Redis对象带有<font color="#oodd00">访问时间记录信息</font>，该消息可以用于计算数据库键的空转时长。空转时长较大的键可能会被优先删除。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">    <span class="comment">// Redis 的对象： redisobejct结构体</span></span><br><span class="line">    <span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">redisObject</span> &#123;</span></span><br><span class="line">    <span class="comment">// 类型</span></span><br><span class="line">    <span class="keyword">unsigned</span> type:<span class="number">4</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 编码</span></span><br><span class="line">    <span class="keyword">unsigned</span> encoding:<span class="number">4</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 对象最后一次被访问的时间(访问时间记录信息)</span></span><br><span class="line">    <span class="keyword">unsigned</span> lru:LRU_BITS; <span class="comment">/* LRU time (relative to global lru_clock) or</span></span><br><span class="line"><span class="comment">                            * LFU data (least significant 8 bits frequency</span></span><br><span class="line"><span class="comment">                            * and most significant 16 bits access time). */</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 引用计数</span></span><br><span class="line">    <span class="keyword">int</span> refcount;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 指向实际值的指针：指向底层实现数据结构</span></span><br><span class="line">    <span class="keyword">void</span> *ptr;</span><br><span class="line">&#125; robj;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="对象类型与编码"><a href="#对象类型与编码" class="headerlink" title="对象类型与编码"></a>对象类型与编码</h2><ul>
+<li><p>Redis使用对象来表示键和值，也即使是一个键值对至少有个两个对象:一个键对象，一个值对象</p>
+<ul>
+<li>键对象总是一个 <font color="#dd6600">字符串对象</font></li>
+<li>值对象可以是字符串对象、列表对象、哈希对象、集合对象、和有序集合</li>
+</ul>
+</li>
+<li><p>通过 encoding 属性来设置对象使用的编码,而非固定类型，<font color="#dd6600">可以极大提升Redisd的灵活性和效率</font>，因为Redis可以根据不同的使用场景来选择设置不同的编码，从而优化对象在某一场景下的效率[类似多态]。</p>
+<ul>
+<li>比如：在列表对象元素较少时，Redis使用压缩列表[ziplist]作为列表对象的底层实现：<ul>
+<li>压缩列表ziplist比双端列表linklist更节省内存，而且在元素较少时，内存中以连续块方式保存的压缩列比链表可以更快的载入缓存。</li>
+<li>随着元素越来越多，链表的优势就体现出来[适合保存大量元素]，对象就会将底层实现从压缩列表ziplist转向双端链表linklist</li>
 </ul>
 </li>
 </ul>
 </li>
 </ul>
-<h2 id="多线程"><a href="#多线程" class="headerlink" title="多线程"></a>多线程</h2><ul>
-<li><font color="#00de00">哪为什么Redis6.0之后有改用多线程呢？</font><ul>
-<li>是在Redis6.0引入多线程的。</li>
-<li>引入多线程并非是抛弃了单线程。<ul>
-<li>引入多线程是<strong>为了解决redis的网络IO瓶颈</strong>，使用多线程处理网络数据的读写和协议的解析,从而提升网络IO读写效率，同时可以利用服务器的多核资源。</li>
-<li><strong>执行命令的还是单线程</strong>。</li>
+<h2 id="字符串对象"><a href="#字符串对象" class="headerlink" title="字符串对象"></a>字符串对象</h2><ul>
+<li>字符串对象编码类型： int、 embstr、 raw[sds]<ul>
+<li>对象是<font color="#00dd00">整数且可以用 long 类型表示</font> ：将 void* 转换为 long， 将对象编码设置为 int</li>
+<li>对象是<font color="#00dd00">字符串且字符串长度**小于等于(&lt;=)**39字节</font>: 使用 sds(简单动态字符串)保存，将对象编码设置为 embstr<ul>
+<li>embstr编码保存短字符串的好处<ul>
+<li>embstr将创建字符串对象所需要的内存分配次数从raw编码的两次变为一次</li>
+<li>释放embstr编码的字符串只需调用一次内存释放函数，而raw则需要两次</li>
+<li>embstr编码的字符串保存在一块连续的地址空间，可以更好地利用缓存带来的优势。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>对象是<font color="#00dd00">字符串且字符串长度**大于(&gt;)**39字节</font>: 使用 sds(简单动态字符串)保存，将对象编码设置为 raw</li>
+</ul>
+<ul>
+<li>embstr 与 raw 编码的区别：<ul>
+<li>embstr编码是专门用于保存<font color="dd0000">短字符串</font>的一种优化编码方式，过程和 raw 类似。但是 embrstr 只会调用<strong>一次</strong>内存分配函数来分配一块连续空间</li>
+</ul>
+<ul>
+<li>raw 编码会调用<strong>两次</strong>内存分配函数来分别创建 redisObejct 和 sdshrd 结构</li>
 </ul>
 </li>
 </ul>
@@ -458,7 +491,7 @@
 </span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B7%B3%E8%B7%83%E8%A1%A8skiplist"><span class="nav-number">1.4.</span> <span class="nav-text">跳跃表skiplist
 </span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8E%8B%E7%BC%A9%E5%88%97%E8%A1%A8ziplist"><span class="nav-number">1.5.</span> <span class="nav-text">压缩列表ziplist
 </span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B4%E6%95%B0%E5%88%97%E8%A1%A8intset"><span class="nav-number">1.6.</span> <span class="nav-text">整数列表intset
-</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Redis%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="nav-number">2.</span> <span class="nav-text">Redis数据类型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Redis%E4%B8%BA%E4%BB%80%E4%B9%88%E9%82%A3%E4%B9%88%E5%BF%AB"><span class="nav-number">3.</span> <span class="nav-text"> Redis为什么那么快</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%95%E7%BA%BF%E7%A8%8B"><span class="nav-number">3.1.</span> <span class="nav-text">单线程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%9A%E7%BA%BF%E7%A8%8B"><span class="nav-number">3.2.</span> <span class="nav-text">多线程</span></a></li></ol></li></ol></div>
+</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Redis%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="nav-number">2.</span> <span class="nav-text">Redis数据类型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AF%B9%E8%B1%A1"><span class="nav-number">3.</span> <span class="nav-text">对象</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis%E5%AF%B9%E8%B1%A1"><span class="nav-number">3.1.</span> <span class="nav-text">Redis对象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%B9%E8%B1%A1%E7%B1%BB%E5%9E%8B%E4%B8%8E%E7%BC%96%E7%A0%81"><span class="nav-number">3.2.</span> <span class="nav-text">对象类型与编码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%AF%B9%E8%B1%A1"><span class="nav-number">3.3.</span> <span class="nav-text">字符串对象</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -474,7 +507,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-count">12</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

@@ -29,7 +29,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://teemo-tristana.github.io/images/malloc-new.png">
 <meta property="article:published_time" content="2020-10-24T15:26:17.000Z">
-<meta property="article:modified_time" content="2020-11-02T06:22:58.880Z">
+<meta property="article:modified_time" content="2020-11-03T01:35:46.758Z">
 <meta property="article:author" content="Han Cheng">
 <meta property="article:tag" content="C++">
 <meta name="twitter:card" content="summary">
@@ -199,7 +199,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-11-02 14:22:58" itemprop="dateModified" datetime="2020-11-02T14:22:58+08:00">2020-11-02</time>
+                <time title="修改时间：2020-11-03 09:35:46" itemprop="dateModified" datetime="2020-11-03T09:35:46+08:00">2020-11-03</time>
               </span>
 
           
@@ -604,7 +604,7 @@
 <h2 id="RAII-Resource-Acquisition-Is-Initialization-资源获取即初始化"><a href="#RAII-Resource-Acquisition-Is-Initialization-资源获取即初始化" class="headerlink" title="RAII(Resource Acquisition Is Initialization)资源获取即初始化"></a><font color="#006666">RAII(Resource Acquisition Is Initialization)资源获取即初始化</font><br></h2><ul>
 <li><ul>
 <li><strong>RAII是一种利用对象生命周期来控制程序资源</strong>（如内存、网络连接等）的技术。<ul>
-<li>用法：在对象构造时获取资源，使用资源，在对象析构时释放资源，借此，把管理资源的认为交给了一个对象。应用比如智能指针。    </li>
+<li>用法：在对象构造时获取资源，使用资源，在对象析构时释放资源，因此，把管理资源的认为交给了一个对象。应用比如智能指针。    </li>
 <li>好处：<strong>不需要显示的释放资源，在对象所需的资源在其生命周期内始终保持有效.</strong></li>
 </ul>
 </li>
@@ -612,11 +612,19 @@
 </ul>
 </li>
 <li><ul>
-<li>普通指针容易造成<em>内存泄漏，二次释放</em>等问题。程序发生异常时内存泄漏等问题，使用智能指针可用很好的管理内存，避免内存泄漏。</li>
-<li><strong>智能指针(smart pointer)是模板类，是行为类似指针的类对象</strong>，用于生存期控制，能够确保自动正确的销毁动态分配的对象，防止内存泄露（利用自动调用类的析构函数来释放内存）。它是C++ RAII的一种应用。它可以使用使用引用计数(shared_ptr)和所有权模式(unique_ptr)两种方式。</li>
-<li><font color="#00dd00">shared_ptr</font><br>:采用引用计数的指针，多个shared_ptr可用指向同一给对象，并维护一个共享的引用计数器。基于引用计数的智能指针类将一个计数器与类指向的对象相关联，引用计数跟踪该类有多少个对象共享同一指针。每次创建类的新对象时，初始化指针并将引用计数置为1；当对象作为另一对象的副本而创建时，拷贝构造函数拷贝指针并增加与之相应的引用计数；对一个对象进行赋值时，赋值操作符减少左操作数所指对象的引用计数（如果引用计数为减至0，则删除对象），并增加右操作数所指对象的引用计数；调用析构函数时，构造函数减少引用计数（如果引用计数减至0，则删除基础对象）</li>
-<li><font color="#00dd00">weak_ptr</font><br>:shared_ptr有一个问题即是循环引用问题，若存在循环引用，会导致shared_ptr的引用计数不能变为0，从而不能释放资源。为了解决该问题，就引入了weak_ptr,weak_ptr是一种弱引用，用于配合shared_ptr的使用，并不影响对象的生命周期，也即是weak_ptr存在与否不影响对引用计数。</li>
-<li><font color="#00dd00">unique_ptr</font><br>:基于所有权模式的智能指针，任意时刻只能有一个拥有者，也不支持拷贝构造和赋值。</li>
+<li><p>普通指针容易造成<em>内存泄漏，二次释放</em>等问题。程序发生异常时内存泄漏等问题，使用智能指针可用很好的管理内存，避免内存泄漏。</p>
+</li>
+<li><p><strong>智能指针(smart pointer)是模板类，是行为类似指针的类对象</strong>，用于生存期控制，能够确保自动正确的销毁动态分配的对象，防止内存泄露（利用自动调用类的析构函数来释放内存）。它是C++ RAII的一种应用。它可以使用使用引用计数(shared_ptr)和所有权模式(unique_ptr)两种方式。</p>
+</li>
+<li><p><font color="#00dd00">shared_ptr</font><br>:std::shared_ptr 是一种基于引用计数的智能指针，它能够记录多少个shared_ptr 共同指向一个对象，并维护一个共享的引用计数器。基于引用计数的智能指针类将一个计数器与类指向的对象相关联，引用计数跟踪该类有多少个对象共享同一指针。每次创建类的新对象时，初始化指针并将引用计数置为1；当对象作为另一对象的副本而创建时，拷贝构造函数拷贝指针并增加与之相应的引用计数；对一个对象进行赋值时，赋值操作符减少左操作数所指对象的引用计数（如果引用计数为减至0，则删除对象），并增加右操作数所指对象的引用计数；调用析构函数时，构造函数减少引用计数（如果引用计数减至0，则删除基础对象），通常与 std::make_shared 配合使用</p>
+</li>
+<li><p><font color="#00dd00">weak_ptr</font><br>:shared_ptr有一个问题即循环引用问题，若存在循环引用，会导致shared_ptr的引用计数不能变为0，从而不能释放资源。为了解决该问题，就引入了weak_ptr,weak_ptr是一种弱引用，用于配合shared_ptr的使用，弱引用不会引起引用计数的增加且并不影响对象的生命周期，也即是weak_ptr存在与否不影响对引用计数。</p>
+</li>
+<li><p><font color="#00dd00">unique_ptr</font><br>:是一种独占的智能指针，基于所有权模式，任意时刻只能有一个拥有者，不支持拷贝构造和赋值， 但是<font color="#66dd00">可以利用 std::move() 将其转移给其他 unique_ptr</font>。</p>
+<ul>
+<li>C++14 中引入了 std::make_unique(),来创建 unique_ptr 指针</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -906,6 +914,51 @@
 </ul>
 </li>
 </ul>
+<h2 id="容器"><a href="#容器" class="headerlink" title="容器"></a>容器</h2><ul>
+<li><p>线程容器：</p>
+<ul>
+<li><p>std::array  : C++11 引入的， std::array对象的大小是固定的</p>
+<ul>
+<li>为什么要引入 std::array 而不是直接使用 std::vector?<ul>
+<li>std::array对象大小是固定的，若容器大小是固定的，推荐使用std::array.</li>
+<li>std::vector是动态数组，可以自动扩容，当容量不够时，会自动扩容，但是删除元素后，容量不会自动释放，要手动调用 shrink_to_fit() 释放内存。std::vector动态数组，但是是有代价的，每次扩容都活涉及到申请内存，拷贝，释放原空间。</li>
+</ul>
+</li>
+<li>已经有传统的数组，为什么要用 std::array?<ul>
+<li>std::array能够让代码更加”现代化”，也即是封装了一些操作函数，比如检查数组大小，判空等，同时支持标准库的一些容器算法，比如 std::sort等。</li>
+</ul>
+</li>
+<li>std::array 只需要只要指定类型和大小即可<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">std</span>::<span class="built_in">array</span>&lt;<span class="keyword">int</span>, 4&gt; arr&#123;<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>&#125;;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>std::forward_list ： C++11 引入的单向链表，和 std::list 类似，只不过std::list是双向链表。</p>
+<ul>
+<li>不支持随机快速访问[链表特定]</li>
+<li>标准库中唯一不支持 size() 方法的容器。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>无序容器: C++11引入了两组无序容器：std:unordered_map/std::unordered_multimap和std:unordered_set/std::unordered_multiset。</p>
+<ul>
+<li>无序容器中元素不进行排序，内部通过 Hash表 实现，插入和查找元素的平均复杂度为 O(1)。在不关心容器内部元素顺序的情况下，能够获得显著的性能提升。</li>
+</ul>
+</li>
+<li><p>元组：std::tuple()</p>
+<ul>
+<li>传统C++容器中，std::pair 可以用来存放不同类型的书，但是 std::pair 只能保存两个元素</li>
+</ul>
+<ul>
+<li>元组基本操作<ul>
+<li>std::make_tuple: 构造元组</li>
+<li>std::get : 获得元组某个位置的值</li>
+<li>std::tie : 元组拆包</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
 
     </div>
 
@@ -1002,7 +1055,7 @@
 </span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%A7%E7%94%9Fcoredump%E6%96%87%E4%BB%B6%E7%9A%84%E5%8E%9F%E5%9B%A0"><span class="nav-number">1.23.</span> <span class="nav-text">产生coredump文件的原因</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#gdb%E8%B0%83%E8%AF%95"><span class="nav-number">1.24.</span> <span class="nav-text">gdb调试</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E6%B7%98%E6%B1%B0%E7%AE%97%E6%B3%95"><span class="nav-number">1.25.</span> <span class="nav-text">缓存淘汰算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Linux%E7%9A%84valgrind%E5%B7%A5%E5%85%B7"><span class="nav-number">1.26.</span> <span class="nav-text">Linux的valgrind工具:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%9B%E7%A8%8B%E9%80%9A%E8%AE%AF%E7%9A%84%E5%87%A0%E7%A7%8D%E6%96%B9%E6%B3%95"><span class="nav-number">1.27.</span> <span class="nav-text"> 进程通讯的几种方法
 </span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%96%E8%AF%91%E7%9A%84%E8%BF%87%E7%A8%8B-font-gt"><span class="nav-number">1.28.</span> <span class="nav-text">编译的过程&#x2F;font&gt;
 </span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#g-%E4%B8%8Egcc%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">1.29.</span> <span class="nav-text">:g++与gcc的区别
-</span></a></li></ol></li></ol></div>
+</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%B9%E5%99%A8"><span class="nav-number">1.30.</span> <span class="nav-text">容器</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -1018,7 +1071,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-count">12</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
