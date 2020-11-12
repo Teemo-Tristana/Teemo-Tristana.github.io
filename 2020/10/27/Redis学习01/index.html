@@ -33,7 +33,7 @@
 <meta property="og:image" content="https://teemo-tristana.github.io/images/redis%E7%9A%84%E5%8E%8B%E7%BC%A9%E5%88%97%E8%A1%A8%E7%9A%84%E6%9F%A5%E6%89%BE%E8%BF%87%E7%A8%8B.jpg">
 <meta property="og:image" content="https://teemo-tristana.github.io/images/Redis%E5%BA%95%E5%B1%82%E7%BB%93%E6%9E%84%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E5%AF%B9%E5%BA%94%E5%85%B3%E7%B3%BB.jpg">
 <meta property="article:published_time" content="2020-10-27T01:41:38.000Z">
-<meta property="article:modified_time" content="2020-11-04T03:37:13.538Z">
+<meta property="article:modified_time" content="2020-11-12T15:09:13.559Z">
 <meta property="article:author" content="Han Cheng">
 <meta property="article:tag" content="Redis">
 <meta name="twitter:card" content="summary">
@@ -203,7 +203,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-11-04 11:37:13" itemprop="dateModified" datetime="2020-11-04T11:37:13+08:00">2020-11-04</time>
+                <time title="修改时间：2020-11-12 23:09:13" itemprop="dateModified" datetime="2020-11-12T23:09:13+08:00">2020-11-12</time>
               </span>
 
           
@@ -354,8 +354,11 @@
 </ul>
 </li>
 <li><p>Redis对象带有<font color="#oodd00">访问时间记录信息</font>，该消息可以用于计算数据库键的空转时长。空转时长较大的键可能会被优先删除。</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">    <span class="comment">// Redis 的对象： redisobejct结构体</span></span><br><span class="line">    <span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">redisObject</span> &#123;</span></span><br><span class="line">    <span class="comment">// 类型</span></span><br><span class="line">    <span class="keyword">unsigned</span> type:<span class="number">4</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 编码</span></span><br><span class="line">    <span class="keyword">unsigned</span> encoding:<span class="number">4</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 对象最后一次被访问的时间(访问时间记录信息)</span></span><br><span class="line">    <span class="keyword">unsigned</span> lru:LRU_BITS; <span class="comment">/* LRU time (relative to global lru_clock) or</span></span><br><span class="line"><span class="comment">                            * LFU data (least significant 8 bits frequency</span></span><br><span class="line"><span class="comment">                            * and most significant 16 bits access time). */</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 引用计数</span></span><br><span class="line">    <span class="keyword">int</span> refcount;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 指向实际值的指针：指向底层实现数据结构</span></span><br><span class="line">    <span class="keyword">void</span> *ptr;</span><br><span class="line">&#125; robj;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<ul>
+<li>空转时长： 当前时间 - 键的值对象最后被访问的时间[lru时间]，单位 秒(s)<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">    <span class="comment">// Redis 的对象： redisobejct结构体</span></span><br><span class="line">    <span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">redisObject</span> &#123;</span></span><br><span class="line">    <span class="comment">// 类型</span></span><br><span class="line">    <span class="keyword">unsigned</span> type:<span class="number">4</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 编码</span></span><br><span class="line">    <span class="keyword">unsigned</span> encoding:<span class="number">4</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 对象最后一次被访问的时间(访问时间记录信息)</span></span><br><span class="line">    <span class="keyword">unsigned</span> lru:LRU_BITS; <span class="comment">/* LRU time (relative to global lru_clock) or</span></span><br><span class="line"><span class="comment">                            * LFU data (least significant 8 bits frequency</span></span><br><span class="line"><span class="comment">                            * and most significant 16 bits access time). */</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 引用计数</span></span><br><span class="line">    <span class="keyword">int</span> refcount;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 指向实际值的指针：指向底层实现数据结构</span></span><br><span class="line">    <span class="keyword">void</span> *ptr;</span><br><span class="line">&#125; robj;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
+</li>
+</ul>
 </li>
 </ul>
 </li>
@@ -378,9 +381,10 @@
 </li>
 </ul>
 <h2 id="字符串对象"><a href="#字符串对象" class="headerlink" title="字符串对象"></a>字符串对象</h2><ul>
-<li>字符串对象编码类型： int、 embstr、 raw[sds]<ul>
+<li>字符串是Redis五种类型对象中唯一一种会被其他四种对象嵌套的对象。</li>
+<li>字符串对象编码方式： int、 embstr、 raw[sds]<ul>
 <li>对象是<font color="#00dd00">整数且可以用 long 类型表示</font> ：将 void* 转换为 long， 将对象编码设置为 int</li>
-<li>对象是<font color="#00dd00">字符串且字符串长度**小于等于(&lt;=)**39字节</font>: 使用 sds(简单动态字符串)保存，将对象编码设置为 embstr<ul>
+<li>对象是<font color="#00dd00">字符串且字符串长度<font color="dd0000">小于等于(&lt;=)39字节</font></font>: 使用 sds(简单动态字符串)保存，将对象编码设置为 embstr<ul>
 <li>embstr编码保存短字符串的好处<ul>
 <li>embstr将创建字符串对象所需要的内存分配次数从raw编码的两次变为一次</li>
 <li>释放embstr编码的字符串只需调用一次内存释放函数，而raw则需要两次</li>
@@ -389,7 +393,7 @@
 </li>
 </ul>
 </li>
-<li>对象是<font color="#00dd00">字符串且字符串长度**大于(&gt;)**39字节</font>: 使用 sds(简单动态字符串)保存，将对象编码设置为 raw</li>
+<li>对象是<font color="#00dd00">字符串且字符串长度<font color="dd0000">大于(&gt;)39字节</font></font>: 使用 sds(简单动态字符串)保存，将对象编码设置为 raw</li>
 </ul>
 <ul>
 <li>embstr 与 raw 编码的区别：<ul>
@@ -400,6 +404,94 @@
 </ul>
 </li>
 </ul>
+</li>
+<li>int编码和embstr编码 转为 raw 编码<ul>
+<li>int编码的字符串在对象执行某些命令后，不在是整数值时，编码方式将从 int 变为 raw 类型。比如 append 命令[追加命令]</li>
+<li>embstr编码字符串对象实际上是只读的，若对embstr编码的字符串对象执行修改命令，则县将编码方式将从embstr转为raw，然后才会执行修改命令。</li>
+</ul>
+</li>
+<li>字符串命令：<ul>
+<li>set</li>
+<li>get</li>
+<li>setrange</li>
+<li>getrange</li>
+<li>append</li>
+<li>incrbyfloat</li>
+<li>incrby</li>
+<li>decrby</li>
+<li>strlen</li>
+</ul>
+</li>
+</ul>
+<h2 id="列表对象"><a href="#列表对象" class="headerlink" title="列表对象"></a>列表对象</h2><ul>
+<li><p>列表对象的编码方式：ziplist、linklist</p>
+</li>
+<li><p>列表使用 ziplist 作为编码方式的条件：</p>
+<ul>
+<li>列表对象保存的字符串长度<font color="#00dd00">小于64字节</font></li>
+<li>礼拜对象的元素个数<font color="#00dd00">小于512个</font></li>
+</ul>
+</li>
+<li><p>若不能同时满住以上两个条件，则列表对象将使用linklist作为编码方式(或对象的编码方式转换[ziplist-&gt;linklist])。</p>
+</li>
+<li><p>列表命令：</p>
+<ul>
+<li>lpush</li>
+<li>rpush</li>
+<li>lpop</li>
+<li>rpop</li>
+<li>lindex</li>
+<li>llen</li>
+<li>linsert</li>
+<li>lerm</li>
+<li>ltrim</li>
+<li>lset</li>
+</ul>
+</li>
+</ul>
+<h2 id="哈希对象"><a href="#哈希对象" class="headerlink" title="哈希对象"></a>哈希对象</h2><ul>
+<li>哈希对象的编码方式： ziplist、hashtable</li>
+<li>列表对象使用 ziplist 作为编码的条件：<ul>
+<li>哈希对象的键值对的键和值的字符串长度都要<font color="#00dd00">小于64字节</font></li>
+<li>哈希对象白菜的键值对数量<font color="#00dd00">小于512个</font></li>
+</ul>
+</li>
+<li>若不能同时满住以上两个条件，则哈希对象将使用hashtable作为编码方式(或对象的编码方式转换[ziplist-&gt;hashable])。</li>
+</ul>
+<h2 id="生成时间-或-过期时间"><a href="#生成时间-或-过期时间" class="headerlink" title="生成时间 或 过期时间"></a>生成时间 或 过期时间</h2><ul>
+<li>过期时间：过期时间是一个UNIX时间戳， 当键的过期时间过后，服务器就会自动从数据库删除该键</li>
+<li>设置过期时间：<ul>
+<li>expire ： expire <key> <ttl>  单位为 秒s</ttl></key></li>
+<li>pexpire:  pexpire <key> <ttl> 单位为 毫秒ms</ttl></key></li>
+<li>expireat: expireat <key> <timestamp> timestamp的时间戳 秒s</timestamp></key></li>
+<li>pexpireat： pexpireat <key> <timestamp> timestamp的时间戳 毫秒ms</timestamp></key></li>
+</ul>
+<ul>
+<li>expire、pexpire和 expireat内部都是使用 pexireat来实现的</li>
+</ul>
+</li>
+<li>移除过期时间：persist 是 pexpireat的反操作，用于移除过期时间</li>
+</ul>
+<h2 id="过期删除策略："><a href="#过期删除策略：" class="headerlink" title="过期删除策略："></a>过期删除策略：</h2><ul>
+<li><p>定时删除：在设置过期时间的同时，创建一个定时器，让定时器在键过期的时候立即对键执行删除操作[主动删除]</p>
+<ul>
+<li><font color="#00dd00">对内存友好，对CPU不友好</font></li>
+</ul>
+</li>
+<li><p>惰性删除：键的过期时间到了不管，每次空键空间获取键时，判断键释放过期，若过期，就删除该键，若没过期就返回该键。[被动删除]</p>
+<ul>
+<li><font color="#00dd00">对内存不友好，对CPU友好</font>，可能存在过期键永远不会被删除的情况，从而导致 <font color="#dd0000">内存泄漏</font>[无用的垃圾数据占用内存]。(某斜数据在某个时间后就可能不在访问，比如日志，但是过期数据仍然在内存中，用户以为服务器自动删除这些数据，但实际仍然在存在)</li>
+</ul>
+</li>
+<li><p>定期删除： 每隔一段时间，就对数据库进行一次检查，以便删除过期键。[主动删除]</p>
+<ul>
+<li>定时删除和惰性删除结合： 执行惰性删除策略 + 每隔一段时间定期删除</li>
+</ul>
+<ul>
+<li>定期删除的难点在于 <font color="#00dd00">删除操作的时长和频率</font></li>
+</ul>
+</li>
+<li><p>Redis实际采用的是<strong>惰性删除</strong>和<strong>定期删除</strong>：通过配合使用这两种删除策略，服务器可以很好地在合理使用CPU时间和避免浪费内存指尖取地平衡。</p>
 </li>
 </ul>
 
@@ -491,7 +583,7 @@
 </span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B7%B3%E8%B7%83%E8%A1%A8skiplist"><span class="nav-number">1.4.</span> <span class="nav-text">跳跃表skiplist
 </span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8E%8B%E7%BC%A9%E5%88%97%E8%A1%A8ziplist"><span class="nav-number">1.5.</span> <span class="nav-text">压缩列表ziplist
 </span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B4%E6%95%B0%E5%88%97%E8%A1%A8intset"><span class="nav-number">1.6.</span> <span class="nav-text">整数列表intset
-</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Redis%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="nav-number">2.</span> <span class="nav-text">Redis数据类型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AF%B9%E8%B1%A1"><span class="nav-number">3.</span> <span class="nav-text">对象</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis%E5%AF%B9%E8%B1%A1"><span class="nav-number">3.1.</span> <span class="nav-text">Redis对象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%B9%E8%B1%A1%E7%B1%BB%E5%9E%8B%E4%B8%8E%E7%BC%96%E7%A0%81"><span class="nav-number">3.2.</span> <span class="nav-text">对象类型与编码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%AF%B9%E8%B1%A1"><span class="nav-number">3.3.</span> <span class="nav-text">字符串对象</span></a></li></ol></li></ol></div>
+</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Redis%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="nav-number">2.</span> <span class="nav-text">Redis数据类型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AF%B9%E8%B1%A1"><span class="nav-number">3.</span> <span class="nav-text">对象</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis%E5%AF%B9%E8%B1%A1"><span class="nav-number">3.1.</span> <span class="nav-text">Redis对象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%B9%E8%B1%A1%E7%B1%BB%E5%9E%8B%E4%B8%8E%E7%BC%96%E7%A0%81"><span class="nav-number">3.2.</span> <span class="nav-text">对象类型与编码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%AF%B9%E8%B1%A1"><span class="nav-number">3.3.</span> <span class="nav-text">字符串对象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%97%E8%A1%A8%E5%AF%B9%E8%B1%A1"><span class="nav-number">3.4.</span> <span class="nav-text">列表对象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%93%88%E5%B8%8C%E5%AF%B9%E8%B1%A1"><span class="nav-number">3.5.</span> <span class="nav-text">哈希对象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%94%9F%E6%88%90%E6%97%B6%E9%97%B4-%E6%88%96-%E8%BF%87%E6%9C%9F%E6%97%B6%E9%97%B4"><span class="nav-number">3.6.</span> <span class="nav-text">生成时间 或 过期时间</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%87%E6%9C%9F%E5%88%A0%E9%99%A4%E7%AD%96%E7%95%A5%EF%BC%9A"><span class="nav-number">3.7.</span> <span class="nav-text">过期删除策略：</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
