@@ -20,22 +20,20 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="如何阅读Redis源码  阅读数据结构的实现： 相关文件： sds.h     sds.c adlist.h  adlist.c dict.h    dict.c redis.h   zskiplist zskiplistNode t_zset.c 所有zsl开头的函数如zslCreate, zslInsert, zslDeleteNode hyperloglog.c 中hlhdr结构，以及所有h">
+  <meta name="description" content="解密Redis持久化Redis作者关于Redis持久化的博文，http:&#x2F;&#x2F;oldblog.antirez.com&#x2F;post&#x2F;看博文、刷论坛以及在推特上搜索有关Redis的内容其实也是我开发Redis工作的一部分。对开发者来说，关注社区用户和非社区用户对你正在开发的产品看法是至关重要的。从自身感受来说，在Redis的所有特性里面，Redis的持久化是被误解最深。 在本篇博客中，我将尽可能公正、不偏">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Teemo-Tristana">
-<meta property="og:url" content="http://example.com/2020/10/30/%E9%98%85%E8%AF%BB%E9%A1%BA%E5%BA%8F/index.html">
+<meta property="og:title" content="解密Redis持久化">
+<meta property="og:url" content="http://example.com/2020/11/13/%E8%A7%A3%E5%AF%86Redis%E6%8C%81%E4%B9%85%E5%8C%96/index.html">
 <meta property="og:site_name" content="Teemo-Tristana">
-<meta property="og:description" content="如何阅读Redis源码  阅读数据结构的实现： 相关文件： sds.h     sds.c adlist.h  adlist.c dict.h    dict.c redis.h   zskiplist zskiplistNode t_zset.c 所有zsl开头的函数如zslCreate, zslInsert, zslDeleteNode hyperloglog.c 中hlhdr结构，以及所有h">
+<meta property="og:description" content="解密Redis持久化Redis作者关于Redis持久化的博文，http:&#x2F;&#x2F;oldblog.antirez.com&#x2F;post&#x2F;看博文、刷论坛以及在推特上搜索有关Redis的内容其实也是我开发Redis工作的一部分。对开发者来说，关注社区用户和非社区用户对你正在开发的产品看法是至关重要的。从自身感受来说，在Redis的所有特性里面，Redis的持久化是被误解最深。 在本篇博客中，我将尽可能公正、不偏">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/.com//readRedis.png">
-<meta property="article:published_time" content="2020-10-30T08:26:25.674Z">
-<meta property="article:modified_time" content="2020-11-03T02:30:41.278Z">
+<meta property="article:published_time" content="2020-11-13T06:32:19.000Z">
+<meta property="article:modified_time" content="2020-11-13T09:41:21.338Z">
 <meta property="article:author" content="Han Cheng">
-<meta property="article:tag" content="C++,python，图像处理">
+<meta property="article:tag" content="Redis">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://example.com/.com//readRedis.png">
 
-<link rel="canonical" href="http://example.com/2020/10/30/%E9%98%85%E8%AF%BB%E9%A1%BA%E5%BA%8F/">
+<link rel="canonical" href="http://example.com/2020/11/13/%E8%A7%A3%E5%AF%86Redis%E6%8C%81%E4%B9%85%E5%8C%96/">
 
 
 <script id="page-configurations">
@@ -48,7 +46,7 @@
   };
 </script>
 
-  <title> | Teemo-Tristana</title>
+  <title>解密Redis持久化 | Teemo-Tristana</title>
   
 
 
@@ -169,7 +167,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/10/30/%E9%98%85%E8%AF%BB%E9%A1%BA%E5%BA%8F/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/11/13/%E8%A7%A3%E5%AF%86Redis%E6%8C%81%E4%B9%85%E5%8C%96/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/teemo.png">
@@ -182,7 +180,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          
+          解密Redis持久化
         </h1>
 
         <div class="post-meta">
@@ -191,16 +189,10 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
+              
 
-              <time title="创建时间：2020-10-30 16:26:25" itemprop="dateCreated datePublished" datetime="2020-10-30T16:26:25+08:00">2020-10-30</time>
+              <time title="创建时间：2020-11-13 14:32:19 / 修改时间：17:41:21" itemprop="dateCreated datePublished" datetime="2020-11-13T14:32:19+08:00">2020-11-13</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-11-03 10:30:41" itemprop="dateModified" datetime="2020-11-03T10:30:41+08:00">2020-11-03</time>
-              </span>
 
           
 
@@ -213,105 +205,46 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="如何阅读Redis源码"><a href="#如何阅读Redis源码" class="headerlink" title="如何阅读Redis源码"></a>如何阅读Redis源码</h1><ul>
+        <h1 id="解密Redis持久化"><a href="#解密Redis持久化" class="headerlink" title="解密Redis持久化"></a>解密Redis持久化</h1><p>Redis作者关于Redis持久化的博文，<a target="_blank" rel="noopener" href="http://oldblog.antirez.com/post/">http://oldblog.antirez.com/post/</a><br>看博文、刷论坛以及在推特上搜索有关Redis的内容其实也是我开发Redis工作的一部分。对开发者来说，关注社区用户和非社区用户对你正在开发的产品看法是至关重要的。从自身感受来说，在Redis的所有特性里面，Redis的持久化是被误解最深。</p>
+<p>在本篇博客中，我将尽可能公正、不偏不倚地阐述Redis的持久化：不吹不黑，不跳过可能导致陷入Redis困境的细节.尽量做到以清晰易懂的方式来阐述Redis的持久化工作原理,可靠性以及与其他数据库的对比。</p>
+<h2 id="os和磁盘"><a href="#os和磁盘" class="headerlink" title="os和磁盘"></a>os和磁盘</h2><p>首先，考虑为什么要做持久化也即是数据库持久化的作用是什么？为此，先来看一次简单的写操作期间发生了什么。</p>
+<ul>
 <li><ol>
-<li>阅读数据结构的实现：<ul>
-<li>相关文件：<ul>
-<li>sds.h     sds.c</li>
-<li>adlist.h  adlist.c</li>
-<li>dict.h    dict.c</li>
-<li>redis.h   zskiplist zskiplistNode t_zset.c 所有zsl开头的函数如zslCreate, zslInsert, zslDeleteNode</li>
-<li>hyperloglog.c 中hlhdr结构，以及所有hll开头的文件</li>
-</ul>
-</li>
-</ul>
-</li>
+<li>客户端向数据库发送写命令(数据在客户端内存)</li>
 </ol>
 </li>
 <li><ol start="2">
-<li>阅读内存编码[encoding]数据结构的实现<ul>
-<li>和普通的数据结构一样， 内存编码数据结构基本上是独立的， 不和其他模块耦合<ul>
-<li>intset.h intset.c[整数集合intset数据结构]</li>
-<li>ziplist.h ziplist.c[压缩列表zip-list数据结构]</li>
-</ul>
-</li>
-</ul>
-</li>
+<li>数据库收到写命令(数据在服务器内存)</li>
 </ol>
 </li>
 <li><ol start="3">
-<li>阅读数据类型实现：<ul>
-<li>Redis6种不同类型的键[字符串-散列-列表-集合-有序集合-HyperLogLog]所有底层实现结构<ul>
-<li>object.c Redis对象类型系统实现</li>
-<li>t_string.c 字符串键的实现</li>
-<li>t_list.c 列表键的实现</li>
-<li>t_hash.c 散列键的实现</li>
-<li>t_set.c 集合键的实现</li>
-<li>t_zset.c中除zsl开头的函数之外的所有函数 有序集合键的实现</li>
-<li>hyperloglog.c 中所有以pf开头的函数</li>
-</ul>
-</li>
-</ul>
-</li>
+<li>数据库调用系统将数据写入磁盘(数据位于内核缓冲区中)</li>
 </ol>
 </li>
 <li><ol start="4">
-<li><p>阅读数据库相关实现代码:</p>
-<ul>
-<li><p>数据库相关</p>
-<ul>
-<li>redis.h中redisDb结构和db.c  Redis数据库实现</li>
-<li>notify.c                   Redis的数据库通知功能实现代码</li>
-<li>rdb.h和rdb.c               Redis的RDB持久化实现代码</li>
-<li>aof.c                      Redis的AOF持久化实现代码</li>
-</ul>
-</li>
-<li><p>Redis独立功能模块：</p>
-<ul>
-<li>redis.h中pubsubPattern结构以及pubsub.c   发布与阅读功能实现</li>
-<li>redis.h中multiState结构以及multiCmd结构   事务功能的实现</li>
-<li>sort.c                                   SORT命令的实现</li>
-<li>bitops.c                                 GETBIT|SETBIT等二进制操作命令的实现</li>
-</ul>
-</li>
-</ul>
-</li>
+<li>操作系统(内核)将写缓冲区数据传输到磁盘控制器(数据位于磁盘缓冲区)</li>
 </ol>
 </li>
 <li><ol start="5">
-<li><p>阅读客户端和服务器相关代码：</p>
-<ul>
-<li><p>客户端-服务器代码：</p>
-<ul>
-<li>ae.c 以及任意一个ae_*.c文件           Redis的事件处理器实现[基于Reactor模式]</li>
-<li>networking.c                         Redis的网络链接库，负责发送回复和接受命令请求，同时也负责创建/销毁客户端以及分析通信协议等工作</li>
-<li>redis.h 和 redis.c中和单机Redis服务器相关部分     单机Redis服务器的实现</li>
-</ul>
-</li>
-<li><p>独立模块:</p>
-<ul>
-<li>scripting.c   Lua脚本功能实现</li>
-<li>slowlog.c     慢查询功能的实现</li>
-<li>monitor.c     监视器功能的实现</li>
-</ul>
-</li>
-</ul>
-</li>
-</ol>
-</li>
-<li><ol start="6">
-<li>阅读多机功能的实现<ul>
-<li>多级功能代码：<ul>
-<li>replication.c     复制功能的实现</li>
-<li>sentinel.c        Redis Sentinel的实现代码</li>
-<li>cluster.c         Redis集群的实现代码<br><img src="/.com//readRedis.png" alt="readRedis.png"></li>
-</ul>
-</li>
-</ul>
-</li>
+<li>磁盘控制器执行真正地写操作，将数据写入物理介质(磁盘、闪存)</li>
 </ol>
 </li>
 </ul>
+<p>Note: 以上步骤是已经简化后的过程，实际可能涉及到更多级缓存和缓冲</p>
+<p>第2步通常是在数据库中实现为一个复杂地系统，写操作有时被不同地进程或线程处理。但是数据将在很快地时间内被写入磁盘，在此不做过多地累述。一句话，来自内存的数据将将在某一时刻传给内核(第三步)</p>
+<p>在第3步中也有大量地省略。现代内存实现了不同等级的缓存，它们通常是文件系统级别的缓存(Linux称位页缓存)和较小的缓冲区，这些缓存区含有待提交到磁盘的数据。调用特殊的API可以跳过这两种缓存机制(比如open系统调函数的O_DIRECT和O_SYNC标识)。但是我们可以将这些缓存视为一层(即不关心其细节)。因此，我们认为如果数据库已实现了缓存机制来避免数据库和内核并行执行同一项工作，那么就可以关闭缓存页。缓冲区通常被保留下来，因为若关闭了缓冲区，每次写操作都使得写磁盘数据很慢(系统调用比较耗时)</p>
+<p>数据库通常的做法是，只有在必要的时候才会调用系统调用将缓冲的数据写入磁盘，我们将在后面详细地介绍。</p>
+<h2 id="什么时候才是安全的？"><a href="#什么时候才是安全的？" class="headerlink" title="什么时候才是安全的？"></a>什么时候才是安全的？</h2><p>如果考虑到数据库故障比如宕机(比如终止或崩溃)而内核没出问题，只有第3步成功执行后才会认为是安全的，也即是write(2)(或将数据传给内核的其他系统调用)成功返回。在完成此步骤后，即使数据库进程崩溃，内核仍然会将数据传给磁盘控制器。</p>
+<p>考虑更为严重的情况，比如断电等，这样的话则只能确保第5步完成了才是安全的，第五步实际上是将数据保存到物理存储设备。</p>
+<p>总结一下，数据安全的关键步骤是第3、4和5步，这几个步骤涉及到：</p>
+<ul>
+<li>数据库以什么频率的调用write(或等效的系统调用)将数据从用户空间传输到内核缓冲区？</li>
+<li>内核缓冲区将多久刷新一次，将数据从缓冲区flush到磁盘控制器？</li>
+<li>磁盘控制器在什么时候将数据写入到物理设备？</li>
+</ul>
+<p>Note：所谓的磁盘控制器实际上指代的时驱动程序或磁盘自身的缓存行为，在持久化比较铭感(重要)的系统中，系统管理员通常禁用这种缓存方式。</p>
+<p>默认情况下，大多数系统的驱动通常只执行直写式高速缓存(即，只高速缓存读，不高速写)。只有在提供足够电池(应对断电等)情况下，才会启动回写模式<a href="%E5%86%99%E7%BC%93%E5%AD%98">write_back_mode</a>，以保证数据安全。</p>
+<h2 id="POSIX-API"><a href="#POSIX-API" class="headerlink" title="POSIX API"></a>POSIX API</h2><p>从数据库开发者角度来看，数据被真正写入物理设备(磁盘)前的流动方向是很有意思的，但更有意思的是控制这一流动方向的API。</p>
 
     </div>
 
@@ -320,6 +253,9 @@
     
 
       <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Redis/" rel="tag"># Redis</a>
+          </div>
 
         
 
@@ -327,13 +263,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2020/10/27/Redis-question/" rel="prev" title="Redis question">
-      <i class="fa fa-chevron-left"></i> Redis question
+    <a href="/2020/11/13/Redis%E5%AD%A6%E4%B9%A003/" rel="prev" title="Redis学习03">
+      <i class="fa fa-chevron-left"></i> Redis学习03
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2020/11/03/Redis%E5%AD%A6%E4%B9%A002/" rel="next" title="Redis学习02">
-      Redis学习02 <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -392,7 +325,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E9%98%85%E8%AF%BBRedis%E6%BA%90%E7%A0%81"><span class="nav-number">1.</span> <span class="nav-text">如何阅读Redis源码</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%A7%A3%E5%AF%86Redis%E6%8C%81%E4%B9%85%E5%8C%96"><span class="nav-number">1.</span> <span class="nav-text">解密Redis持久化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#os%E5%92%8C%E7%A3%81%E7%9B%98"><span class="nav-number">1.1.</span> <span class="nav-text">os和磁盘</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%97%B6%E5%80%99%E6%89%8D%E6%98%AF%E5%AE%89%E5%85%A8%E7%9A%84%EF%BC%9F"><span class="nav-number">1.2.</span> <span class="nav-text">什么时候才是安全的？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#POSIX-API"><span class="nav-number">1.3.</span> <span class="nav-text">POSIX API</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
