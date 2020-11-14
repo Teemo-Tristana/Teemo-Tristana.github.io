@@ -187,10 +187,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2020-11-13 14:32:19 / 修改时间：17:41:21" itemprop="dateCreated datePublished" datetime="2020-11-13T14:32:19+08:00">2020-11-13</time>
+              <time title="创建时间：2020-11-13 14:32:19" itemprop="dateCreated datePublished" datetime="2020-11-13T14:32:19+08:00">2020-11-13</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-11-14 22:54:59" itemprop="dateModified" datetime="2020-11-14T22:54:59+08:00">2020-11-14</time>
+              </span>
 
           
 
@@ -203,7 +209,9 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="解密Redis持久化"><a href="#解密Redis持久化" class="headerlink" title="解密Redis持久化"></a>解密Redis持久化</h1><p>Redis作者关于Redis持久化的博文，<a target="_blank" rel="noopener" href="http://oldblog.antirez.com/post/">http://oldblog.antirez.com/post/</a><br>看博文、刷论坛以及在推特上搜索有关Redis的内容其实也是我开发Redis工作的一部分。对开发者来说，关注社区用户和非社区用户对你正在开发的产品看法是至关重要的。从自身感受来说，在Redis的所有特性里面，Redis的持久化是被误解最深。</p>
+          <h1 id="解密Redis持久化"><a href="#解密Redis持久化" class="headerlink" title="解密Redis持久化"></a>解密Redis持久化</h1><ol>
+<li> Redis作者关于Redis持久化的博文，<a target="_blank" rel="noopener" href="http://oldblog.antirez.com/post/">http://oldblog.antirez.com/post/</a> <br>看博文、刷论坛以及在推特上搜索有关Redis的内容其实也是我开发Redis工作的一部分。对开发者来说，关注社区用户和非社区用户对你正在开发的产品看法是至关重要的。从自身感受来说，在Redis的所有特性里面，Redis的持久化是被误解最深。</li>
+</ol>
 <p>在本篇博客中，我将尽可能公正、不偏不倚地阐述Redis的持久化：不吹不黑，不跳过可能导致陷入Redis困境的细节.尽量做到以清晰易懂的方式来阐述Redis的持久化工作原理,可靠性以及与其他数据库的对比。</p>
 <h2 id="os和磁盘"><a href="#os和磁盘" class="headerlink" title="os和磁盘"></a>os和磁盘</h2><p>首先，考虑为什么要做持久化也即是数据库持久化的作用是什么？为此，先来看一次简单的写操作期间发生了什么。</p>
 <ul>
@@ -243,7 +251,17 @@
 <p>Note：所谓的磁盘控制器实际上指代的时驱动程序或磁盘自身的缓存行为，在持久化比较铭感(重要)的系统中，系统管理员通常禁用这种缓存方式。</p>
 <p>默认情况下，大多数系统的驱动通常只执行直写式高速缓存(即，只高速缓存读，不高速写)。只有在提供足够电池(应对断电等)情况下，才会启动回写模式<a href="%E5%86%99%E7%BC%93%E5%AD%98">write_back_mode</a>，以保证数据安全。</p>
 <h2 id="POSIX-API"><a href="#POSIX-API" class="headerlink" title="POSIX API"></a>POSIX API</h2><p>从数据库开发者角度来看，数据被真正写入物理设备(磁盘)前的流动方向是很有意思的，但更有意思的是控制这一流动方向的API。</p>
-
+<p>分析第3步的过程，我们可以使用write系统调用将数据写入内核缓冲区，从这个角度来看，可以使用POSIX API来控制这一过程。但是我们并不知道该系统调用成功返回时需要的执行时间。内核写缓冲区大小是有限的，如果内核缓冲区无法满足写请求，导致缓冲区溢出，那么内核会阻塞该写操作，当内核可以接收更多数据时(即内核有空闲空间)时，write系统调用才会返回。总之，最终的目的是将数据写入物理介质。</p>
+<p>同理第4步，在此步骤中，是将数据从内核缓冲区传输到磁盘控制器。默认情况下该步频率不是太频繁，因为传输越大的数据库时速度越快，比如，Linux默认30秒提交一次写操作。这意味着在提交之前这段时间，若发生故障，则最近30秒内待写入的数据就可能丢失。</p>
+<p>POSIX API 提供一些列系统调用用来强制内核将缓冲区的数据写入磁盘：最著名的可能就是 fsync 系统调用(有关更多信息，另请参见 mysnc 和 fdatasync)。使用 fsync ，数据库系统可以强制将内核缓冲区数据真正地写入磁盘，不过你也应该可以想到，该该操作开销很大：fsync 每次调用时都会启动一次写操作并且内核缓存会遗留一些待处理的数据。 sync()会一直阻塞该进程直到写操作完成，如果有需要的话，在Linux系统下，它也会阻塞向同一个文件写入的所有其他线程。</p>
+<h2 id="控制之外的事情"><a href="#控制之外的事情" class="headerlink" title="控制之外的事情"></a>控制之外的事情</h2><p>到现在位置，第3、4步是可以控制的，那么第5步呢？严格的来说，无法使用 POSIX API 来控制第5步。有些内核实现或许会告知使用者驱动程序将数据真正提交给物理介质，又或许控制器为了将数据提高速度而将写操作进行重排，而非立即将数据写入磁盘，与此相反的是，可能需要等待若干毫秒。这些是我们无法控制和干预的。</p>
+<p>在本文余下的部分，将简单地探讨简化后地两种数据安全级别：</p>
+<ul>
+<li>使用 write(2) (或等效)的系统调用将数据写入内核缓冲区，从而<strong>保证数据安全</strong>，避免进程受异常情况的影响</li>
+<li>使用 fsync(2) (或等效)的系统调用将数据从内核缓冲区写入到磁盘，这一个过程保证数据安全避免受到系统故障如断电的影响。但是，这一点是无法真正保证的，因为磁盘控制器可能存在缓存，但是可以不去考虑这情况，因为这种缓存在常用的数据库系统中是相同的。而且，数据库管理员可以通过特定的工具来管理物理设备的具体行为。</li>
+</ul>
+<p>Note：并非所有的数据库都是用 POSIXAPI 。一些专用数据库使用内核模块，这些内核模块可以直接与硬件进行交互。但是该问题的本质是一样的。可以使用用户缓冲区、内核缓冲区，但迟早都需要将数据写入磁盘以保证其数据安全(这是一个耗时的过程)。Oracle就是一个使用内核模块的数据库实际例子。</p>
+<h2 id="数据损坏"><a href="#数据损坏" class="headerlink" title="数据损坏"></a>数据损坏</h2>
       
     </div>
 
