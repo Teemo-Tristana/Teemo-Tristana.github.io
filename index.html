@@ -195,7 +195,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-11-18 17:33:06" itemprop="dateModified" datetime="2020-11-18T17:33:06+08:00">2020-11-18</time>
+                <time title="修改时间：2020-11-18 23:14:23" itemprop="dateModified" datetime="2020-11-18T23:14:23+08:00">2020-11-18</time>
               </span>
 
           
@@ -328,7 +328,12 @@
 <p>总之一句话：即使 Redis 作为内存数据库，与其他数据库相比，它也可以提供良好的持久化。</p>
 <p>从使用角度而言，Redis 提供的 AOF 和 RDB快照 两种持久化方式可以同时启用(如果拿不准，推荐这样做)，使用方便同时持久化良好。</p>
 <h2 id="Credits-可用度"><a href="#Credits-可用度" class="headerlink" title="Credits 可用度"></a>Credits 可用度</h2><p><a target="_blank" rel="noopener" href="https://twitter.com/didier_06">Didier Spezia</a>为这篇文章提供了很多有用的想法。这个话题太大了，我肯定漏掉了很多东西。不过很感谢Didier Spezia，他让这篇文章比初稿好很多。</p>
-<h2 id="附录：关于重启时间"><a href="#附录：关于重启时间" class="headerlink" title="附录：关于重启时间"></a>附录：关于重启时间</h2>
+<h2 id="附录：关于重启时间"><a href="#附录：关于重启时间" class="headerlink" title="附录：关于重启时间"></a>附录：关于重启时间</h2><p>我收到一些私信，希望在给出一些关于重启时的相关信息。Redis重启时，需要从磁盘中加载数据到内存中。在Redis 2.6 和 Redis 2.4 中 AOF 和 RDB 的持久化是存在差异的的，因此这个知识点值得补充。同时，将Redis 和 MySQL、 PostgreSQL在进行比较也很有意义。</p>
+<p>首先，需要说明为什么Redis服务器在接受用户请求之前需要将整个数据加载到内存中：严格来说，并不是因为 Redis 是一个内存数据库。可用设想，一个运行在内存，但内存和磁盘上数据的表达形式完全一致的数据库当然能够尽快地提供服务(ASAP)。</p>
+<p>真正的原因在于为不同的服务类型提供了不同的数据表现形式：在磁盘上采用紧凑的 append-only 结构，但这不适合随机访问；而在内存中，数据可用很快地获取和修改。但这要求我们将数据从磁盘加载内存时需要进行必要的转换。 Redis 依次读取磁盘上的keys(键)，然后以内存数据格式将键值关联起来。</p>
+<p>对于 RDB 文件，此过程是非常快的，原因如下：首先是 RDB 通常是更加紧凑、二进制形式的文件，有时甚至使用内存格式来编码数据(小型数据格式被编码成压缩列表或整数集合)。</p>
+<p>CPU 和 磁盘的速度差异非常大，但一般而言 Redis 的 RDB 文件的加载速度大致是 1G 数据需要 10 ~ 20 s,因此，加载数十GB的数据通常需要几分钟。</p>
+
       
     </div>
 
