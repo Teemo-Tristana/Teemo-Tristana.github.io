@@ -31,7 +31,7 @@
 <meta property="og:image" content="https://teemo-tristana.github.io/images/AOF_%E9%9D%9E%E9%98%BB%E5%A1%9E%E9%87%8D%E5%86%99%E8%BF%87%E7%A8%8B.jpg">
 <meta property="og:image" content="https://teemo-tristana.github.io/images/AOF%E4%B8%89%E7%A7%8D%E5%86%99%E5%9B%9E%E7%AD%96%E7%95%A5.jpg">
 <meta property="article:published_time" content="2020-11-13T06:32:19.000Z">
-<meta property="article:modified_time" content="2020-11-19T02:44:30.460Z">
+<meta property="article:modified_time" content="2020-11-19T02:52:15.721Z">
 <meta property="article:author" content="Han Cheng">
 <meta property="article:tag" content="Redis">
 <meta name="twitter:card" content="summary">
@@ -201,7 +201,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-11-19 10:44:30" itemprop="dateModified" datetime="2020-11-19T10:44:30+08:00">2020-11-19</time>
+                <time title="修改时间：2020-11-19 10:52:15" itemprop="dateModified" datetime="2020-11-19T10:52:15+08:00">2020-11-19</time>
               </span>
 
           
@@ -217,6 +217,7 @@
       
         <h1 id="解密Redis持久化"><a href="#解密Redis持久化" class="headerlink" title="解密Redis持久化"></a>解密Redis持久化</h1><p>看博文、刷论坛以及在推特上搜索有关Redis的内容其实也是我开发Redis工作的一部分。对开发者来说，关注社区用户和非社区用户对你正在开发的产品看法是至关重要的。从自身感受来说，在Redis的所有特性里面，Redis的持久化是被误解最深。</p>
 <p>在本篇博客中，我将尽可能公正、不偏不倚地阐述Redis的持久化：不吹不黑，不跳过可能导致陷入Redis困境的细节.尽量做到以清晰易懂的方式来阐述Redis的持久化工作原理,可靠性以及与其他数据库的对比。</p>
+<a id="more"></a>
 <h2 id="os和磁盘"><a href="#os和磁盘" class="headerlink" title="os和磁盘"></a>os和磁盘</h2><p>首先，考虑为什么要做持久化也即是数据库持久化的作用是什么？为此，先来看一次简单的写操作期间发生了什么。</p>
 <blockquote>
 <ol>
@@ -254,12 +255,10 @@
 <p>Note：并非所有的数据库都是用 POSIXAPI 。一些专用数据库使用内核模块，这些内核模块可以直接与硬件进行交互。但是该问题的本质是一样的。可以使用用户缓冲区、内核缓冲区，但迟早都需要将数据写入磁盘以保证其数据安全(这是一个耗时的过程)。Oracle就是一个使用内核模块的数据库实际例子。</p>
 <h2 id="数据损坏"><a href="#数据损坏" class="headerlink" title="数据损坏"></a>数据损坏</h2><p>在这之前，我们从应用层和内核层面分析了将数据真正写入磁盘的问题。但者并不是持久化的唯一问题。另一个问题是：在发生崩溃的事件后数据库是否仍然可读，或者说数据库内部数据结构是否遭受一定程度的破坏，以至于无法支持正确的读取，再或许是否需要一定的恢复措施来确保数据的有效表示形式？</p>
 <p>比如在很多 SQL 和 NoSQL 数据库中，在磁盘上采用树形结构来存储数据和索引。这种数据结构在写入时进行操作。如果正在执行写操作时系统终止(比如系统崩溃)，树形结构的表示是否仍然有效？</p>
-<p>一般将数据损坏分为三个级别：\</p>
-<ul>
-<li>执行写入磁盘的数据库不关心故障时发生什么，而是要求用户使用数据备份或提供可以恢复有效表示形式的工具。</li>
-<li>数据库通过记录日志(journal)以便在故障时，可以恢复到故障发生前的一致性状态。</li>
-<li>数据库不修改已有的数据，而是在追加模式下工作，这样也就杜绝了数据损坏的可能。</li>
-</ul>
+<p>一般将数据损坏分为三个级别：</p>
+<blockquote>
+<p>执行写入磁盘的数据库不关心故障时发生什么，而是要求用户使用数据备份或提供可以恢复有效表示形式的工具。<br>数据库通过记录日志(journal)以便在故障时，可以恢复到故障发生前的一致性状态。<br>数据库不修改已有的数据，而是在追加模式下工作，这样也就杜绝了数据损坏的可能。</p>
+</blockquote>
 <p>到此，我们已经了解了评估数据库可靠性的所有要素。现在就可以来了解Redis在这方面的表现了。Redis提供了两种不同的持久化方法，接下来逐一进行分析。</p>
 <h2 id="快照-Snapshotting"><a href="#快照-Snapshotting" class="headerlink" title="快照(Snapshotting)"></a>快照(Snapshotting)</h2><p>Redis快照是最简单的Redis持久化模式。在达到指定条件时，它会创建该时间点的数据库快照，比如若距离上一份快照过去2分钟且在该时间段内发生了至少100此写操作，则创建一份快照。触发条件可以通过配置文件来定义，也支持运行时动态修改。快照存储在 .rdb 文件中，包含该时刻整个数据库信息。</p>
 <p>快照的持久化限定于用户指定的保存点。如果数据库每15分钟保存一次，若数据给一旦崩溃，则15分钟内的写数据可能就会丢失。从Redis数据角度来看，快照确保了一个 MULTI/EXEC 事务要么完全写入快照，要么完全不写入(正如前面所述，RDB 文件准确的保存了某一时刻数据库状态信息)[翻者注：类似拍照，将某一时刻定格下来或类似Linux的PS命令]</p>
@@ -307,9 +306,9 @@
 <li> 正常情况： 响应客户端之前调用 write(2), 每秒调用 fsync(2)</li>
 </ul>
 <p>有趣的是，在这种模式下，Redis 依然高速运行，这是有原因的。<br>一个是 fsync 是由后台线程执行的，另一个是，Redis 只进行 append-only 的写操作，这是一个很大的优势。</p>
-<p>如果数据安全性要求很高而写入操作不高，也可以使用 <font color="00dd00">&gt;<strong>fsync always</strong> </font> 模式，可以获得像其他数据库系统一样的好的持久化效果。</p>
+<p>如果数据安全性要求很高而写入操作不高，也可以使用 <font color="00dd00"><strong>fsync always</strong> </font> 模式，可以获得像其他数据库系统一样的好的持久化效果。</p>
 <p>与 PostgreSQL相比如何呢？ PostgreSQL是一款很好且非常可靠的数据库。</p>
-<p>一起来看一下 PostgreSQL 的文档(这里选取我们关心的部分，全部文档<font color="0000dd"> [在这里]  </font>(<a target="_blank" rel="noopener" href="https://www.postgresql.org/docs/9.1/runtime-config-wal.html#GUC-SYNCHRONOUS-COMMIT">https://www.postgresql.org/docs/9.1/runtime-config-wal.html#GUC-SYNCHRONOUS-COMMIT</a>))</p>
+<p>一起来看一下 PostgreSQL 的文档(这里选取我们关心的部分，全部文档<a target="_blank" rel="noopener" href="https://www.postgresql.org/docs/9.1/runtime-config-wal.html#GUC-SYNCHRONOUS-COMMIT"><font color="0000dd">在这里</font></a>)</p>
 <blockquote>
 <p>fsync(boolean)<br>如果启用此参数，PostgreSQL服务器将调用 fsync()或等效的系统调用来确保数据被写入到磁盘。这意味着服务器集群在遇到系统故障或崩溃时，数据库可以恢复到之前的一致性状态.</p>
 </blockquote>
@@ -325,10 +324,10 @@
 <blockquote>
 <p>MySQL的InnoDB也有类似的参数，可以从文档中获知：<br>如果将 innodb_flush_log_at_trx_commit 设置为 0， 则每秒将日志缓冲的内容写入日志文件中一次并将日志写入磁盘。但是事务提交时不执行任何操作。如果设置为1(默认值)，每次提交事务时将写入日志文件并将写入磁盘。若设置为2，每次提交事务都会写入日志文件，但是不会写入磁盘。但是，此时还是会每隔一秒将数据日志文件写入磁盘，但是这里写入(flush)到磁盘并不会得到严格的保证，因为这会受到进程调度的影响。</p>
 </blockquote>
-<p><font color="0000dd"> [进一步了解] </font>(<a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/8.0/en/innodb-parameters.html#sysvar_innodb_flush_log_at_trx_commit">https://dev.mysql.com/doc/refman/8.0/en/innodb-parameters.html#sysvar_innodb_flush_log_at_trx_commit</a>)</p>
+<p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/8.0/en/innodb-parameters.html#sysvar_innodb_flush_log_at_trx_commit"><font color="0000dd">进一步了解</font></a></p>
 <p>总之一句话：即使 Redis 作为内存数据库，与其他数据库相比，它也可以提供良好的持久化。</p>
 <p>从使用角度而言，Redis 提供的 AOF 和 RDB快照 两种持久化方式可以同时启用(如果拿不准，推荐这样做)，使用方便同时持久化良好。</p>
-<h2 id="Credits-可用度"><a href="#Credits-可用度" class="headerlink" title="Credits 可用度"></a>Credits 可用度</h2><p><font color="0000dd">[Didier Spezia]</font>(<a target="_blank" rel="noopener" href="https://twitter.com/didier_06)%E4%B8%BA%E8%BF%99%E7%AF%87%E6%96%87%E7%AB%A0%E6%8F%90%E4%BE%9B%E4%BA%86%E5%BE%88%E5%A4%9A%E6%9C%89%E7%94%A8%E7%9A%84%E6%83%B3%E6%B3%95%E3%80%82%E8%BF%99%E4%B8%AA%E8%AF%9D%E9%A2%98%E5%A4%AA%E5%A4%A7%E4%BA%86%EF%BC%8C%E6%88%91%E8%82%AF%E5%AE%9A%E6%BC%8F%E6%8E%89%E4%BA%86%E5%BE%88%E5%A4%9A%E4%B8%9C%E8%A5%BF%E3%80%82%E4%B8%8D%E8%BF%87%E5%BE%88%E6%84%9F%E8%B0%A2Didier">https://twitter.com/didier_06)为这篇文章提供了很多有用的想法。这个话题太大了，我肯定漏掉了很多东西。不过很感谢Didier</a> Spezia，他让这篇文章比初稿好很多。</p>
+<h2 id="Credits-可用度"><a href="#Credits-可用度" class="headerlink" title="Credits 可用度"></a>Credits 可用度</h2><p><a target="_blank" rel="noopener" href="https://twitter.com/didier_06"><font color="0000dd">Didier Spezia</font></a>为这篇文章提供了很多有用的想法。这个话题太大了，我肯定漏掉了很多东西。不过很感谢Didier Spezia，他让这篇文章比初稿好很多。</p>
 <h2 id="附录：关于重启"><a href="#附录：关于重启" class="headerlink" title="附录：关于重启"></a>附录：关于重启</h2><p>我收到一些私信，希望在给出一些关于重启时的相关信息。Redis重启时，需要从磁盘中加载数据到内存中。在Redis 2.6 和 Redis 2.4 中 AOF 和 RDB 的持久化是存在差异的的，因此这个知识点值得补充。同时，将Redis 和 MySQL、 PostgreSQL在进行比较也很有意义。</p>
 <p>首先，需要说明为什么Redis服务器在接受用户请求之前需要将整个数据加载到内存中：严格来说，并不是因为 Redis 是一个内存数据库。可用设想，一个运行在内存，但内存和磁盘上数据的表达形式完全一致的数据库当然能够尽快地提供服务(ASAP)。</p>
 <p>真正的原因在于为不同的服务类型提供了不同的数据表现形式：在磁盘上采用紧凑的 append-only 结构，但这不适合随机访问；而在内存中，数据可用很快地获取和修改。但这要求我们将数据从磁盘加载内存时需要进行必要的转换。 Redis 依次读取磁盘上的keys(键)，然后以内存数据格式将键值关联起来。</p>
@@ -341,7 +340,7 @@
 <p>总而言之：如果数据量很大，Redis 的重启则需要一点时间。基于磁盘的数据库表现很好，但是冷启动时的效果可能不就如人意。如果处于负载情况下，整个应用程序可能就会被阻塞一段时间。与之相反，Redis 一旦启动，便高速运行。</p>
 <h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
 <li>Redis 设计与实现</li>
-<li>Redis作者关于Redis持久化的<font color="0000dd">[博客]</font>(<a target="_blank" rel="noopener" href="http://oldblog.antirez.com/post/">http://oldblog.antirez.com/post/</a>)</li>
+<li>Redis作者关于Redis持久化的<a target="_blank" rel="noopener" href="http://oldblog.antirez.com/post/"><font color="0000dd">博客</font></a></li>
 </ol>
 
     </div>

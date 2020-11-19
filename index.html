@@ -195,7 +195,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-11-19 10:44:30" itemprop="dateModified" datetime="2020-11-19T10:44:30+08:00">2020-11-19</time>
+                <time title="修改时间：2020-11-19 10:52:15" itemprop="dateModified" datetime="2020-11-19T10:52:15+08:00">2020-11-19</time>
               </span>
 
           
@@ -211,133 +211,14 @@
       
           <h1 id="解密Redis持久化"><a href="#解密Redis持久化" class="headerlink" title="解密Redis持久化"></a>解密Redis持久化</h1><p>看博文、刷论坛以及在推特上搜索有关Redis的内容其实也是我开发Redis工作的一部分。对开发者来说，关注社区用户和非社区用户对你正在开发的产品看法是至关重要的。从自身感受来说，在Redis的所有特性里面，Redis的持久化是被误解最深。</p>
 <p>在本篇博客中，我将尽可能公正、不偏不倚地阐述Redis的持久化：不吹不黑，不跳过可能导致陷入Redis困境的细节.尽量做到以清晰易懂的方式来阐述Redis的持久化工作原理,可靠性以及与其他数据库的对比。</p>
-<h2 id="os和磁盘"><a href="#os和磁盘" class="headerlink" title="os和磁盘"></a>os和磁盘</h2><p>首先，考虑为什么要做持久化也即是数据库持久化的作用是什么？为此，先来看一次简单的写操作期间发生了什么。</p>
-<blockquote>
-<ol>
-<li>客户端向数据库发送写命令(数据在客户端内存)</li>
-<li>数据库收到写命令(数据在服务器内存)</li>
-<li>数据库调用系统将数据写入磁盘(数据位于内核缓冲区中)</li>
-<li>操作系统(内核)将写缓冲区数据传输到磁盘控制器(数据位于磁盘缓冲区)</li>
-<li>磁盘控制器执行真正地写操作，将数据写入物理介质(磁盘、闪存)</li>
-</ol>
-</blockquote>
-<p>Note: 以上步骤是已经简化后的过程，实际可能涉及到更多级缓存和缓冲</p>
-<p>第2步通常是在数据库中实现为一个复杂地系统，写操作有时被不同地进程或线程处理。但是数据将在很快地时间内被写入磁盘，在此不做过多地累述。一句话，来自内存的数据将将在某一时刻传给内核(第三步)</p>
-<p>在第3步中也有大量地省略。现代内存实现了不同等级的缓存，它们通常是文件系统级别的缓存(Linux称位页缓存)和较小的缓冲区，这些缓存区含有待提交到磁盘的数据。调用特殊的API可以跳过这两种缓存机制(比如open系统调函数的O_DIRECT和O_SYNC标识)。但是我们可以将这些缓存视为一层(即不关心其细节)。因此，我们认为如果数据库已实现了缓存机制来避免数据库和内核并行执行同一项工作，那么就可以关闭缓存页。缓冲区通常被保留下来，因为若关闭了缓冲区，每次写操作都使得写磁盘数据很慢(系统调用比较耗时)</p>
-<p>数据库通常的做法是，只有在必要的时候才会调用系统调用将缓冲的数据写入磁盘，我们将在后面详细地介绍。</p>
-<h2 id="何时写入才算安全？"><a href="#何时写入才算安全？" class="headerlink" title="何时写入才算安全？"></a>何时写入才算安全？</h2><p>如果考虑到数据库故障比如宕机(比如终止或崩溃)而内核没出问题，只有第3步成功执行后才会认为是安全的，也即是write(2)(或将数据传给内核的其他系统调用)成功返回。在完成此步骤后，即使数据库进程崩溃，内核仍然会将数据传给磁盘控制器。</p>
-<p>考虑更为严重的情况，比如断电等，这样的话则只能确保第5步完成了才是安全的，第五步实际上是将数据保存到物理存储设备。</p>
-<p>总结一下，数据安全的关键步骤是第3、4和5步，这几个步骤涉及到：</p>
-<ul>
-<li>数据库以什么频率的调用write(或等效的系统调用)将数据从用户空间传输到内核缓冲区？</li>
-<li>内核缓冲区将多久刷新一次，将数据从缓冲区flush到磁盘控制器？</li>
-<li>磁盘控制器在什么时候将数据写入到物理设备？</li>
-</ul>
-<p>Note：所谓的磁盘控制器实际上指代的时驱动程序或磁盘自身的缓存行为，在持久化比较铭感(重要)的系统中，系统管理员通常禁用这种缓存方式。</p>
-<p>默认情况下，大多数系统的驱动通常只执行直写式高速缓存(即，只高速缓存读，不高速写)。只有在提供足够电池(应对断电等)情况下，才会启动回写模式<a href="%E5%86%99%E7%BC%93%E5%AD%98">write_back_mode</a>，以保证数据安全。</p>
-<h2 id="POSIX-API"><a href="#POSIX-API" class="headerlink" title="POSIX API"></a>POSIX API</h2><p>从数据库开发者角度来看，数据被真正写入物理设备(磁盘)前的流动方向是很有意思的，但更有意思的是控制这一流动方向的API。</p>
-<p>分析第3步的过程，我们可以使用write系统调用将数据写入内核缓冲区，从这个角度来看，可以使用POSIX API来控制这一过程。但是我们并不知道该系统调用成功返回时需要的执行时间。内核写缓冲区大小是有限的，如果内核缓冲区无法满足写请求，导致缓冲区溢出，那么内核会阻塞该写操作，当内核可以接收更多数据时(即内核有空闲空间)时，write系统调用才会返回。总之，最终的目的是将数据写入物理介质。</p>
-<p>同理第4步，在此步骤中，是将数据从内核缓冲区传输到磁盘控制器。默认情况下这一步不是太频繁，因为传输越大的数据库时速度越快，比如，Linux默认30秒提交一次写操作。这意味着在提交之前这段时间，若发生故障，则最近30秒内待写入的数据就可能丢失。</p>
-<p>POSIX API 提供一些列系统调用用来强制内核将缓冲区的数据写入磁盘：最著名的可能就是 fsync 系统调用(有关更多信息，另请参见 mysnc 和 fdatasync)。使用 fsync ，数据库系统可以强制将内核缓冲区数据真正地写入磁盘，不过你也应该可以想到，该该操作开销很大：fsync 每次调用时都会启动一次写操作并且内核缓存会遗留一些待处理的数据。 sync()会一直阻塞该进程直到写操作完成，如果有需要的话，在Linux系统下，它也会阻塞向同一个文件写入的所有其他线程。</p>
-<h2 id="控制之外的事情"><a href="#控制之外的事情" class="headerlink" title="控制之外的事情"></a>控制之外的事情</h2><p>到现在位置，第3、4步是可以控制的，那么第5步呢？严格的来说，无法使用 POSIX API 来控制第5步。有些内核实现或许会告知使用者驱动程序将数据真正提交给物理介质，又或许控制器为了将数据提高速度而将写操作进行重排，而非立即将数据写入磁盘，与此相反的是，可能需要等待若干毫秒。这些是我们无法控制和干预的。</p>
-<p>在本文余下的部分，将简单地探讨简化后地两种数据安全级别：</p>
-<ul>
-<li>使用 write(2) (或等效)的系统调用将数据写入内核缓冲区，从而<strong>保证数据安全</strong>，避免进程受异常情况的影响</li>
-<li>使用 fsync(2) (或等效)的系统调用将数据从内核缓冲区写入到磁盘，这一个过程保证数据安全避免受到系统故障如断电的影响。但是，这一点是无法真正保证的，因为磁盘控制器可能存在缓存，但是可以不去考虑这情况，因为这种缓存在常用的数据库系统中是相同的。而且，数据库管理员可以通过特定的工具来管理物理设备的具体行为。</li>
-</ul>
-<p>Note：并非所有的数据库都是用 POSIXAPI 。一些专用数据库使用内核模块，这些内核模块可以直接与硬件进行交互。但是该问题的本质是一样的。可以使用用户缓冲区、内核缓冲区，但迟早都需要将数据写入磁盘以保证其数据安全(这是一个耗时的过程)。Oracle就是一个使用内核模块的数据库实际例子。</p>
-<h2 id="数据损坏"><a href="#数据损坏" class="headerlink" title="数据损坏"></a>数据损坏</h2><p>在这之前，我们从应用层和内核层面分析了将数据真正写入磁盘的问题。但者并不是持久化的唯一问题。另一个问题是：在发生崩溃的事件后数据库是否仍然可读，或者说数据库内部数据结构是否遭受一定程度的破坏，以至于无法支持正确的读取，再或许是否需要一定的恢复措施来确保数据的有效表示形式？</p>
-<p>比如在很多 SQL 和 NoSQL 数据库中，在磁盘上采用树形结构来存储数据和索引。这种数据结构在写入时进行操作。如果正在执行写操作时系统终止(比如系统崩溃)，树形结构的表示是否仍然有效？</p>
-<p>一般将数据损坏分为三个级别：\</p>
-<ul>
-<li>执行写入磁盘的数据库不关心故障时发生什么，而是要求用户使用数据备份或提供可以恢复有效表示形式的工具。</li>
-<li>数据库通过记录日志(journal)以便在故障时，可以恢复到故障发生前的一致性状态。</li>
-<li>数据库不修改已有的数据，而是在追加模式下工作，这样也就杜绝了数据损坏的可能。</li>
-</ul>
-<p>到此，我们已经了解了评估数据库可靠性的所有要素。现在就可以来了解Redis在这方面的表现了。Redis提供了两种不同的持久化方法，接下来逐一进行分析。</p>
-<h2 id="快照-Snapshotting"><a href="#快照-Snapshotting" class="headerlink" title="快照(Snapshotting)"></a>快照(Snapshotting)</h2><p>Redis快照是最简单的Redis持久化模式。在达到指定条件时，它会创建该时间点的数据库快照，比如若距离上一份快照过去2分钟且在该时间段内发生了至少100此写操作，则创建一份快照。触发条件可以通过配置文件来定义，也支持运行时动态修改。快照存储在 .rdb 文件中，包含该时刻整个数据库信息。</p>
-<p>快照的持久化限定于用户指定的保存点。如果数据库每15分钟保存一次，若数据给一旦崩溃，则15分钟内的写数据可能就会丢失。从Redis数据角度来看，快照确保了一个 MULTI/EXEC 事务要么完全写入快照，要么完全不写入(正如前面所述，RDB 文件准确的保存了某一时刻数据库状态信息)[翻者注：类似拍照，将某一时刻定格下来或类似Linux的PS命令]</p>
-<p>RDB文件是由子进程以 append-only 模式从Redis内存数据库的数据映射生成的，因此它不会损坏。新的 rdb 快照时一个零时文件，一旦子进程成功生成快照(使用 fsync 系统调用将其同步到磁盘)，接下来就会执行一个原子操作 rename(2) 将临时文件重命名为目标文件。</p>
-<p>如果对几分钟内的数据丢比较介意的话，Redis快照持久化可能就不是一个很好选择，因此，<font color="#00dd00">它适合于短时间数据丢失不敏感的场景</font>。</p>
-<p>即使启用更高级的持久化模式即 AOF 下，仍然建议开启快照模式，因为保留一份完整的数据库内容的RDB文件，对于数据备份和恢复是非常有用的，把数据传给远程的数据中心，帮助其从故障中恢复，或则应用的bug导致数据库的不可逆损坏时，将数据库回滚到上一个版本。</p>
-<p>值得注意的是，在主从同步时，Redis也是用了RDB快照。</p>
-<blockquote>
-<p>RDB另外一个优点时：在给定的数据库大小情况下，系统的I/O次数也随之固定，不论数据库发生什么操作。这一特性是大多数传统数据库(以及Redis的AOF持久化模式下)不具备的。</p>
-</blockquote>
-<h2 id="Append-only-file"><a href="#Append-only-file" class="headerlink" title="Append only file"></a>Append only file</h2><p>Append Only File，简称AOF,是Redis的主要持久化模式。原理非常简单：每次对内存数据库进行修改的操作都会被记录下来。日志的格式和客户端与Redis通信的格式完全一样，因此，AOF可以通过netcat(一种网路通信工具)传递给其他Redis实例，在需要的时候可以对其轻松的解析。在重启时，Redis将重新执行所有操作以重建数据。<br> <img src="https://teemo-tristana.github.io/images/AOF%E6%93%8D%E4%BD%9C%E8%BF%87%E7%A8%8B.jpg" alt="AOF操作过程"><br>为了显示Redis AOF工作模式，使用Redis2.6版本进行一次演示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.&#x2F;redis-server --append-only yes</span><br></pre></td></tr></table></figure>
-
-<p>接下来写入一些数据：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">redis 127.0.0.1:6379&gt; set key1 hello</span><br><span class="line">OK</span><br><span class="line">redis 127.0.0.1:6379&gt; append key1 &quot; world!&quot;</span><br><span class="line">(integer 12)</span><br><span class="line">redis 127.0.0.1:6379&gt; del key1</span><br><span class="line">(integer 1)</span><br><span class="line">redis 127.0.0.1:6379&gt; del non_existing_key</span><br><span class="line">(integer 0)</span><br></pre></td></tr></table></figure>
-<p>前三个操作修改了数据库，但第四个却没有，因为数据不存在指定的键名。aof文件大致如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">$ cat appendonly.aof </span><br><span class="line">*2</span><br><span class="line">$6</span><br><span class="line">SELECT</span><br><span class="line">$1</span><br><span class="line">0</span><br><span class="line">*3</span><br><span class="line">$3</span><br><span class="line">set</span><br><span class="line">$4</span><br><span class="line">key1</span><br><span class="line">$5</span><br><span class="line">Hello</span><br><span class="line">*3</span><br><span class="line">$6</span><br><span class="line">append</span><br><span class="line">$4</span><br><span class="line">key1</span><br><span class="line">$7</span><br><span class="line"> World!</span><br><span class="line">*2</span><br><span class="line">$3</span><br><span class="line">del</span><br><span class="line">$4</span><br><span class="line">key1</span><br></pre></td></tr></table></figure>
-<p>可以看到，最后一个 DEL 命令是缺失的，因为并没有对数据库进行修改。<br>原理上很简单，只有对实际数据有影响的操作才会被记录到AOF中。但并非所有的命令在接收时会被记录下来。比如对列表的阻塞操作，只会记录其产生的最终效果，与非阻塞命令类似。在比如 INCRBYFLOAT 时机使用 set 来记录，使用增加之后的值来替代原来的值，如此，由于不同架构浮点数的不同处理方式，就不会使得redis在加载AOF时出现不一样的结果(屏蔽了架构差异)。</p>
-<p>现在我们大概明白了Redis AOF的要义：即append-only，因此就杜绝了损坏数据的可能。但这也有一个问题：在上面的例子中，DEL 之后数据库是空的，然后，AOF文件却非空(含有一些数据)。AOF 文件总是不断的增大，文件过大时，该如何处理呢？</p>
-<h2 id="AOF-重写"><a href="#AOF-重写" class="headerlink" title="AOF 重写"></a>AOF 重写</h2><p>当 AOF 文件过大时，Redis会重写到一个临时文件。重写不是读去旧的AOF文件，而是直接访问内存数据，这样就要可以生成一个较小的 AOF 文件，并且在写入新的 AOF 文件时无须读取磁盘。</p>
-<p>一旦重写结束，fsync将临时文件同步到磁盘并覆盖旧的AOF文件。</p>
-<p>你也许会问，在重写过程中，服务器如何处理到来的写请求呢？这些新数据仍然会写进旧(当前)的AOF文件，同时也会写入一个内存缓冲区(AOF重写缓冲区)，这样，当新的AOF文件生成完毕后，再将该缓冲区的内容追加进去，最后替换旧 AOF 文件。</p>
-<p><img src="https://teemo-tristana.github.io/images/AOF_%E9%9D%9E%E9%98%BB%E5%A1%9E%E9%87%8D%E5%86%99%E8%BF%87%E7%A8%8B.jpg" alt="AOF_非阻塞重写过程"></p>
-<p>可以看出，所有的操作都属采用 append-only 模式，再重写 AOF 文件过程中，仍然向旧的 AOF 文件中追加写请求，直到新 AOF 文件完成。因此Redis的AOF重写并不是真正的重写旧的AOF文件[翻者注：读取并记录数据库状态然后替换旧的AOF]。对于Redis重写的真正问题是：write(2) 和 fysnc(2) 的调用频率。</p>
-<p>AOF重写只采用了顺序I/O操作，即使在旋转磁盘下，该过程是非常高效的(不涉及到随机I/O)。RDB 快照也是如此。完全不用随机I/O访问数据库是很少见的。之所以可以这样的原因是Redis是从内存中读取数据，无须为磁盘上的数据组织随机访问模式，但在重启时需要顺序加载。</p>
-<h2 id="AOF-持久化"><a href="#AOF-持久化" class="headerlink" title="AOF 持久化"></a>AOF 持久化</h2><p>这一部分是写这篇文章的目的。很高兴我坚持写到这里，你能读到这里我更开心。</p>
-<p>AOF 使用的是用户缓冲区，将新命令产生的新数据填充到用户缓冲区。每次事件循环返回时，会对 AOF 文件描述符调用 write(2), 从buffer中的数据 flush 到磁盘，实际上，Redis的AOF有三种不同配置选项，这些选项会影响到 write(2) ，尤其是 fync(2)的具体行为。</p>
-<p>参数 <strong>appendfsync</strong> 控制着这三种不同的行为，该参数有三个不同的值：no、 everysec、 always。该配置参数可以运行时修改，使用 config set 命令，从而实现无须停机即可修改。</p>
-<h3 id="appendfsync-no"><a href="#appendfsync-no" class="headerlink" title="appendfsync no"></a>appendfsync no</h3><p>在这个参数配置下，Redis 完全不会调用 fsync(2)。但是，它会先确定客户端没有启用pipelining(流水线)，不启用pipelining指代的是：客户端只能在收到对前一条命令的返回结果后，才能发送新的命令，如此一来，只有服务器使用 write(2) 成功将修改命令提交到内核后，客户端才能被正确的执行。<br>在此配置中，根本不调用 fsync(2), 因此数据什么时候提交到磁盘完全是由内核来确定，比如在大多数Linux系统中，每30秒提交一次。</p>
-<h3 id="appendfsync-everysec"><a href="#appendfsync-everysec" class="headerlink" title="appendfsync everysec"></a>appendfsync everysec</h3><p>在这个参数配置下，Redis每秒调用一次 write(2) 和 fsync(2)将数据写入磁盘[write写入内核缓冲区，fsync将数据从内核写入磁盘]。通常，每次循环事件返回时调用 write(2), 但并非完全如此。</p>
-<p>但是，如果磁盘跟不上写速度，后台 fsync(2) 调用的耗费将超过1秒，此时，Redis将会把写操作延迟，延迟时间最多为1秒(为了避免 write(2) 和 fsync(2)系统调用同时操作同一个文件描述导致主线程阻塞)。如果 fsync(2)超过两秒而没有被终止，Redis最终将调用 write(2) (可能阻塞) ,不惜一切代价将数据写入磁盘。</p>
-<p>因此，在这种模式下，Redis能够保证，在最坏的情况下， 2秒内保证将数据从操作系统缓冲区写入磁盘，平均下来，每1秒提交一次数据。</p>
-<h3 id="appendfsync-always"><a href="#appendfsync-always" class="headerlink" title="appendfsync always"></a>appendfsync always</h3><p>在这种模式下，如果客户端没有启动pipelining(流水线)，<strong>确认命令的结果返回之前</strong>，会将数据写入文件并调用 fsync(2) 同步到磁盘。</p>
-<p>这是持久化模式等级最高(最安全)，而速度却是最慢的。</p>
-<p>Redis的appendfsync参数的默认配置是 <font color="00dd00"><strong>append everysec</strong> </font> ，该模式是在速度(几乎与<strong>appendfsync no</strong>模式一样快)和持久化的一个这种方案。</p>
-<p>在Redis实现中，把 appendfsync设置为 <strong>always</strong> 的做法通常称位 **组提交[group-commit]**。意思是，无须每次调用 write(2)时都执行一次 fsync(2),Redis在每次循环事件中，将多个提交打包，用一次 write + fsync 进行持久化，然后再对多个发起写请求的客户端响应。</p>
-<p>在实际场景下，它允许同时支持上百个客户端同时执行写操作： fsync 操作将被分解，因此在该模式允许 Redis 支持每秒上千次事务操作，尽管物理设备只能支持每次100-200次写操作。</p>
-<p><img src="https://teemo-tristana.github.io/images/AOF%E4%B8%89%E7%A7%8D%E5%86%99%E5%9B%9E%E7%AD%96%E7%95%A5.jpg" alt="AOF三种写回策略"></p>
-<h2 id="为什么pipelining-流水线-独树一帜？"><a href="#为什么pipelining-流水线-独树一帜？" class="headerlink" title="为什么pipelining(流水线)独树一帜？"></a>为什么pipelining(流水线)独树一帜？</h2><p>之所以对使用流水线方式的客户端区别对待，是因为如果客户端使用了流水线的写操作方式，则是以获取正在执行命令的结果之前而不能执行下一条指令为代价，从而提升速度。假如客户端十分在意速度，那么要求服务器发送一条用户不感兴趣的回复之后，才真正提交数据是毫无意义的。但即使客户端使用了流水线模式， write 和 fysnc(取决于配置文件)则总是在循环事件返回时才发生。</p>
-<h2 id="AOF-和-Redis-事务"><a href="#AOF-和-Redis-事务" class="headerlink" title="AOF 和 Redis 事务"></a>AOF 和 Redis 事务</h2><p>AOF 保证 MULTI/EXEC 事务的语法正确性，拒绝加载末尾有不完整事务的文件。Redis服务器附带的应用程序可以修剪 AOF 末尾不完整的事务，以保证 AOF 中事务的完整性。</p>
-<p>Note： 由于 AOF 文件是在每次循环事件结束时才调用 write 来更新 AOF 文件，因此只有在AOF文件所在磁盘没有足够空间而Redis有需要有要写入数据时，才会出现不完整的事务。</p>
-<h2 id="与-PostrgreSQL-比较"><a href="#与-PostrgreSQL-比较" class="headerlink" title="与 PostrgreSQL 比较"></a>与 PostrgreSQL 比较</h2><p>使用默认持久引擎(AOF)的 Redis 的持久化效果如何呢？</p>
-<ul>
-<li> 最坏情况： 保证 write(2) 和 fsync(2) 在两秒内执行。</li>
-<li> 正常情况： 响应客户端之前调用 write(2), 每秒调用 fsync(2)</li>
-</ul>
-<p>有趣的是，在这种模式下，Redis 依然高速运行，这是有原因的。<br>一个是 fsync 是由后台线程执行的，另一个是，Redis 只进行 append-only 的写操作，这是一个很大的优势。</p>
-<p>如果数据安全性要求很高而写入操作不高，也可以使用 <font color="00dd00">&gt;<strong>fsync always</strong> </font> 模式，可以获得像其他数据库系统一样的好的持久化效果。</p>
-<p>与 PostgreSQL相比如何呢？ PostgreSQL是一款很好且非常可靠的数据库。</p>
-<p>一起来看一下 PostgreSQL 的文档(这里选取我们关心的部分，全部文档<font color="0000dd"> [在这里]  </font>(<a target="_blank" rel="noopener" href="https://www.postgresql.org/docs/9.1/runtime-config-wal.html#GUC-SYNCHRONOUS-COMMIT">https://www.postgresql.org/docs/9.1/runtime-config-wal.html#GUC-SYNCHRONOUS-COMMIT</a>))</p>
-<blockquote>
-<p>fsync(boolean)<br>如果启用此参数，PostgreSQL服务器将调用 fsync()或等效的系统调用来确保数据被写入到磁盘。这意味着服务器集群在遇到系统故障或崩溃时，数据库可以恢复到之前的一致性状态.</p>
-</blockquote>
-<blockquote>
-<p>[snip]<br>在大多数场景，关闭非关键性事务的synchronous_commit(同步提交)可以提升 fsync 的性能，同时不会带来任何数据损坏的风险。</p>
-</blockquote>
-<p>因此，PostgreSQL 需要进行数据同步避免数据损坏。幸运的是，对于 Redis的 AOF 持久化是没有该问题的，压根就没有数据损坏的可能。来分析下一个参数，该参数与 Redis 的同步策略紧密相关，尽管名字不同：</p>
-<blockquote>
-<p>synchronous_commit(enum)<br>指定在返回”成功”之前，十五提交是否等待 WAL(wait ahead logging)记录写入磁盘。参数的可选值有 on、local、off。默认和安全值是 on， 如果参数值是 off， 客户端响应和数据写入到磁盘(保证崩溃时，数据安全)之间有一定的延迟(最大延迟时wak_writer_delay的三倍)。与 fsync 不同，将参数设置为 off，不会到处数据库不一致的风险：操作系统或数据库崩溃可能导致近期已提交的事务丢失，但是数据库的实际状态仍然保持一致，好像这些丢失事务被禁止一样。</p>
-</blockquote>
-<p>在这方面与 Redis 类似。用过 PostgreSQL的朋友或许会告诉你，想让更快，可以将 synchronous commit(同步提交)关闭。在 Redis 中一样，想要更快？那就将 appendfsync always关闭。</p>
-<p>在 PostgreSQL 中，若将 synchronous commits 关闭，则于 Redis的 appendfsync everysec 很类似，默认情况下 wal_writer_delay是 200 ms， 给出的文档建议将该时间乘以3，也即是 600 ms作为写操作的延迟时间。 600毫秒与Redis的1秒是很接近了。</p>
-<blockquote>
-<p>MySQL的InnoDB也有类似的参数，可以从文档中获知：<br>如果将 innodb_flush_log_at_trx_commit 设置为 0， 则每秒将日志缓冲的内容写入日志文件中一次并将日志写入磁盘。但是事务提交时不执行任何操作。如果设置为1(默认值)，每次提交事务时将写入日志文件并将写入磁盘。若设置为2，每次提交事务都会写入日志文件，但是不会写入磁盘。但是，此时还是会每隔一秒将数据日志文件写入磁盘，但是这里写入(flush)到磁盘并不会得到严格的保证，因为这会受到进程调度的影响。</p>
-</blockquote>
-<p><font color="0000dd"> [进一步了解] </font>(<a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/8.0/en/innodb-parameters.html#sysvar_innodb_flush_log_at_trx_commit">https://dev.mysql.com/doc/refman/8.0/en/innodb-parameters.html#sysvar_innodb_flush_log_at_trx_commit</a>)</p>
-<p>总之一句话：即使 Redis 作为内存数据库，与其他数据库相比，它也可以提供良好的持久化。</p>
-<p>从使用角度而言，Redis 提供的 AOF 和 RDB快照 两种持久化方式可以同时启用(如果拿不准，推荐这样做)，使用方便同时持久化良好。</p>
-<h2 id="Credits-可用度"><a href="#Credits-可用度" class="headerlink" title="Credits 可用度"></a>Credits 可用度</h2><p><font color="0000dd">[Didier Spezia]</font>(<a target="_blank" rel="noopener" href="https://twitter.com/didier_06)%E4%B8%BA%E8%BF%99%E7%AF%87%E6%96%87%E7%AB%A0%E6%8F%90%E4%BE%9B%E4%BA%86%E5%BE%88%E5%A4%9A%E6%9C%89%E7%94%A8%E7%9A%84%E6%83%B3%E6%B3%95%E3%80%82%E8%BF%99%E4%B8%AA%E8%AF%9D%E9%A2%98%E5%A4%AA%E5%A4%A7%E4%BA%86%EF%BC%8C%E6%88%91%E8%82%AF%E5%AE%9A%E6%BC%8F%E6%8E%89%E4%BA%86%E5%BE%88%E5%A4%9A%E4%B8%9C%E8%A5%BF%E3%80%82%E4%B8%8D%E8%BF%87%E5%BE%88%E6%84%9F%E8%B0%A2Didier">https://twitter.com/didier_06)为这篇文章提供了很多有用的想法。这个话题太大了，我肯定漏掉了很多东西。不过很感谢Didier</a> Spezia，他让这篇文章比初稿好很多。</p>
-<h2 id="附录：关于重启"><a href="#附录：关于重启" class="headerlink" title="附录：关于重启"></a>附录：关于重启</h2><p>我收到一些私信，希望在给出一些关于重启时的相关信息。Redis重启时，需要从磁盘中加载数据到内存中。在Redis 2.6 和 Redis 2.4 中 AOF 和 RDB 的持久化是存在差异的的，因此这个知识点值得补充。同时，将Redis 和 MySQL、 PostgreSQL在进行比较也很有意义。</p>
-<p>首先，需要说明为什么Redis服务器在接受用户请求之前需要将整个数据加载到内存中：严格来说，并不是因为 Redis 是一个内存数据库。可用设想，一个运行在内存，但内存和磁盘上数据的表达形式完全一致的数据库当然能够尽快地提供服务(ASAP)。</p>
-<p>真正的原因在于为不同的服务类型提供了不同的数据表现形式：在磁盘上采用紧凑的 append-only 结构，但这不适合随机访问；而在内存中，数据可用很快地获取和修改。但这要求我们将数据从磁盘加载内存时需要进行必要的转换。 Redis 依次读取磁盘上的keys(键)，然后以内存数据格式将键值关联起来。</p>
-<p>对于 RDB 文件，此过程是非常快的，原因如下：首先是 RDB 通常是更加紧凑、二进制形式的文件，有时甚至使用内存格式来编码数据(小型数据格式被编码成压缩列表或整数集合)。</p>
-<p>CPU 和 磁盘的速度差异非常大，但一般而言 Redis 的 RDB 文件的加载速度大致是 1G 数据需要 10 ~ 20 s,因此，加载数十GB的数据通常需要几分钟。</p>
-<p>在 Redis2.6 中，加载服务器刚刚重写的 AOF 文件，则每1GB数据需要耗费上述的两倍时间。如果距离上次生成 AOF 文件期间有很多写操作，那么加载时，则需要耗费更长时间(Redis 的默认是配置是在 AOF 文件是初始大小的两倍时就会自动触发AOF重写)</p>
-<p>通常而言，重新启动一个Redis实例是不需要重启的，但是在单服务器设置中，最好使用复制技术将控制权从旧实例转移到新实例，以便不中断的服务。例如，需要实际 Redis 版本时，可用将新版本的 Redis 实例成为旧版本 Redis 实例的 slave，然后让所有的客户端指向这个新版本Redis的实例，然后让这个新实例成为 master，最后关闭旧实例，如此便可以完成Redis的平滑升级。</p>
-<p>传统数据库在这方面如何呢？它们不需要把数据加载到内存…或许是吧？ 在这点上，传统数据库比 Redis 做得更好，因为 MySQL 一旦启动就可以立即服务(处理请求)。但如果数据和所以文件不在系统缓冲中，则会进行<font color="dd0000"><strong>冷启动</strong></font>(每次都是从磁盘中获取数据)。在这种情况下，数据库一旦启动就可以立即提供服务，但是速度缓慢可能无法满足应用程序的速度要求。我曾多次碰到这样的情况。</p>
-<p>冷启动实际上就是从磁盘中加载数据到内存，与 Redis 非常类似，只不过它是增量式的。</p>
-<p>总而言之：如果数据量很大，Redis 的重启则需要一点时间。基于磁盘的数据库表现很好，但是冷启动时的效果可能不就如人意。如果处于负载情况下，整个应用程序可能就会被阻塞一段时间。与之相反，Redis 一旦启动，便高速运行。</p>
-<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
-<li>Redis 设计与实现</li>
-<li>Redis作者关于Redis持久化的<font color="0000dd">[博客]</font>(<a target="_blank" rel="noopener" href="http://oldblog.antirez.com/post/">http://oldblog.antirez.com/post/</a>)</li>
-</ol>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/11/13/%E8%A7%A3%E5%AF%86Redis%E6%8C%81%E4%B9%85%E5%8C%96/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
