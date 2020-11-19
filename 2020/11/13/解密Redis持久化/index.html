@@ -31,7 +31,7 @@
 <meta property="og:image" content="https://teemo-tristana.github.io/images/AOF_%E9%9D%9E%E9%98%BB%E5%A1%9E%E9%87%8D%E5%86%99%E8%BF%87%E7%A8%8B.jpg">
 <meta property="og:image" content="https://teemo-tristana.github.io/images/AOF%E4%B8%89%E7%A7%8D%E5%86%99%E5%9B%9E%E7%AD%96%E7%95%A5.jpg">
 <meta property="article:published_time" content="2020-11-13T06:32:19.000Z">
-<meta property="article:modified_time" content="2020-11-19T02:40:28.359Z">
+<meta property="article:modified_time" content="2020-11-19T02:44:30.460Z">
 <meta property="article:author" content="Han Cheng">
 <meta property="article:tag" content="Redis">
 <meta name="twitter:card" content="summary">
@@ -201,7 +201,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-11-19 10:40:28" itemprop="dateModified" datetime="2020-11-19T10:40:28+08:00">2020-11-19</time>
+                <time title="修改时间：2020-11-19 10:44:30" itemprop="dateModified" datetime="2020-11-19T10:44:30+08:00">2020-11-19</time>
               </span>
 
           
@@ -309,7 +309,7 @@
 <p>有趣的是，在这种模式下，Redis 依然高速运行，这是有原因的。<br>一个是 fsync 是由后台线程执行的，另一个是，Redis 只进行 append-only 的写操作，这是一个很大的优势。</p>
 <p>如果数据安全性要求很高而写入操作不高，也可以使用 <font color="00dd00">&gt;<strong>fsync always</strong> </font> 模式，可以获得像其他数据库系统一样的好的持久化效果。</p>
 <p>与 PostgreSQL相比如何呢？ PostgreSQL是一款很好且非常可靠的数据库。</p>
-<p>一起来看一下 PostgreSQL 的文档(这里选取我们关心的部分，全部文档<a target="_blank" rel="noopener" href="https://www.postgresql.org/docs/9.1/runtime-config-wal.html#GUC-SYNCHRONOUS-COMMIT">在这里</a>)</p>
+<p>一起来看一下 PostgreSQL 的文档(这里选取我们关心的部分，全部文档<font color="0000dd"> [在这里]  </font>(<a target="_blank" rel="noopener" href="https://www.postgresql.org/docs/9.1/runtime-config-wal.html#GUC-SYNCHRONOUS-COMMIT">https://www.postgresql.org/docs/9.1/runtime-config-wal.html#GUC-SYNCHRONOUS-COMMIT</a>))</p>
 <blockquote>
 <p>fsync(boolean)<br>如果启用此参数，PostgreSQL服务器将调用 fsync()或等效的系统调用来确保数据被写入到磁盘。这意味着服务器集群在遇到系统故障或崩溃时，数据库可以恢复到之前的一致性状态.</p>
 </blockquote>
@@ -325,7 +325,7 @@
 <blockquote>
 <p>MySQL的InnoDB也有类似的参数，可以从文档中获知：<br>如果将 innodb_flush_log_at_trx_commit 设置为 0， 则每秒将日志缓冲的内容写入日志文件中一次并将日志写入磁盘。但是事务提交时不执行任何操作。如果设置为1(默认值)，每次提交事务时将写入日志文件并将写入磁盘。若设置为2，每次提交事务都会写入日志文件，但是不会写入磁盘。但是，此时还是会每隔一秒将数据日志文件写入磁盘，但是这里写入(flush)到磁盘并不会得到严格的保证，因为这会受到进程调度的影响。</p>
 </blockquote>
-<p><font color="0000dd">[进一步了解]</font>(<a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/8.0/en/innodb-parameters.html#sysvar_innodb_flush_log_at_trx_commit">https://dev.mysql.com/doc/refman/8.0/en/innodb-parameters.html#sysvar_innodb_flush_log_at_trx_commit</a>)</p>
+<p><font color="0000dd"> [进一步了解] </font>(<a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/8.0/en/innodb-parameters.html#sysvar_innodb_flush_log_at_trx_commit">https://dev.mysql.com/doc/refman/8.0/en/innodb-parameters.html#sysvar_innodb_flush_log_at_trx_commit</a>)</p>
 <p>总之一句话：即使 Redis 作为内存数据库，与其他数据库相比，它也可以提供良好的持久化。</p>
 <p>从使用角度而言，Redis 提供的 AOF 和 RDB快照 两种持久化方式可以同时启用(如果拿不准，推荐这样做)，使用方便同时持久化良好。</p>
 <h2 id="Credits-可用度"><a href="#Credits-可用度" class="headerlink" title="Credits 可用度"></a>Credits 可用度</h2><p><font color="0000dd">[Didier Spezia]</font>(<a target="_blank" rel="noopener" href="https://twitter.com/didier_06)%E4%B8%BA%E8%BF%99%E7%AF%87%E6%96%87%E7%AB%A0%E6%8F%90%E4%BE%9B%E4%BA%86%E5%BE%88%E5%A4%9A%E6%9C%89%E7%94%A8%E7%9A%84%E6%83%B3%E6%B3%95%E3%80%82%E8%BF%99%E4%B8%AA%E8%AF%9D%E9%A2%98%E5%A4%AA%E5%A4%A7%E4%BA%86%EF%BC%8C%E6%88%91%E8%82%AF%E5%AE%9A%E6%BC%8F%E6%8E%89%E4%BA%86%E5%BE%88%E5%A4%9A%E4%B8%9C%E8%A5%BF%E3%80%82%E4%B8%8D%E8%BF%87%E5%BE%88%E6%84%9F%E8%B0%A2Didier">https://twitter.com/didier_06)为这篇文章提供了很多有用的想法。这个话题太大了，我肯定漏掉了很多东西。不过很感谢Didier</a> Spezia，他让这篇文章比初稿好很多。</p>
