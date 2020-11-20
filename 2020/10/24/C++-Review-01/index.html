@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="C++ Review在语言层面上：面试C++程序员的时候一般都是3板斧：首先是基础问答然后就是如虚函数、虚函数表、纯虚函数、抽象类、虚函数和析构函数、虚函数和构造函数，以及拷贝构造函数、操作符重载和STL，内存管理，malloc&#x2F;free与new&#x2F;delete等问题，最后是C++11新特性比如智能指针，RAII，左值与右值等 函数指针与指针函数 指针函数: 是返回值为指针的函数  123&#x2F;&#x2F;指针函">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C++ Review 01">
+<meta property="og:url" content="http://example.com/2020/10/24/C++-Review-01/index.html">
+<meta property="og:site_name" content="Teemo-Tristana">
+<meta property="og:description" content="C++ Review在语言层面上：面试C++程序员的时候一般都是3板斧：首先是基础问答然后就是如虚函数、虚函数表、纯虚函数、抽象类、虚函数和析构函数、虚函数和构造函数，以及拷贝构造函数、操作符重载和STL，内存管理，malloc&#x2F;free与new&#x2F;delete等问题，最后是C++11新特性比如智能指针，RAII，左值与右值等 函数指针与指针函数 指针函数: 是返回值为指针的函数  123&#x2F;&#x2F;指针函">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://teemo-tristana.github.io/images/malloc-new.png">
+<meta property="article:published_time" content="2020-10-24T15:26:17.000Z">
+<meta property="article:modified_time" content="2020-11-03T01:35:46.758Z">
+<meta property="article:author" content="Han Cheng">
+<meta property="article:tag" content="C++">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://teemo-tristana.github.io/images/malloc-new.png">
+
+<link rel="canonical" href="http://example.com/2020/10/24/C++-Review-01/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>C++ Review 01 | Teemo-Tristana</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Teemo-Tristana</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">每日进步一点</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="user fa-fw"></i>关于</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/10/24/C++-Review-01/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/teemo.png">
+      <meta itemprop="name" content="Han Cheng">
+      <meta itemprop="description" content="记录平日所学">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Teemo-Tristana">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          C++ Review 01
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-10-24 23:26:17" itemprop="dateCreated datePublished" datetime="2020-10-24T23:26:17+08:00">2020-10-24</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-11-03 09:35:46" itemprop="dateModified" datetime="2020-11-03T09:35:46+08:00">2020-11-03</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="C-Review"><a href="#C-Review" class="headerlink" title="C++ Review"></a>C++ Review</h1><p>在语言层面上：面试C++程序员的时候一般都是3板斧：<br>首先是基础问答<br>然后就是如虚函数、虚函数表、纯虚函数、抽象类、虚函数和析构函数、虚函数和构造函数，以及拷贝构造函数、操作符重载和STL，内存管理，malloc/free与new/delete等问题，<br>最后是C++11新特性比如智能指针，RAII，左值与右值等</p>
+<h2 id="函数指针与指针函数"><a href="#函数指针与指针函数" class="headerlink" title="函数指针与指针函数"></a>函数指针与指针函数</h2><ul>
+<li>指针函数: 是<strong>返回值为指针</strong>的函数  <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//指针函数</span></span><br><span class="line">(<span class="keyword">int</span>*)func(<span class="keyword">int</span>,<span class="keyword">int</span>)&#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span>* <span class="title">func</span><span class="params">(<span class="keyword">int</span>)</span></span>&#123;&#125;</span><br></pre></td></tr></table></figure></li>
+<li>函数指针：是指向函数的指针,主要在<strong>回调函数</strong>时使用。  <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//函数指针</span></span><br><span class="line"><span class="keyword">int</span> (*fp) (<span class="keyword">int</span>,<span class="keyword">int</span>)&#123;&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>函数指针与其他类型指针类似，只不过指向的是函数的地址。</li>
+<li>函数明在被使用时总是由编译器把它转为函数指针。<a id="more"></a>
+<h2 id="i和i-的主要区别有两个："><a href="#i和i-的主要区别有两个：" class="headerlink" title="++i和i++的主要区别有两个："></a>++i和i++的主要区别有两个：</h2></li>
+</ul>
+</li>
+<li><ul>
+<li>i++ 返回原来的值，++i 返回加1后的值。</li>
+<li>i++ 不能作为左值，i++最后返回的是一个临时变量。而++i 可以。<h2 id="i和i-的效率哪个更高？"><a href="#i和i-的效率哪个更高？" class="headerlink" title="++i和i++的效率哪个更高？"></a>++i和i++的效率哪个更高？</h2></li>
+</ul>
+  ++i是在原地操作，效率更高；i++选哟申请临时变量，++后再赋值回去，效率低(需要申请临时空间存储临时变量)</li>
+</ul>
+<h2 id="左值和右值"><a href="#左值和右值" class="headerlink" title="左值和右值"></a><font color="#dd0000">左值和右值</font><br></h2><ul>
+<li><ul>
+<li><p>左值、右值的纯右值、将亡值、右值</p>
+<ul>
+<li>左值[lvalue:left-value]：顾名思义就是赋值符号左边的值。准确来说，左值是表达式（不一定是赋值表达式）后依然存在的持久对象</li>
+</ul>
+<ul>
+<li>右值[rvalue:right-value]: 右边的值，是指表达式结束后就不再存在的临时对象。<ul>
+<li>纯右值[prvalue:pure-rvalue]: 字面量或匿名临时对象，非引用返回的临时变量、运算表达式产生的临时变量、原始字面量、Lambda 表达式都属于纯右值。</li>
+<li>将亡值][xvalue:expiring-value]:即将被销毁、却能够被移动的值，主要用于右值引用[T&amp;&amp;]。<font color="#006600">nullptr右值引用让临时变量的生命周期得以延长</font>。</li>
+</ul>
+</li>
+<li>左值与右值的主要区别： 左值可以取地址，右值不能;也即是左值是存储在内存中，而右值不是存储在内存中。</li>
+</ul>
+</li>
+<li><p>左值是有名字的变量（对象），可以被赋值，可以在多条语句中使用。左值引用声明符号为 &amp; 。</p>
+</li>
+<li><p>右值是临时变量，没有名字，只在一条语句中出现，不能被赋值，右值声明符号为 &amp;&amp;。(左值：int &amp;a = 1，右值：int &amp;&amp;a=1)</p>
+</li>
+<li><p>凡是真正的存在内存当中，而不是寄存器当中的值就是左值，其余的都是右值。其实更通俗一点的说法就是:凡是取地址（&amp;）操作可以成功的都是左值，其余都是右值。</p>
+</li>
+<li><p><font color="#00dd00">左值[lvalue : locator value]</font><br> : 存储在内存，有明确地址的值</p>
+</li>
+<li><p><font color="#00dd00">右值[rvalue : read value]：</font><br>    提供数据的值，不一定可寻址；比如寄存器中的数据。右值又可以分为纯右值和将亡值</p>
+</li>
+<li><p>有名称的，可以获取存储地址的值即为左值，否则为右值    </p>
+</li>
+<li><p>左值引用 T&amp;   右值引用 T&amp;&amp;c)    同</p>
+</li>
+<li><p>左值引用T&amp;一样，右值引用T&amp;&amp; 创建时就必须初始化且只能使用右值进行初始化<br><font color="#dd0000"> 左右值最大的区别就是是否可以取地址，左值可以，右值不可以。</font><br></p>
+</li>
+<li><p>右值引用(T&amp;&amp;)主要是为了用于<font color="#dd0000"> 移动语义和完美转发</font><br></p>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="右值引用的意义"><a href="#右值引用的意义" class="headerlink" title="右值引用的意义"></a>右值引用的意义</h2><ul>
+<li><p>右值引用的引入用来解决 C++ 中历史遗留问题，消除注入std::vector,std::string之类的额外开销。也使得 std::function()成为可能。</p>
+<ul>
+<li><p>右值主要用于 移动语义 和 完美转发 </p>
+</li>
+<li><p><font color="#660066">为临时变量延长生命周期</font><br> 。因为右值在表达式结束后就消亡了，如果想继续使用右值，那就会动用（昂贵的）拷贝构造函数。</p>
+</li>
+<li><p><font color="#00dd00">移动语义</font><br>：将资源从一个对象转移到一个对象，避免不必要的拷贝，主要是将所有权转出去，避免申请空间和数据复制来提高效率。</p>
+<ul>
+<li>传统C++ 通过拷贝构造函数和赋值操作符为类对象设计了拷贝/复制的概念，但为了实现对资源的移动操作，调用者必须使用先复制、再析构的方式。</li>
+<li>右值引用可以消除两个对象交互时的不必要的对象拷贝，节省运算存储资源，提高效率。</li>
+<li>右值引用是用来支持转移语义的。转移语义可以将资源（堆，系统对象等）从一个对象转移到另一个对象，这样能够减少不必要的临时对象的创建、拷贝和销毁，能够大幅度提高C++应用程序的性能。</li>
+</ul>
+</li>
+<li><p><font color="#00dd00">完美转发</font>：函数模板可以将自己的参数 完美 的转发其内部调用的函数</p>
+<ul>
+<li>。所谓完美转发，就是为了让我们在传递参数的时候，保持原来的参数类型（<font color="#00dd00">左引用保持左引用，右引用保持右引用</font>）。一般使 std::forward()来进行参数的转发(传递)</li>
+<li>完美的意思是 <strong>不仅准确的转发参数的值，而且还能保证转发参数的左、右值属于不变</strong>。</li>
+</ul>
+<ul>
+<li>内部调用时使用模板函数 forward()，forward()函数用于转发，依赖于类型T<ul>
+<li>std::forward() 和 std::move() 一样，没有做任何事情<ul>
+<li>std::move()单纯地将左值转为右值</li>
+<li>std::forward()也只是单纯地将参数做了一个类型转换，从效果上来看： std::forward<T>(v) 和 static_cast&lt;T&amp;&amp;&gt;(v) 完全一样。</T></li>
+</ul>
+</li>
+<li>std::forward()包含两个重载，内部调用static_cast。<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// std::forward 实现</span></span><br><span class="line"><span class="comment">// std::remove_reference 的功能是消除类型中的引用</span></span><br><span class="line"><span class="comment">//std::is_lvalue_reference用于检查类型推导是否正确</span></span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> _Tp&gt;</span><br><span class="line"><span class="function"><span class="keyword">constexpr</span> _Tp&amp;&amp; <span class="title">forward</span><span class="params">(<span class="keyword">typename</span> <span class="built_in">std</span>::remove_referece&lt;_Tp&gt;::type&amp; <span class="keyword">__t</span>)</span> nonexcept</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">static_cast</span>&lt;T&amp;&amp;&gt;(<span class="keyword">__t</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> _Tp&gt;</span><br><span class="line"><span class="function"><span class="keyword">constexpr</span> _Tp&amp;&amp; <span class="title">forward</span><span class="params">(<span class="keyword">typename</span> <span class="built_in">std</span>::remove_referece&lt;_Tp&gt;::type&amp; <span class="keyword">__t</span>)</span> nonexcept</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">   <span class="comment">// ，在std::forward 的第二个实现中检查了接收到的值确实是一个左值，进而体现了坍缩规则</span></span><br><span class="line">    <span class="keyword">static_assert</span>(!<span class="built_in">std</span>::is_lvalue_reference&lt;_Tp&gt;::value, <span class="string">&quot;template argument substituting _Tp is an lvalue reference type&quot;</span>));</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">static_cast</span>&lt;T&amp;&amp;&gt;(<span class="keyword">__t</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><font color="#660066">std::move() </font><br>C++11引入的， std::move()可以将左值参数无条件的转为右值，std::move()实际上是   static_cast&lt;T&amp;&amp;&gt;()的简单封装。std::move()并不会move，只是做了类型转化而已，左值的移动操作时在移动构造或移动赋值完成的。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// move的内部实现</span></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="keyword">typename</span> remove_reference&lt;T&gt;::<span class="function">type&amp;&amp; <span class="title">move</span><span class="params">(T&amp;&amp; t)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"><span class="keyword">return</span> <span class="keyword">static_cast</span>&lt;<span class="keyword">typename</span> remove_reference&lt;T&gt;::type&amp;&amp;&gt;(t);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="emplace-back-和push-back-区别"><a href="#emplace-back-和push-back-区别" class="headerlink" title="emplace_back()和push_back()区别"></a>emplace_back()和push_back()区别</h2><ul>
+<li><ul>
+<li>emplace_back()和push_back()都是在容器尾部添加元素是操作，但是它们的效率是不同的。</li>
+<li>在c++11引入右值引用之前，push_back() 是先调用构造函数创建一个临时对象，然后调用拷贝构造函数将临时对象拷贝到容器中，最后释放临时对象，有一个申请空间，拷贝，和释放空间的过程, 导致临时变量申请资源的浪费。 </li>
+<li>在引入右值引用之后，则是创建临时对象，然后使用移动构造函数，将里临时对象加入对象。从而避免了一次拷贝过程和开辟空间的消耗，在原来的基础上提高效率</li>
+<li>emplace_back()则是在这基础上，进一步改进，直接在容器中就地构造，没有赋值和移动操作，进一步提高效率。</li>
+</ul>
+</li>
+</ul>
+<h2 id="C-中struct与class区别"><a href="#C-中struct与class区别" class="headerlink" title="C++中struct与class区别:"></a>C++中struct与class区别:</h2><ul>
+<li><ul>
+<li>在c中，struct主要是正对数据结构，是面向对象的设计，struct中不能包含函数。</li>
+<li>c++中，struct得到很大的扩充，作用几乎和class类似</li>
+<li>struct可以包含成员函数</li>
+<li>struct可以实现继承</li>
+<li>struct可以实现多态</li>
+<li>在c++中strcut和class的区别:<ul>
+<li>class关键字可用于定于模板参数，类似typename。struct不能。    </li>
+<li>默认权限不同，struct默认是public，class默认是private。哪种继承取决于子类而不是基类，也就是说struct可以继承class，class也可以继承struct<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">A</span>&#123;</span>&#125;;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">B</span>:</span>A&#123;&#125; <span class="comment">//private 继承</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">C</span>:</span>B&#123;&#125; <span class="comment">//public 继承</span></span><br></pre></td></tr></table></figure>
+
+
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="C-和C相比的最大特点："><a href="#C-和C相比的最大特点：" class="headerlink" title="C++和C相比的最大特点："></a>C++和C相比的最大特点：</h2><ul>
+<li><ul>
+<li>面向对象，主要特点有<font color="#dd0000"> 封装、继承、多态</font><br>  </li>
+<li>引入了引用替代指针</li>
+<li>const/inline/template替代宏常量</li>
+<li>namespace解决重名问题<ul>
+<li>名字空间是用来划分冲突域的，把全局名字空间划分成几个小的名字空间。全局函数，全局变量，以及类的名字是在同一个全局名字空间中，有时为了防止命名冲突，会把这些名字放到不同的名字空间中去。</li>
+</ul>
+</li>
+<li>STL提供高效的数据结构和算法<h2 id="C-面向对象的三大特性："><a href="#C-面向对象的三大特性：" class="headerlink" title="C++面向对象的三大特性："></a>C++面向对象的三大特性：</h2></li>
+</ul>
+</li>
+<li><ul>
+<li><font color="#dd0000"> 封装</font><br>  : 将代码模块化，将其封装起来，对外隐藏，解决可扩展性。</li>
+<li><font color="#dd0000"> 继承</font><br>  ：子类继承父类，实现了代码的可重用,继承的本质是<font color="#00dd00"> <strong>抽象</strong></font><br></li>
+<li><font color="#dd0000"> 多态</font><br>  ：一种接口，多种形态，虚函数是多态的重要实现方式。<ul>
+<li>作用： 一种接口，多种方法[<em>不同对象对同一行为会有不同的状态,实现接口重用</em>]</li>
+</ul>
+<ul>
+<li>实现形式： 静态多态 和 动态多态<ul>
+<li>静态多态： 通过 函数重载 和 函数模板  来实现<ul>
+<li>同一函数，其参数的个数，顺序，类型不同来实现重载</li>
+<li>在编译时就已经确定对象的行为，又称为静态绑定。</li>
+</ul>
+</li>
+<li>动态多态：是面向对象的一大特色，通过继承方式使得程序在运行时才确定相应的调用函数，又称为动态绑定。通过 虚函数 来实现,在运行时确定具体调用那个函数。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="虚函数及纯虚函数的理解"><a href="#虚函数及纯虚函数的理解" class="headerlink" title="虚函数及纯虚函数的理解"></a><font color="#dd0000">虚函数及纯虚函数的理解</font><br></h2><ul>
+<li><ul>
+<li><p>虚函数: 只有成员函数可以为虚函数，在成员函数前面加上关键字 <em>virtual</em></p>
+<ul>
+<li>虚函数作用： 实现多态</li>
+</ul>
+<ul>
+<li><font color="#00dd00">实现原理</font><br>:虚函数表（vtable）+ 虚表指针(vptr)<ul>
+<li><font color="#660066">虚表指针指</font><br> 向一个由虚函数的地址构成的一个数组（指针数组），含有虚函数的类有一个虚函数表，每个类对象由一个虚表指针，指向虚函数表</li>
+<li><font color="#660066"> 虚函数表</font><br>是存放着类中所有虚函数对象的函数指针的表，虚函数表类似一个数组，存储的是虚函数的地址，也即是虚函数的原始是指向类成员函数的指针。虚函数表的实现是编译器来实现的，编译器不同，可能实现方式不同</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><font color="#dd0000">虚函数表是属于类</font><br>,该类的所有对象共享这个虚函数表 </p>
+</li>
+<li><p>纯虚函数</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//纯虚函数的形式:</span></span><br><span class="line"><span class="function"><span class="keyword">virtual</span> <span class="keyword">bool</span> <span class="title">function</span><span class="params">()</span> </span>= <span class="number">0</span>;</span><br></pre></td></tr></table></figure></li>
+<li><p>纯虚函数就是定义了一个虚函数但是没有实现，且在原型后面加了”=0”,<strong>含纯虚函数的类是抽象类</strong>，<br><font color="#00dddd">抽象类不能实例化对象，但是可以右指针和引用对象。</font><br> </p>
+</li>
+<li><p><font color="#dd0000">构造函数可以是虚函数吗？</font><br> </p>
+<ul>
+<li>不可以，原因如下：</li>
+<li>构造一个对象的时候，必须知道对象的实际类型，而虚函数是在运行期间确定实际类型的。但在构造一个对象时，由于对象还未构造成功，编译器无法知道对象的实际类型，比如是该类本身还是派生类，因为无法确定。</li>
+<li>虚函数的执行依赖于虚函数表，而虚函数表在构造函数中进行初始化，也即是初始化 虚函数指针vptr,让它指向虚函数表。但在构造对象期间，虚函数还没有被初始化。</li>
+</ul>
+</li>
+<li><p><font color="#dd0000">构造函数/析构函数中可以调用虚函数吗？</font><br> </p>
+<ul>
+<li>从语法上来讲，这样调用是可以的。</li>
+<li>但是从效果上来看，往往达不到需要的效果[<em>可以，但是没有意义，没有实现动态绑定的效果</em>]</li>
+</ul>
+</li>
+<li><p>正如 effective C++ 条款09 所讲： 绝对不要在构造函数或析构函数中调用虚函数。</p>
+</li>
+<li><p>在继承体系中，构造的顺序 :基类构造函数 –&gt;对象成员构造函数-&gt;派生类的构造函数析构的顺序刚好相反父类先于子类被构造，当父类的构造函数被调用时，子类还没有形成，此时子类对于编译器而是是不存在，所以调用的仍然是父类本身的虚函数。因为派生类对象构造期间进入基类的构造函数时，对象的类型变成了基类对象，而不是派生类对象，同样，进入基类析构函数时，对象也是基类类型。   </p>
+</li>
+<li><p><font color="#006666">虚继承和虚基类</font><br> </p>
+<ul>
+<li><font color="#006600">虚继承</font><br>是为了<font color="#006666">解决多重继承出现菱形继承的问题</font><br>比如A是一个基类，B，C分别继承了A,D类多重继承B，C类， 则D中会出现两份A类数据。在进程时，通过在继承关系前加上 virtual 关键字即可实现虚继承。</li>
+<li><font color="#006600">虚虚基类</font><br>是用 virtual关键字声明继承的父类，即该基类在多条链路上被一个子类继承，但是该子类中只含一份该虚基类的数据。<font color="#006666">用来解决继承中的二义性问题</font><br> 。在同一层次中同时包含虚基类和非虚基类，那么先调用虚基类的构造函数，在调用非虚基类的构造函数，最后调用派生类的构造函数，析构则相反; 对于多个虚基类，则构造函数执行顺序从左到右。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="const与-define区别"><a href="#const与-define区别" class="headerlink" title="const与 #define区别"></a>const与 #define区别</h2><ul>
+<li><ul>
+<li>编译器处理阶段不同<ul>
+<li>#define是宏定义，在预处理阶段就进行文本替换。</li>
+<li>const定义的是只读常量，在编译阶段处理。</li>
+</ul>
+</li>
+<li>类型安全检查不同<ul>
+<li>define是宏定义，不会进行类型检查，只是简单的文本替换。</li>
+<li>const定义的是常量，在编译阶段会进行类型检查。</li>
+</ul>
+</li>
+<li>存储方式不同<ul>
+<li>#define 不分配内存，而是在替换是对变量分配内存，因而在内存中可能存在多份拷贝。</li>
+<li>const常量在内存分配内存，存储在静态变量区，只存在一份拷贝。</li>
+</ul>
+</li>
+<li>能否调试<ul>
+<li>#define 定义的常量不能调试。</li>
+<li>const 定义的常量是可调试的。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="C-11的特性"><a href="#C-11的特性" class="headerlink" title="C++11的特性"></a>C++11的特性</h2><ul>
+<li><ul>
+<li><p><font color="#006666">nullptr</font><br>:<br>  新引入的空指针，<strong>NULL本质是一个宏定义，本质是0,可能会导致二义性</strong></p>
+  <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">ifndef</span> NULL</span></span><br><span class="line">    <span class="meta">#<span class="meta-keyword">ifdef</span> __cplusplus</span></span><br><span class="line">        <span class="meta">#<span class="meta-keyword">define</span> NULL 0</span></span><br><span class="line">    <span class="meta">#<span class="meta-keyword">else</span> </span></span><br><span class="line">        <span class="meta">#<span class="meta-keyword">define</span> NULL(void*) 0</span></span><br><span class="line">    <span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//出现二义性的情况:</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Fa</span><span class="params">(<span class="keyword">char</span>* p)</span></span>&#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Fa</span><span class="params">(<span class="keyword">int</span> n)</span></span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    Fa(<span class="literal">NULL</span>); <span class="comment">//这个时候就出现了二义性，到底调用which one？</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>  为解决该问题，C++11引入了<font color="#006600">nullptr</font>关键字，专门用来区分指针和0。nullptr能够饮食地转换为任何指针或成员类型。</p>
+</li>
+<li><p><font color="#006666">类型推导auto 和 decltype </font><br>:</p>
+<ul>
+<li>auto:<ul>
+<li>auto 一般用于<strong>变量类型</strong>，auto使用时就必须初始化，在使用迭代器的时候比较方便</li>
+<li>auto类型推导的显著例子：就是迭代器<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">std</span>::<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;::const_iterator it = nums.begin(); <span class="comment">//传统方法</span></span><br><span class="line"><span class="keyword">auto</span> it = nums.begin(); <span class="comment">// C++11起，使用 auto 关键字进行类型推导</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<ul>
+<li>auto 不能用于的地方：<ol>
+<li>auto 不能用于函数传参<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">add</span><span class="params">(<span class="keyword">auto</span> x)</span></span>; <span class="comment">//将无法通过编译</span></span><br></pre></td></tr></table></figure></li>
+<li>auto 不能用于推导数组类型<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">auto</span> arr[<span class="number">2</span>] = &#123; arr&#125; ; <span class="comment">// 错误， 无法推导数组元素类型</span></span><br></pre></td></tr></table></figure></li>
+</ol>
+</li>
+</ul>
+</li>
+<li>decltype:<ul>
+<li>decltype是为了解决 auto 关键字只能对变量进行类型推导的缺陷而出现的，用法与 typeof 类似<ul>
+<li>decltype用于<strong>表达式类型推导</strong>：在<font color="#6600dd">编译期间</font>完成类型推导，只进行类型推导，不会实际执行表达式。</li>
+<li>decltype(表达式)<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">auto</span> x = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">auto</span> y = <span class="number">2</span>;</span><br><span class="line"><span class="keyword">decltype</span>(x + y) z;</span><br><span class="line"><span class="comment">// std::is_same&lt;T, U&gt; 用于判断T 和U 这两个类型是否相等。</span></span><br><span class="line"><span class="keyword">if</span> (<span class="built_in">std</span>::is_same&lt;<span class="keyword">decltype</span>(x), <span class="keyword">int</span>&gt;::value)</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">&quot;type x == int&quot;</span> &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line"><span class="keyword">if</span> (<span class="built_in">std</span>::is_same&lt;<span class="keyword">decltype</span>(x), <span class="keyword">float</span>&gt;::value)</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">&quot;type x == float&quot;</span> &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line"><span class="keyword">if</span> (<span class="built_in">std</span>::is_same&lt;<span class="keyword">decltype</span>(x), <span class="keyword">decltype</span>(z)&gt;::value)</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">&quot;type x == type z&quot;</span> &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;  </span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><font color="#dd0000">尾返回类型推导 </font></p>
+<ul>
+<li>为了解决在运行后才能知道类型的问题，C++11引入了 尾返回类型推导[trailing-return-type],<font color="#006600">利用 auto 关键字将返回类型后置 </font><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//  C++11 </span></span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T, <span class="keyword">typename</span> U&gt;</span><br><span class="line">auto add(T x, U y) -&gt; decltype(x+y)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">return</span> x + y;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>C++14中可以直接让普通函数具备返回值推导，因此尾返回类型更加简单<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T, <span class="keyword">typename</span> U&gt;</span><br><span class="line"><span class="function"><span class="keyword">auto</span> <span class="title">add</span> <span class="params">(T x, U y)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> x + y;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p>c++11中引入了右值和右值引用和右值的应用::</p>
+</li>
+<li><p>基于范围的for循环</p>
+</li>
+<li><p>模板：C++的模板一直是这门语言的一种特殊的艺术。</p>
+<ul>
+<li><font color="#dd00ff">模板的哲学在于将一切<font color="#dd0000">能够在编译期处理的问题丢到编译期进行处理 </font>，仅在运行时处理那些核心的动态服务，进而大幅优化运行期的性能。 </font></li>
+<li>外部模板： 传统C++中，模板只有在使用时才会被编译期实例化<ul>
+<li>每个编译单元(文件)中编译的代码中遇到被完整定义的模板时，都会实例化，这就可能会产生重复实例化而导致编译时间增加。同时，我们没有办法通知编译器不要触发模板的实例化。</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p>外部模板：为了解决该问题，C++11中引入了 外部模板， 扩充了原来的强制编译器在特定位置实例化模板的语法，使我们能够显示的通知编译器何时进行模板的实例化。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> <span class="class"><span class="keyword">class</span> <span class="title">std</span>:</span>:<span class="built_in">vector</span>&lt;<span class="keyword">bool</span>&gt; ;<span class="comment">//强行实例化</span></span><br><span class="line"><span class="keyword">extern</span> <span class="keyword">template</span> <span class="class"><span class="keyword">class</span> <span class="title">std</span>:</span>:<span class="built_in">vector</span>&lt;<span class="keyword">double</span>&gt; ; <span class="comment">// 不在该当前编译文件中实例化模板</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>尖括号 ‘&gt;’:</p>
+<ul>
+<li>在传统C++编译器中， &gt;&gt; 一律被当作右移运算符进行处理</li>
+<li>在 C++11 中， 连续的右尖括号变得合法</li>
+</ul>
+</li>
+<li><p><font color="#dd0000">类型别名模板</font></p>
+<ul>
+<li>模板与类型：<font color="#00dd00">模板是用来产生类型的</font><ul>
+<li>在传统C++ 中，typedef 可以为类型定义一个新的名称，但是却没有办法为模板定义一个新的名称。因为，模板不是类型</li>
+</ul>
+<ul>
+<li>C++11 中引入了 using， 可以支持为 模板定义新的名称 同是支持传统 typedef的功能。<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// typedef 传统方法</span></span><br><span class="line"><span class="keyword">typedef</span> (*process)(<span class="keyword">void</span>*) newprocess;</span><br><span class="line"></span><br><span class="line"><span class="comment">// C++11 的 using</span></span><br><span class="line"><span class="keyword">using</span> newprocess = (*procss)(<span class="keyword">void</span>*)</span><br><span class="line"></span><br><span class="line"><span class="comment">// C++11 的 using 为模板定义别名</span></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="keyword">using</span> TrueDarkMagic = MagicType&lt;<span class="built_in">std</span>::<span class="built_in">vector</span>&lt;T&gt;, <span class="built_in">std</span>::<span class="built_in">string</span>&gt;;</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>默认模板参数：</p>
+  <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T, <span class="keyword">typename</span> U&gt;</span><br><span class="line">auto add (T x, U y) -&gt; decltype(x+y)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">return</span> x + y;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>使用上述函数时，每次调用都需要指定模板参数的类型</li>
+<li>C++11中提供了一种便利：可以指定模板的默认参数<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T = <span class="keyword">int</span>, <span class="keyword">typename</span> U = <span class="keyword">int</span>&gt;</span><br><span class="line"><span class="keyword">auto</span> add (T x, U y) -&gt; <span class="keyword">decltype</span>(x + y)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">return</span> x + y;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>变长参数模板</p>
+<ul>
+<li><p>模板一直是C++ 所独有的黑魔法[Dark-Magic]之一。在C++11 之前，无论是类模板还是函数模板，都只能按其指定的样子，接受一组固定数量的模板参数；而C++11 加入了新的表示方法，允许任意个数、任意类别的模板参数，同时也不需要在定义时将参数的个数固定</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span>... Ts&gt; <span class="class"><span class="keyword">class</span> <span class="title">Magic</span></span></span><br><span class="line"><span class="class"></span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Magic</span>&lt;</span><span class="keyword">int</span>, <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;, <span class="built_in">std</span>::<span class="built_in">map</span>&lt;<span class="built_in">std</span>::<span class="built_in">string</span>, <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&gt;&gt; darkMagic;</span><br></pre></td></tr></table></figure></li>
+<li><p>变长参数模板也能被直接调整到到模板函数上。<font color="#00dd00">传统C 中的printf 函数，虽然也能达成不定个数的形参的调用，但其并非类别安全</font></p>
+</li>
+<li><p>除了在模板参数中能使用 <font color="#00dd00">…</font> 表示不定长模板参数外，函数参数也使用同样的表示法代表不定长参数</p>
+</li>
+</ul>
+<ul>
+<li><p>变长的模板参数 解包</p>
+<ul>
+<li>使用 <font color="#00dd00">sizeof</font>来计算参数的个数<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span>... Ts&gt;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">magic</span><span class="params">(Ts... args)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="keyword">sizeof</span>...(args) &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">magic(); <span class="comment">// 输出 0</span></span><br><span class="line">magic(<span class="number">1</span>); <span class="comment">// 输出 1</span></span><br><span class="line">magic(<span class="number">1</span>, <span class="string">&quot;&quot;</span>); <span class="comment">// 输出 2</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<ul>
+<li><p>模板参数解包：</p>
+<ol>
+<li><p>递归模板函数：不断递归地向函数传递模板参数，进而达到递归遍历所有模板参数的目的</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 使用递归对参数解包</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T0&gt;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">printf1</span><span class="params">(T0 value)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; value &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T, <span class="keyword">typename</span>... Ts&gt;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">printf1</span><span class="params">(T value, Ts... args)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; value &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">    printf1(args...);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    printf1(<span class="number">1</span>, <span class="number">2</span>, <span class="string">&quot;123&quot;</span>, <span class="number">1.1</span> );</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>变参模板展开：C++17中增加了 变参模板展开 </p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// C++17中，可以在一个printf中完成</span></span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T0, <span class="keyword">typename</span>... T&gt;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">printf2</span><span class="params">(T0, t0, T... t)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; t0 &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>; </span><br><span class="line">    <span class="function"><span class="keyword">if</span> <span class="title">constexpr</span> <span class="params">(<span class="keyword">sizeof</span>... (t) &gt; <span class="number">0</span>)</span></span></span><br><span class="line"><span class="function">        <span class="title">printf2</span><span class="params">(t...)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>强类型枚举：</p>
+<ul>
+<li>传统的C++中，枚举类型并非类型安全，枚举类型会被视为整数，不同枚举类型可以进行直接比较，<font color="#006666">甚至同一命名空间中的不同枚举类型的枚举名字不能相同</font></li>
+</ul>
+<ul>
+<li>为此，C++11中引入了枚举类(enumeration class)<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">enum</span> <span class="keyword">class</span> <span class="title">test</span>:</span> <span class="keyword">unsigned</span> <span class="keyword">int</span>&#123;</span><br><span class="line">    v1,</span><br><span class="line">    v2,</span><br><span class="line">    v3 = <span class="number">100</span>,</span><br><span class="line">    v4 = <span class="number">100</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (test::value3 == test::value4) &#123;</span><br><span class="line"><span class="comment">// 会输出</span></span><br><span class="line"><span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">&quot;new_enum::value3 == new_enum::value4&quot;</span> &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//在这个语法中，枚举类型后面使用了冒号及类型关键字来指定枚举中枚举值的类型，这使得我们能够为枚举赋值（未指定时将默认使用int）。</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p>explicit : 修饰构造函数， 防止由构造函数定义的隐式转换。</p>
+</li>
+<li><p>const 和 constexpr</p>
+<ul>
+<li>两者都表示可读，const表明read-only  constexptr才是真正的常量，在编译期就计算出来，整个运行期间不可改变。</li>
+<li>const修饰的是类型，constexpr修饰的是用来算出值的那段代码。</li>
+</ul>
+</li>
+<li><p>final 和 overrid关键字：</p>
+<ul>
+<li>final用于修饰一个类 表示禁止该类禁止被派生和虚函数进一步重载</li>
+<li>override修饰成员函数，用于重写基类函数，若声明为override，但是对父类没有该虚函数或重新，编译器报错,<strong>override 可以避免开发者在重写基类函数时无意产生错误。</strong></li>
+</ul>
+</li>
+<li><p><font color="#660000">Lambda表达式</font></p>
+<ul>
+<li><p>Lambda表达式实际上就是提供了一个 类似匿名函数 的特性；匿名函数则是在需要一个函数时，不为函数命名而直接能使用的函数。</p>
+</li>
+<li><p>Lamdbad 表达式的基本语法：</p>
+  <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[捕获列表](参数列表) <span class="keyword">mutable</span>(可选) 异常属性 -&gt; 返回类型 &#123;</span><br><span class="line">    <span class="comment">// 函数体</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>捕获列表： 可认为时一个种类型， lambda表达式内部函数体在默认情况下是不能使用函数体外的遍历，此时，<font color="#006600">捕获列表可以起到传递外部数据的数据</font>的作用。<ul>
+<li>值捕获 ： 与值传递类似，值捕获的前提是值是可拷贝的，不同的是<font color="#dd6600">被捕获的变量在lambda表达式被创建时时拷贝，而非调用时才拷贝</font>。</li>
+<li>引用捕获： 与引用传递类似，引用捕获保存的是引用，值发生变化。</li>
+<li>隐式捕获：在捕获列表种写入一个 &amp; 或 = 向编译器声明采用的是 引用捕获或值捕获 <font color="#006600">[&amp;]</font>引用捕获，让编译器自行推导捕获列表 <font color="#006600">[=]</font>值捕获， 让编译器执行推导引用列表</li>
+<li>表达式捕获</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>泛型Lambda ：</p>
+<ul>
+<li>C++11中参数表不能够泛化，必须明确参数表类型，但是在C++14 中， Lambda函数的形参可以使用 auto 关键字来产生意义上的泛型<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">auto</span> add = [](<span class="keyword">auto</span> x, <span class="keyword">auto</span> y)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">return</span> x + y;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">add(<span class="number">1</span>, <span class="number">2</span>);</span><br><span class="line">add(<span class="number">1.1</span>, <span class="number">1.2</span>);</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>函数对象包装器</p>
+<ul>
+<li>std::function(): C++11 中引入 std::function(), &lt;font color=”#66dd00” std::function()是一种通用、多态的函数封装 。可以对调用的任何目标实体进行存储、复制、和调用操作。<ul>
+<li>它也是对C++ 中现有的可调用实体的一种类型安全的包裹（相对来说，函数指针的调用不是类型安全的），也即是  &lt;font color=”#66dd00” std::functoin()是函数的容器<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">    <span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;functional&gt;</span></span></span><br><span class="line">    <span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">foo</span><span class="params">(<span class="keyword">int</span> para)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> para;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">// std::function 包装了一个返回值为int, 参数为int 的函数</span></span><br><span class="line">        <span class="built_in">std</span>::function&lt;<span class="keyword">int</span>(<span class="keyword">int</span>)&gt; func = foo;</span><br><span class="line">        <span class="keyword">int</span> important = <span class="number">10</span>;</span><br><span class="line">        <span class="built_in">std</span>::function&lt;<span class="keyword">int</span>(<span class="keyword">int</span>)&gt; func2 = [&amp;](<span class="keyword">int</span> value) -&gt; <span class="keyword">int</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>+value+important;</span><br><span class="line">        &#125;;</span><br><span class="line">        <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; func(<span class="number">10</span>) &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">        <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; func2(<span class="number">10</span>) &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    ````</span><br><span class="line">- <span class="built_in">std</span>::bind() 和 <span class="built_in">std</span>::placeholder()</span><br><span class="line">    - <span class="built_in">std</span>::bind()是用来绑定函数调用的参数，主要解决：有时候可能不一定能够一次性获得调用的某个函数的全部参数， 通过该函数，可以部分调用参数提前绑定待函数身上成为一个新对象，待参数齐全后，完成调用。</span><br><span class="line">    ```C++</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">foo</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b, <span class="keyword">int</span> c)</span> </span>&#123;</span><br><span class="line">        ;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 将参数1,2 绑定到函数foo 上，但是使用std::placeholders::_1 来对第一个参数进行占位</span></span><br><span class="line">        <span class="keyword">auto</span> bindFoo = <span class="built_in">std</span>::bind(foo, <span class="built_in">std</span>::placeholders::_1, <span class="number">1</span>,<span class="number">2</span>);</span><br><span class="line">        <span class="comment">// 这时调用bindFoo 时，只需要提供第一个参数即可</span></span><br><span class="line">        bindFoo(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="RAII-Resource-Acquisition-Is-Initialization-资源获取即初始化"><a href="#RAII-Resource-Acquisition-Is-Initialization-资源获取即初始化" class="headerlink" title="RAII(Resource Acquisition Is Initialization)资源获取即初始化"></a><font color="#006666">RAII(Resource Acquisition Is Initialization)资源获取即初始化</font><br></h2><ul>
+<li><ul>
+<li><strong>RAII是一种利用对象生命周期来控制程序资源</strong>（如内存、网络连接等）的技术。<ul>
+<li>用法：在对象构造时获取资源，使用资源，在对象析构时释放资源，因此，把管理资源的认为交给了一个对象。应用比如智能指针。    </li>
+<li>好处：<strong>不需要显示的释放资源，在对象所需的资源在其生命周期内始终保持有效.</strong></li>
+</ul>
+</li>
+<li><font color="#006666">RAII的本质是用对象代表资源，把管理资源的认为交给对象</font>,把资源的申请和释放与对象的构造和析构对应起来，从而确保在对象的生命周期内资源始终有效，在对象销毁时资源被释放，避免内存泄漏等情况的发生。也即使对现在，资源在，对象消失，资源释放。<h2 id="智能指针"><a href="#智能指针" class="headerlink" title="智能指针"></a><font color="#006666">智能指针</font><br></h2></li>
+</ul>
+</li>
+<li><ul>
+<li><p>普通指针容易造成<em>内存泄漏，二次释放</em>等问题。程序发生异常时内存泄漏等问题，使用智能指针可用很好的管理内存，避免内存泄漏。</p>
+</li>
+<li><p><strong>智能指针(smart pointer)是模板类，是行为类似指针的类对象</strong>，用于生存期控制，能够确保自动正确的销毁动态分配的对象，防止内存泄露（利用自动调用类的析构函数来释放内存）。它是C++ RAII的一种应用。它可以使用使用引用计数(shared_ptr)和所有权模式(unique_ptr)两种方式。</p>
+</li>
+<li><p><font color="#00dd00">shared_ptr</font><br>:std::shared_ptr 是一种基于引用计数的智能指针，它能够记录多少个shared_ptr 共同指向一个对象，并维护一个共享的引用计数器。基于引用计数的智能指针类将一个计数器与类指向的对象相关联，引用计数跟踪该类有多少个对象共享同一指针。每次创建类的新对象时，初始化指针并将引用计数置为1；当对象作为另一对象的副本而创建时，拷贝构造函数拷贝指针并增加与之相应的引用计数；对一个对象进行赋值时，赋值操作符减少左操作数所指对象的引用计数（如果引用计数为减至0，则删除对象），并增加右操作数所指对象的引用计数；调用析构函数时，构造函数减少引用计数（如果引用计数减至0，则删除基础对象），通常与 std::make_shared 配合使用</p>
+</li>
+<li><p><font color="#00dd00">weak_ptr</font><br>:shared_ptr有一个问题即循环引用问题，若存在循环引用，会导致shared_ptr的引用计数不能变为0，从而不能释放资源。为了解决该问题，就引入了weak_ptr,weak_ptr是一种弱引用，用于配合shared_ptr的使用，弱引用不会引起引用计数的增加且并不影响对象的生命周期，也即是weak_ptr存在与否不影响对引用计数。</p>
+</li>
+<li><p><font color="#00dd00">unique_ptr</font><br>:是一种独占的智能指针，基于所有权模式，任意时刻只能有一个拥有者，不支持拷贝构造和赋值， 但是<font color="#66dd00">可以利用 std::move() 将其转移给其他 unique_ptr</font>。</p>
+<ul>
+<li>C++14 中引入了 std::make_unique(),来创建 unique_ptr 指针</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="C-的this指针"><a href="#C-的this指针" class="headerlink" title="C++的this指针"></a>C++的this指针</h2><ul>
+<li><ul>
+<li>this指针是类指针</li>
+<li>this指针是一个隐士的指针，作为普通成员函数的参数，由编译器来完成</li>
+<li>this指针的存储位置可能在栈，寄存器中，具体与编译器实现有关</li>
+<li>this指针只能在普通成员函数中使用，在全局函数，静态函数中不能使用</li>
+<li>this指针只有在成员函数中才有定义，不能通过对象来使用this指针，无法直接知道一个this指针的位置，但是可以在成员函数中指定this指针的位置。<h2 id="C-的类型转换"><a href="#C-的类型转换" class="headerlink" title="C++的类型转换"></a>C++的类型转换</h2></li>
+</ul>
+</li>
+<li><ul>
+<li>static_cast： <ul>
+<li>静态类型转换[编译时转换]</li>
+<li>用于各种类型的转换，</li>
+<li>在编译时完成</li>
+</ul>
+</li>
+<li>dynamic_cast<ul>
+<li>用于动态类型转换</li>
+<li>只能用于含有虚函数的类，用于类层次的向和向下转换，</li>
+<li>失败返回NULL</li>
+</ul>
+</li>
+<li>const_cast： <ul>
+<li>用于将const变量转为非const【去除常量属性】    </li>
+</ul>
+</li>
+<li>reinterupt_cast：几乎什么都可以转，比如int转为指针，但可能会出问题</li>
+<li><strong>为什么不用C的强制类型转换？</strong><ul>
+<li>C的强制类型转换看起来很强大，什么都可以转，但是转化不明确，不进行错误检查，容易出错。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="new、operator-new-和-placement-new的区别"><a href="#new、operator-new-和-placement-new的区别" class="headerlink" title="new、operator new 和 placement new的区别"></a><font color="#dd0000">new、operator new 和 placement new的区别</font><br></h2><ul>
+<li><p>  new operator: 不能被重载，</p>
+<pre><code>  + new的执行过程如下：
+      - 调用operator new 分配内存
+      - 调用并执行构造函数
+      - 返回相应类型的指针
+  + delete过程 ：
+      - 调用析构函数 
+      - 调用operator delete,释放空间</code></pre>
+  <!--more-->
+<ul>
+<li><p>operator new </p>
+<ul>
+<li>实现内存分配，重载时new时，实际上重载的是operator new,</li>
+<li>要实现不同的内存分配行为，应该重载operator new </li>
+</ul>
+</li>
+<li><p>placement new：</p>
+<ul>
+<li>operator new 只是operator new的一个重载版本</li>
+<li><font color="#006600">并不分配内存，只是返回指向已分配的某段内存的一个指针</font><br> </li>
+<li>因此，不能删除，但需要调用对象的析构函数。</li>
+<li>placement new  允许在一个已分配的内存中构造一个新对象。</li>
+</ul>
+<ul>
+<li>引入 placement new的理由：<ul>
+<li><strong>用 placement new 解决buffer问题：</strong><br>  若是用new分配数组缓冲时，先要申请分配内存，然后调用构造函数，效率不急啊；使用 placement new 可以直接在已预分配的内存上构造函数。</li>
+<li><strong>增大时空效率问题</strong>：<br>  使用 new 申请分配空间时，需要在堆中查找足够大的空间，然后分配，这个操作比较慢，同时可能出现内存不足，内存分配异常；而 placement new 是在一个预先已分配的内存缓冲区将那些，不需要查找内存，这样内存分配的时间就就是常数，且不会出现内存不足的异常。因此，placement new非常适合对时间要求较高，长时间运行不希望被打断的应用程序。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="new和malloc区别以及-malloc原理"><a href="#new和malloc区别以及-malloc原理" class="headerlink" title="new和malloc区别以及 malloc原理"></a><font color="#dd0000">new和malloc区别以及 malloc原理</font><br></h2><ul>
+<li><ul>
+<li><p><font color="#006666">类型不同</font><br> </p>
+<ul>
+<li>new/delete是c++里面引入的运算符。</li>
+<li>malloc和free是标准库函数。</li>
+</ul>
+</li>
+<li><p><font color="#006666">申请内存的所在位置不同</font><br> </p>
+<ul>
+<li>new操作符是从自由存储器(free store)上为对象动态分配内存空间，自由存储区释放可以是堆(或是new是否能够在队上动态分配内存)，这取决于 operater new的实现细节。自由存储区不仅仅可以是堆，还可以是静态存储区。 new 甚至可以部位对象分配内存，而是使用已分配的内存，使用 定位 new 来做到。</li>
+<li>malloc()则是从堆(heap)上分配内存。堆是操作系统中的术语，是操作系统所谓五的一块特殊内存，用于程序的动态内存分配。</li>
+</ul>
+</li>
+<li><p><font color="#006666">返回类型安全性</font><br> </p>
+<ul>
+<li>new操作成功是返回对象类型的指针，类型严格与对象匹配，无须进行类型转换。因此new是类型安全性的操作符</li>
+<li>malloc内存分配成功返回void<em>，则需要强制类型将void</em>指针转为需要的类型。</li>
+</ul>
+</li>
+<li><p><font color="#006666">内存分配失败时的返回值</font><br> </p>
+<ul>
+<li>ew内存分配失败时，会抛出bac_alloc异常，而非NULL</li>
+<li>malloc分配内存失败时返回NULL。</li>
+</ul>
+</li>
+<li><p><font color="#006666"> 是否需要指定内存大小</font><br> </p>
+<ul>
+<li>使用 new 操作符申请分配内存时无须指定内存块大小，编译器会根据类型自行计算</li>
+<li>malloc则需要显示指定所需内存的大小。</li>
+</ul>
+</li>
+<li><p><font color="#006666"> 对数组的处理</font><br> </p>
+<ul>
+<li>C++提供了new[]和delete[]来专门处理数组类型，必须配合使用。</li>
+<li>malloc只是分配一块原始内存给你，不管该空间放置的东西，也不做初始化。</li>
+</ul>
+</li>
+<li><p><font color="#006666"> 是否可以重载</font><br> </p>
+<ul>
+<li>operator new/delete可以被重载</li>
+<li>malloc/free不允许重载</li>
+</ul>
+</li>
+<li><p><font color="#0000dd">有了malloc，为什么还需要new ？</font><br> </p>
+<ul>
+<li>对于非内置的数据类型的对象而言，使用malloc/free是无法满足要求的，对象在创建时要自动执行构造函数，在对象消亡前要自动执行析构函数，而malloc/free是库函数，不在编译器的控制权限之内，不能够把执行构造函数和析构函数的任务强加给mallo/free。因此，C++需要一个能完成动态内存分配和初始化的运算符和清理与释放内存工作的运算符。</li>
+</ul>
+<ul>
+<li><p>new操作符分配内存时会经历三个过程：</p>
+<ul>
+<li><p>第一步是调用 operator new函数，分配一块合适的，原始的，未命名的内存空间。</p>
+</li>
+<li><p>第二步是编译器运行相应的构造函数以构造该对象。</p>
+</li>
+<li><p>第三步是对象构造完成后，返回一个指向该对象的指针。</p>
+<p><img src="https://teemo-tristana.github.io/images/malloc-new.png" alt="malloc与new区别"></p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="malloc内存分配原理"><a href="#malloc内存分配原理" class="headerlink" title="malloc内存分配原理"></a><font color="#dd0000">malloc内存分配原理</font><br></h2><ul>
+<li><ul>
+<li>malloc在申请内存时，一般会通过brk或者mmap系统调用进行申请空间。<font color="#006666">malloc申请内存小于128k时，使用 brk分配内存，申请内存大于128k时，使用mmap分配内存</font><br> </li>
+<li>brk和mmap这两种方式分配的都是<strong>虚拟内存</strong>，而非物理内存；当第一次访问已分配的虚拟地址空间时，会发生缺页中断，操作系统负责物理分配物理内存，然后建立虚拟内存和物理内存之间的映射关系。brk与sbrk， mmap与munmap</li>
+<li>brk/sbrk/mmap属于系统调用，如果每次申请内存，都调用其中一个，系统调用开销较大，若每次都用系统调用，则会影响性能。</li>
+<li>这样申请内存容易产生内存碎片，<strong>因为堆是从低地址往高地址方向增长，若低地址没有释放，高地址内存就不能回收。</strong></li>
+<li>因此，<font color="#006666">malloc采用内存池的方法</font><br>,来减少内存碎片的产生和减少系统调用的开销。<strong>先申请一个大内存，然后将其分为不同大小的内存块，并以块为管理的基本单位</strong>。用户申请内存时，就直接从内存池中选择一块相近的内存块即可。</li>
+<li>malloc使用链表来管理内存块：<ul>
+<li><font color="#006600">隐式空闲链表</font><br> :将堆区分为地址连续，大小不一的块，包含已分配和未分配的内存块。</li>
+<li><font color="#006600">显示空闲链表</font><br> :用一个链表将可用的内存块连接起来，组成一个双向的空闲链表，链表节点含有一个前向指针和后继指针，每个节点记录一个地址连续，未被使用的内存块，节点同时记录内存首地址和大小。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="malloc之ptmlloc-tcmaclloc-jemalloc："><a href="#malloc之ptmlloc-tcmaclloc-jemalloc：" class="headerlink" title=" malloc之ptmlloc/tcmaclloc/jemalloc："></a><font color="#dd0000"> malloc之ptmlloc/tcmaclloc/jemalloc：</font><br></h2><ul>
+<li><ul>
+<li>gcc默认使用的是ptmalloc分配器对内存碎片进行优化，但是这种优化不理想，胆汁看似内存泄漏，实际上时内存碎片的问题。</li>
+<li>为了更好解决该问题，google开发了tcmalloc和jemalloc内存管理工具，比如在Redis中就使用的时tcmalloc和jemalloc。</li>
+<li>tcmalloc/jemlloc原理很类似，都是在链接时期替换标准库的maloc和free，在不改变diamond情况下，解决内存碎片的问题。</li>
+<li>tcmalloc就是一个内存分配器，管理堆内存，主要影响malloc和free，用于降低频繁分配、释放内存造成的性能影响，且有效地控制内存碎片。</li>
+<li>tcmalloc比ptmalloc快，一次malloc和free操作，ptmalloc需要大约300ns，而tcmalloc只需要50ns。+ + tcmalloc优化了存储对象，需要的空间更少，tcmalloc对多线程做了优化，对于小对象的分配基本不存在锁竞争</li>
+</ul>
+</li>
+</ul>
+<h2 id="引用和指针有什么区别"><a href="#引用和指针有什么区别" class="headerlink" title="引用和指针有什么区别"></a><font color="#006600">引用和指针有什么区别</font><br></h2><ul>
+<li><ul>
+<li>指针有自己的一块空间，而引用只是一个别名。</li>
+<li>指针可以被初始化为NULL，而引用必须被初始化且必须是一个已有对象的引用。</li>
+<li>使用sizeof看一个指针的大小是4，而引用则是被引用对象的大小。   </li>
+<li>指针在使用中可以指向其他对象，但是引用只能是一个对象的引用，不可被改变。</li>
+</ul>
+</li>
+</ul>
+<h2 id="sizeof和strlen-的区别"><a href="#sizeof和strlen-的区别" class="headerlink" title="sizeof和strlen()的区别"></a><font color="#006600">sizeof和strlen()的区别</font><br></h2><ul>
+<li><ul>
+<li>sizeof 是一个操作符， strlen()是一个库函数</li>
+<li>sizeof的参数可以是数据类，也可以是变量， 而strlen()只能以结尾’\0’的字符串作为参数</li>
+<li>sizeof在编译时期就确定了结果，strlen()需要在运行时才能计算出结果</li>
+<li>sizeof 计算的是分配的内存大小，strlen()则是字符串实际的长度</li>
+<li>数组作为sizeof参数时，不退化， 作为strlen()参数时，则退化为指针。</li>
+</ul>
+</li>
+</ul>
+<h2 id="产生coredump文件的原因"><a href="#产生coredump文件的原因" class="headerlink" title="产生coredump文件的原因"></a>产生coredump文件的原因</h2><ul>
+<li><ul>
+<li><p>访问内存越界（如使用下标访问字符串未进行结束符判断，strcpy，strcmp,strcat等越界）</p>
+</li>
+<li><p>非法指针(使用空指针或随意转使用指针转换)</p>
+</li>
+<li><p>堆栈溢出</p>
+</li>
+<li><p>多线程使用了线程不安全的函数</p>
+</li>
+<li><p>多线程读写的数据没有加锁保护</p>
+</li>
+<li><p>定位coredump文件：</p>
+<ul>
+<li>先编译生成含有调试信息的可执行文件 gcc –g test.cpp –o test</li>
+<li>在执行 ./test,从而产生coredump文件</li>
+<li>在执行 gdb ./test ./core</li>
+<li>在gdb下输入 where</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="gdb调试"><a href="#gdb调试" class="headerlink" title="gdb调试"></a>gdb调试</h2><ul>
+<li>  <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">g++ -g test.cpp –o test</span><br><span class="line">./test</span><br><span class="line">l (<span class="built_in">list</span>)  			    罗列出当前代码信息</span><br><span class="line">b (<span class="keyword">break</span> point)         设置断点</span><br><span class="line">r (run)    		        运行直到断点或结束 </span><br><span class="line">n (next)  			    单步调试，不会进入函数 类似 vs的 F10</span><br><span class="line">s (step)  			    单步调试  会进入函数体 类似 vs的 F11</span><br><span class="line">f (frame)				切换函数的栈帧</span><br><span class="line">p (print)  			    打印</span><br><span class="line">t (thread)	 		    切换线程	</span><br><span class="line">c (<span class="keyword">continue</span>) 			程序继续执行直到下一个断点或程序结束</span><br><span class="line">bt (backtrace)		    显示堆栈信息</span><br><span class="line">i (info) 				查看信息</span><br><span class="line">d (<span class="keyword">delete</span>) 			    删除断点</span><br><span class="line">fin (finish) 			退出函数    </span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h2 id="缓存淘汰算法"><a href="#缓存淘汰算法" class="headerlink" title="缓存淘汰算法"></a>缓存淘汰算法</h2><ul>
+<li><ul>
+<li>LRU（least recently used, 最近最少使用），根据数据的历史访问记录来进行淘汰数据，其核心思想是“如果数据最近被访问过，那么将来被访问的几率也更高”。<ul>
+<li>新数据插入到链表头部；</li>
+<li>每当缓存命中（即缓存数据被访问），则将数据移到链表头部；</li>
+<li>当链表满的时候，将链表尾部的数据丢弃。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="Linux的valgrind工具"><a href="#Linux的valgrind工具" class="headerlink" title="Linux的valgrind工具:"></a>Linux的valgrind工具:</h2><ul>
+<li><ul>
+<li>内存分析工具，由Memcheck，Cachegrind，Helgrind等组成。</li>
+<li><strong>Memcheck是一款 内存泄漏 检测工具</strong></li>
+<li><font color="#006600"> Memcheck能够检测出内存问题的原理：关键在于建立两个全局表</font><br>:<ul>
+<li>Valid-Value表：对于进程的整个地址空间的每一个字节(Byte）,都与之对应的 8 bit，这些bit负责记录该字节或寄存器的值是否有效，是否被初始化等。（CPU的每个继承寄存器，也有与之对的bit向量）</li>
+<li>Valid-Address 表：对于进程整个地址空间中每一个字节（Byte）,还有与之对应的1bit,负责记录该地是否能够被读写。</li>
+</ul>
+</li>
+<li><font color="#006600">MemCheck原理</font><br>:<ul>
+<li>当要读写某个字节时，首先检测该字节的 A bit,若A bit显示无效位置，memcheck则报告错误。</li>
+<li>当字节加载到cpu时，它对应的 v bit也被加载到cpu环境中，首先检测对应的 v bit，若为初始化，则memcheck报错。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="进程通讯的几种方法"><a href="#进程通讯的几种方法" class="headerlink" title=" 进程通讯的几种方法"></a><font color="#006600"> 进程通讯的几种方法</font><br></h2><ul>
+<li><ul>
+<li>管道。管道的机制类似于缓存，是单向传输的，效率较为低下，比如：a进程给b进程传输数据，只能等待b进程取了数据之后a进程才能返回。</li>
+<li>消息队列。优点：把进程的数据放在某内存以后，无需等待其他进程来取就返回。缺点：<ul>
+<li>如果a进程发送的数据占内存比较大，并且两个进程之间通信较为频繁，消息队列模型就不合适，因为a发送的数据很大的话，发送消息（拷贝）这个过程需要花很多时间来读内存。</li>
+</ul>
+</li>
+<li>共享内存。系统加载一个进程的时候，分配给进程的内存并不是实际物理内存，二是虚拟内存空间。将两个进程的虚拟内存空间映射到同一个实际物理内存中，就实现了内存共享的机制。</li>
+<li>信号量。为了解决共享内存的线程安全问题，引入信号量的通信方式。</li>
+</ul>
+</li>
+</ul>
+<h2 id="编译的过程-font-gt"><a href="#编译的过程-font-gt" class="headerlink" title="编译的过程/font&gt;"></a><font color="#006600">编译的过程/font&gt;<br></font></h2><ul>
+<li><ul>
+<li><p>编译的分别四步, 也即是：预编译处理(.c) －&gt; 编译、优化程序（.s）－&gt;汇编程序(.obj、.o、.a、.ko) －&gt; 链接程序（.exe、.elf、.axf等），具体如下：    </p>
+</li>
+<li><p>预处理 : 预处理器指令处理 # 号开头的，比如#include, #define;一般来讲因为引入了头文件，预处理编译的文件比源文件大，将 .cpp文件转为 .i 文件。</p>
+<ul>
+<li>命令 g++ -E test.cpp  -o  test.i </li>
+<li>主要处理以 # 开始的预编译指令， 如 #include、 #define 和 注释</li>
+<li>#pragma 则保留，编译器需要它们</li>
+</ul>
+</li>
+<li><p>编译 :  通过预处理后的 .i 文件中，只有常量，数字，字符串及关键字等，编译主要是通过语法分析和词法分析，来确定所有指令是否符号规则，并将其转换成汇编代码， 将 .i 文件转为 .s 文件。</p>
+<ul>
+<li>命令 ： g++ -S test.i –o test.s </li>
+<li>主要进行词法分析，语法分析，语义分析等</li>
+<li>汇编：将汇编语言翻译成目标机器指令的过程，将 .s 文件转为 .o 文件。</li>
+<li>命令 ：g++ -c test.s –o test.o</li>
+</ul>
+</li>
+<li><p>链接：汇编生成的目标并不能立即执行，还需要通过链接，因为 某个文件可能调用另外一个源文件中的函数或常量，或是函数中调用了库函数；链接的主要工作就是将有关目标文件连接起来， 将 .o 文件转为可执行文件。</p>
+<ul>
+<li>静态链接 ： 在编译期间就确定了 <ul>
+<li>对库函数的链接是在编译期间完成的。 Libxxx.a</li>
+<li>动态链接 ： 在运行时再载入 </li>
+</ul>
+</li>
+<li>在程序运行时期才载入</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="g-与gcc的区别"><a href="#g-与gcc的区别" class="headerlink" title=":g++与gcc的区别"></a><font color="#006600">:g++与gcc的区别</font><br></h2><ul>
+<li><ul>
+<li>它们都可以编译.c和.cpp文件；后缀为 .c 的文件， gcc把它当作C程序， g++ 则将它当作 C++ 程序，对于 .cpp文件，gcc和g++都将其视为 c++程序。</li>
+<li>编译阶段，g++会调用gcc，对于cpp文件，两者等价，但gcc 命令不能自动和C++程序使用的库链接。因此，对于cpp文件，一般使用g++。</li>
+<li>对于 extern ”C” ，gcc/g++都将以C的方式进行编译。</li>
+</ul>
+</li>
+</ul>
+<h2 id="容器"><a href="#容器" class="headerlink" title="容器"></a>容器</h2><ul>
+<li><p>线程容器：</p>
+<ul>
+<li><p>std::array  : C++11 引入的， std::array对象的大小是固定的</p>
+<ul>
+<li>为什么要引入 std::array 而不是直接使用 std::vector?<ul>
+<li>std::array对象大小是固定的，若容器大小是固定的，推荐使用std::array.</li>
+<li>std::vector是动态数组，可以自动扩容，当容量不够时，会自动扩容，但是删除元素后，容量不会自动释放，要手动调用 shrink_to_fit() 释放内存。std::vector动态数组，但是是有代价的，每次扩容都活涉及到申请内存，拷贝，释放原空间。</li>
+</ul>
+</li>
+<li>已经有传统的数组，为什么要用 std::array?<ul>
+<li>std::array能够让代码更加”现代化”，也即是封装了一些操作函数，比如检查数组大小，判空等，同时支持标准库的一些容器算法，比如 std::sort等。</li>
+</ul>
+</li>
+<li>std::array 只需要只要指定类型和大小即可<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">std</span>::<span class="built_in">array</span>&lt;<span class="keyword">int</span>, 4&gt; arr&#123;<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>&#125;;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>std::forward_list ： C++11 引入的单向链表，和 std::list 类似，只不过std::list是双向链表。</p>
+<ul>
+<li>不支持随机快速访问[链表特定]</li>
+<li>标准库中唯一不支持 size() 方法的容器。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>无序容器: C++11引入了两组无序容器：std:unordered_map/std::unordered_multimap和std:unordered_set/std::unordered_multiset。</p>
+<ul>
+<li>无序容器中元素不进行排序，内部通过 Hash表 实现，插入和查找元素的平均复杂度为 O(1)。在不关心容器内部元素顺序的情况下，能够获得显著的性能提升。</li>
+</ul>
+</li>
+<li><p>元组：std::tuple()</p>
+<ul>
+<li>传统C++容器中，std::pair 可以用来存放不同类型的书，但是 std::pair 只能保存两个元素</li>
+</ul>
+<ul>
+<li>元组基本操作<ul>
+<li>std::make_tuple: 构造元组</li>
+<li>std::get : 获得元组某个位置的值</li>
+<li>std::tie : 元组拆包</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/C/" rel="tag"># C++</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/10/24/hello-world/" rel="prev" title="Hello World">
+      <i class="fa fa-chevron-left"></i> Hello World
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/10/25/%E7%BA%BF%E7%A8%8B%E5%90%8C%E6%AD%A5%E9%97%AE%E9%A2%98/" rel="next" title="线程同步问题">
+      线程同步问题 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#C-Review"><span class="nav-number">1.</span> <span class="nav-text">C++ Review</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%BD%E6%95%B0%E6%8C%87%E9%92%88%E4%B8%8E%E6%8C%87%E9%92%88%E5%87%BD%E6%95%B0"><span class="nav-number">1.1.</span> <span class="nav-text">函数指针与指针函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#i%E5%92%8Ci-%E7%9A%84%E4%B8%BB%E8%A6%81%E5%8C%BA%E5%88%AB%E6%9C%89%E4%B8%A4%E4%B8%AA%EF%BC%9A"><span class="nav-number">1.2.</span> <span class="nav-text">++i和i++的主要区别有两个：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#i%E5%92%8Ci-%E7%9A%84%E6%95%88%E7%8E%87%E5%93%AA%E4%B8%AA%E6%9B%B4%E9%AB%98%EF%BC%9F"><span class="nav-number">1.3.</span> <span class="nav-text">++i和i++的效率哪个更高？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B7%A6%E5%80%BC%E5%92%8C%E5%8F%B3%E5%80%BC"><span class="nav-number">1.4.</span> <span class="nav-text">左值和右值
+</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%B3%E5%80%BC%E5%BC%95%E7%94%A8%E7%9A%84%E6%84%8F%E4%B9%89"><span class="nav-number">1.5.</span> <span class="nav-text">右值引用的意义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#emplace-back-%E5%92%8Cpush-back-%E5%8C%BA%E5%88%AB"><span class="nav-number">1.6.</span> <span class="nav-text">emplace_back()和push_back()区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C-%E4%B8%ADstruct%E4%B8%8Eclass%E5%8C%BA%E5%88%AB"><span class="nav-number">1.7.</span> <span class="nav-text">C++中struct与class区别:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C-%E5%92%8CC%E7%9B%B8%E6%AF%94%E7%9A%84%E6%9C%80%E5%A4%A7%E7%89%B9%E7%82%B9%EF%BC%9A"><span class="nav-number">1.8.</span> <span class="nav-text">C++和C相比的最大特点：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E7%9A%84%E4%B8%89%E5%A4%A7%E7%89%B9%E6%80%A7%EF%BC%9A"><span class="nav-number">1.9.</span> <span class="nav-text">C++面向对象的三大特性：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%99%9A%E5%87%BD%E6%95%B0%E5%8F%8A%E7%BA%AF%E8%99%9A%E5%87%BD%E6%95%B0%E7%9A%84%E7%90%86%E8%A7%A3"><span class="nav-number">1.10.</span> <span class="nav-text">虚函数及纯虚函数的理解
+</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#const%E4%B8%8E-define%E5%8C%BA%E5%88%AB"><span class="nav-number">1.11.</span> <span class="nav-text">const与 #define区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C-11%E7%9A%84%E7%89%B9%E6%80%A7"><span class="nav-number">1.12.</span> <span class="nav-text">C++11的特性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RAII-Resource-Acquisition-Is-Initialization-%E8%B5%84%E6%BA%90%E8%8E%B7%E5%8F%96%E5%8D%B3%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="nav-number">1.13.</span> <span class="nav-text">RAII(Resource Acquisition Is Initialization)资源获取即初始化
+</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88"><span class="nav-number">1.14.</span> <span class="nav-text">智能指针
+</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C-%E7%9A%84this%E6%8C%87%E9%92%88"><span class="nav-number">1.15.</span> <span class="nav-text">C++的this指针</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C-%E7%9A%84%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2"><span class="nav-number">1.16.</span> <span class="nav-text">C++的类型转换</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#new%E3%80%81operator-new-%E5%92%8C-placement-new%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">1.17.</span> <span class="nav-text">new、operator new 和 placement new的区别
+</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#new%E5%92%8Cmalloc%E5%8C%BA%E5%88%AB%E4%BB%A5%E5%8F%8A-malloc%E5%8E%9F%E7%90%86"><span class="nav-number">1.18.</span> <span class="nav-text">new和malloc区别以及 malloc原理
+</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#malloc%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E5%8E%9F%E7%90%86"><span class="nav-number">1.19.</span> <span class="nav-text">malloc内存分配原理
+</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#malloc%E4%B9%8Bptmlloc-tcmaclloc-jemalloc%EF%BC%9A"><span class="nav-number">1.20.</span> <span class="nav-text"> malloc之ptmlloc&#x2F;tcmaclloc&#x2F;jemalloc：
+</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%95%E7%94%A8%E5%92%8C%E6%8C%87%E9%92%88%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB"><span class="nav-number">1.21.</span> <span class="nav-text">引用和指针有什么区别
+</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#sizeof%E5%92%8Cstrlen-%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">1.22.</span> <span class="nav-text">sizeof和strlen()的区别
+</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%A7%E7%94%9Fcoredump%E6%96%87%E4%BB%B6%E7%9A%84%E5%8E%9F%E5%9B%A0"><span class="nav-number">1.23.</span> <span class="nav-text">产生coredump文件的原因</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#gdb%E8%B0%83%E8%AF%95"><span class="nav-number">1.24.</span> <span class="nav-text">gdb调试</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E6%B7%98%E6%B1%B0%E7%AE%97%E6%B3%95"><span class="nav-number">1.25.</span> <span class="nav-text">缓存淘汰算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Linux%E7%9A%84valgrind%E5%B7%A5%E5%85%B7"><span class="nav-number">1.26.</span> <span class="nav-text">Linux的valgrind工具:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%9B%E7%A8%8B%E9%80%9A%E8%AE%AF%E7%9A%84%E5%87%A0%E7%A7%8D%E6%96%B9%E6%B3%95"><span class="nav-number">1.27.</span> <span class="nav-text"> 进程通讯的几种方法
+</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%96%E8%AF%91%E7%9A%84%E8%BF%87%E7%A8%8B-font-gt"><span class="nav-number">1.28.</span> <span class="nav-text">编译的过程&#x2F;font&gt;
+</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#g-%E4%B8%8Egcc%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">1.29.</span> <span class="nav-text">:g++与gcc的区别
+</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%B9%E5%99%A8"><span class="nav-number">1.30.</span> <span class="nav-text">容器</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Han Cheng"
+      src="/images/teemo.png">
+  <p class="site-author-name" itemprop="name">Han Cheng</p>
+  <div class="site-description" itemprop="description">记录平日所学</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">15</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Han Cheng</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

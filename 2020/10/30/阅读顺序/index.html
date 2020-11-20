@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="如何阅读Redis源码  阅读数据结构的实现： 相关文件： sds.h     sds.c adlist.h  adlist.c dict.h    dict.c redis.h   zskiplist zskiplistNode t_zset.c 所有zsl开头的函数如zslCreate, zslInsert, zslDeleteNode hyperloglog.c 中hlhdr结构，以及所有h">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Teemo-Tristana">
+<meta property="og:url" content="http://example.com/2020/10/30/%E9%98%85%E8%AF%BB%E9%A1%BA%E5%BA%8F/index.html">
+<meta property="og:site_name" content="Teemo-Tristana">
+<meta property="og:description" content="如何阅读Redis源码  阅读数据结构的实现： 相关文件： sds.h     sds.c adlist.h  adlist.c dict.h    dict.c redis.h   zskiplist zskiplistNode t_zset.c 所有zsl开头的函数如zslCreate, zslInsert, zslDeleteNode hyperloglog.c 中hlhdr结构，以及所有h">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/.com//readRedis.png">
+<meta property="article:published_time" content="2020-10-30T08:26:25.674Z">
+<meta property="article:modified_time" content="2020-11-03T02:30:41.278Z">
+<meta property="article:author" content="Han Cheng">
+<meta property="article:tag" content="C++,python，图像处理">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/.com//readRedis.png">
+
+<link rel="canonical" href="http://example.com/2020/10/30/%E9%98%85%E8%AF%BB%E9%A1%BA%E5%BA%8F/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title> | Teemo-Tristana</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Teemo-Tristana</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">每日进步一点</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="user fa-fw"></i>关于</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/10/30/%E9%98%85%E8%AF%BB%E9%A1%BA%E5%BA%8F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/teemo.png">
+      <meta itemprop="name" content="Han Cheng">
+      <meta itemprop="description" content="记录平日所学">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Teemo-Tristana">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-10-30 16:26:25" itemprop="dateCreated datePublished" datetime="2020-10-30T16:26:25+08:00">2020-10-30</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-11-03 10:30:41" itemprop="dateModified" datetime="2020-11-03T10:30:41+08:00">2020-11-03</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="如何阅读Redis源码"><a href="#如何阅读Redis源码" class="headerlink" title="如何阅读Redis源码"></a>如何阅读Redis源码</h1><ul>
+<li><ol>
+<li>阅读数据结构的实现：<ul>
+<li>相关文件：<ul>
+<li>sds.h     sds.c</li>
+<li>adlist.h  adlist.c</li>
+<li>dict.h    dict.c</li>
+<li>redis.h   zskiplist zskiplistNode t_zset.c 所有zsl开头的函数如zslCreate, zslInsert, zslDeleteNode</li>
+<li>hyperloglog.c 中hlhdr结构，以及所有hll开头的文件</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+</li>
+<li><ol start="2">
+<li>阅读内存编码[encoding]数据结构的实现<ul>
+<li>和普通的数据结构一样， 内存编码数据结构基本上是独立的， 不和其他模块耦合<ul>
+<li>intset.h intset.c[整数集合intset数据结构]</li>
+<li>ziplist.h ziplist.c[压缩列表zip-list数据结构]</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+</li>
+<li><ol start="3">
+<li>阅读数据类型实现：<ul>
+<li>Redis6种不同类型的键[字符串-散列-列表-集合-有序集合-HyperLogLog]所有底层实现结构<ul>
+<li>object.c Redis对象类型系统实现</li>
+<li>t_string.c 字符串键的实现</li>
+<li>t_list.c 列表键的实现</li>
+<li>t_hash.c 散列键的实现</li>
+<li>t_set.c 集合键的实现</li>
+<li>t_zset.c中除zsl开头的函数之外的所有函数 有序集合键的实现</li>
+<li>hyperloglog.c 中所有以pf开头的函数</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+</li>
+<li><ol start="4">
+<li><p>阅读数据库相关实现代码:</p>
+<ul>
+<li><p>数据库相关</p>
+<ul>
+<li>redis.h中redisDb结构和db.c  Redis数据库实现</li>
+<li>notify.c                   Redis的数据库通知功能实现代码</li>
+<li>rdb.h和rdb.c               Redis的RDB持久化实现代码</li>
+<li>aof.c                      Redis的AOF持久化实现代码</li>
+</ul>
+</li>
+<li><p>Redis独立功能模块：</p>
+<ul>
+<li>redis.h中pubsubPattern结构以及pubsub.c   发布与阅读功能实现</li>
+<li>redis.h中multiState结构以及multiCmd结构   事务功能的实现</li>
+<li>sort.c                                   SORT命令的实现</li>
+<li>bitops.c                                 GETBIT|SETBIT等二进制操作命令的实现</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+</li>
+<li><ol start="5">
+<li><p>阅读客户端和服务器相关代码：</p>
+<ul>
+<li><p>客户端-服务器代码：</p>
+<ul>
+<li>ae.c 以及任意一个ae_*.c文件           Redis的事件处理器实现[基于Reactor模式]</li>
+<li>networking.c                         Redis的网络链接库，负责发送回复和接受命令请求，同时也负责创建/销毁客户端以及分析通信协议等工作</li>
+<li>redis.h 和 redis.c中和单机Redis服务器相关部分     单机Redis服务器的实现</li>
+</ul>
+</li>
+<li><p>独立模块:</p>
+<ul>
+<li>scripting.c   Lua脚本功能实现</li>
+<li>slowlog.c     慢查询功能的实现</li>
+<li>monitor.c     监视器功能的实现</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+</li>
+<li><ol start="6">
+<li>阅读多机功能的实现<ul>
+<li>多级功能代码：<ul>
+<li>replication.c     复制功能的实现</li>
+<li>sentinel.c        Redis Sentinel的实现代码</li>
+<li>cluster.c         Redis集群的实现代码<br><img src="/.com//readRedis.png" alt="readRedis.png"></li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/10/27/Redis-question/" rel="prev" title="Redis question">
+      <i class="fa fa-chevron-left"></i> Redis question
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/11/03/Redis%E5%AD%A6%E4%B9%A002/" rel="next" title="Redis学习02">
+      Redis学习02 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E9%98%85%E8%AF%BBRedis%E6%BA%90%E7%A0%81"><span class="nav-number">1.</span> <span class="nav-text">如何阅读Redis源码</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Han Cheng"
+      src="/images/teemo.png">
+  <p class="site-author-name" itemprop="name">Han Cheng</p>
+  <div class="site-description" itemprop="description">记录平日所学</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">15</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Han Cheng</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

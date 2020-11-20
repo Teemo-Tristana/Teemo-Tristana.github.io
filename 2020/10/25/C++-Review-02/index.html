@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="new、operator new 和 placement new的区别  new operator: 不能被重载，  new的执行过程如下： 调用operator new 分配内存 调用并执行构造函数 返回相应类型的指针   delete过程 ： 调用析构函数  调用operator delete,释放空间">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C++ Review 02">
+<meta property="og:url" content="http://example.com/2020/10/25/C++-Review-02/index.html">
+<meta property="og:site_name" content="Teemo-Tristana">
+<meta property="og:description" content="new、operator new 和 placement new的区别  new operator: 不能被重载，  new的执行过程如下： 调用operator new 分配内存 调用并执行构造函数 返回相应类型的指针   delete过程 ： 调用析构函数  调用operator delete,释放空间">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://teemo-tristana.github.io/images/malloc-new.png">
+<meta property="article:published_time" content="2020-10-25T07:28:52.000Z">
+<meta property="article:modified_time" content="2020-10-26T01:41:24.845Z">
+<meta property="article:author" content="Han Cheng">
+<meta property="article:tag" content="C++">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://teemo-tristana.github.io/images/malloc-new.png">
+
+<link rel="canonical" href="http://example.com/2020/10/25/C++-Review-02/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>C++ Review 02 | Teemo-Tristana</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Teemo-Tristana</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">每日进步一点</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="user fa-fw"></i>关于</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/10/25/C++-Review-02/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/teemo.png">
+      <meta itemprop="name" content="Han Cheng">
+      <meta itemprop="description" content="记录平日所学">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Teemo-Tristana">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          C++ Review 02
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-10-25 15:28:52" itemprop="dateCreated datePublished" datetime="2020-10-25T15:28:52+08:00">2020-10-25</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-10-26 09:41:24" itemprop="dateModified" datetime="2020-10-26T09:41:24+08:00">2020-10-26</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <ol start="16">
+<li><p><font color="#dd0000">new、operator new 和 placement new的区别</font><br></p>
+<ul>
+<li><p>new operator: 不能被重载，</p>
+<ul>
+<li>new的执行过程如下：<ul>
+<li>调用operator new 分配内存</li>
+<li>调用并执行构造函数</li>
+<li>返回相应类型的指针</li>
+</ul>
+</li>
+<li>delete过程 ：<ul>
+<li>调用析构函数 </li>
+<li>调用operator delete,释放空间<a id="more"></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>operator new </p>
+<ul>
+<li>实现内存分配，重载时new时，实际上重载的是operator new,</li>
+<li>要实现不同的内存分配行为，应该重载operator new </li>
+</ul>
+</li>
+<li><p>placement new：</p>
+<ul>
+<li>operator new 只是operator new的一个重载版本</li>
+<li><font color="#006600">并不分配内存，只是返回指向已分配的某段内存的一个指针</font><br> </li>
+<li>因此，不能删除，但需要调用对象的析构函数。</li>
+<li>placement new  允许在一个已分配的内存中构造一个新对象。</li>
+</ul>
+<ul>
+<li>引入 placement new的理由：<ul>
+<li><strong>用 placement new 解决buffer问题：</strong><br>  若是用new分配数组缓冲时，先要申请分配内存，然后调用构造函数，效率不急啊；使用 placement new 可以直接在已预分配的内存上构造函数。</li>
+<li><strong>增大时空效率问题</strong>：<br>  使用 new 申请分配空间时，需要在堆中查找足够大的空间，然后分配，这个操作比较慢，同时可能出现内存不足，内存分配异常；而 placement new 是在一个预先已分配的内存缓冲区将那些，不需要查找内存，这样内存分配的时间就就是常数，且不会出现内存不足的异常。因此，placement new非常适合对时间要求较高，长时间运行不希望被打断的应用程序。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><font color="#dd0000">new和malloc区别以及 malloc原理</font><br> </p>
+<ul>
+<li><p><font color="#006666">类型不同</font><br> </p>
+<ul>
+<li>new/delete是c++里面引入的运算符。</li>
+<li>malloc和free是标准库函数。</li>
+</ul>
+</li>
+<li><p><font color="#006666">申请内存的所在位置不同</font><br> </p>
+<ul>
+<li>new操作符是从自由存储器(free store)上为对象动态分配内存空间，自由存储区释放可以是堆(或是new是否能够在队上动态分配内存)，这取决于 operater new的实现细节。自由存储区不仅仅可以是堆，还可以是静态存储区。 new 甚至可以部位对象分配内存，而是使用已分配的内存，使用 定位 new 来做到。</li>
+<li>malloc()则是从堆(heap)上分配内存。堆是操作系统中的术语，是操作系统所谓五的一块特殊内存，用于程序的动态内存分配。</li>
+</ul>
+</li>
+<li><p><font color="#006666">返回类型安全性</font><br> </p>
+<ul>
+<li>new操作成功是返回对象类型的指针，类型严格与对象匹配，无须进行类型转换。因此new是类型安全性的操作符</li>
+<li>malloc内存分配成功返回void<em>，则需要强制类型将void</em>指针转为需要的类型。</li>
+</ul>
+</li>
+<li><p><font color="#006666">内存分配失败时的返回值</font><br> </p>
+<ul>
+<li>ew内存分配失败时，会抛出bac_alloc异常，而非NULL</li>
+<li>malloc分配内存失败时返回NULL。</li>
+</ul>
+</li>
+<li><p><font color="#006666"> 是否需要指定内存大小</font><br> </p>
+<ul>
+<li>使用 new 操作符申请分配内存时无须指定内存块大小，编译器会根据类型自行计算</li>
+<li>malloc则需要显示指定所需内存的大小。</li>
+</ul>
+</li>
+<li><p><font color="#006666"> 对数组的处理</font><br> </p>
+<ul>
+<li>C++提供了new[]和delete[]来专门处理数组类型，必须配合使用。</li>
+<li>malloc只是分配一块原始内存给你，不管该空间放置的东西，也不做初始化。</li>
+</ul>
+</li>
+<li><p><font color="#006666"> 是否可以重载</font><br> </p>
+<ul>
+<li>operator new/delete可以被重载</li>
+<li>malloc/free不允许重载</li>
+</ul>
+</li>
+<li><p><font color="#0000dd">有了malloc，为什么还需要new ？</font><br> </p>
+<ul>
+<li>对于非内置的数据类型的对象而言，使用malloc/free是无法满足要求的，对象在创建时要自动执行构造函数，在对象消亡前要自动执行析构函数，而malloc/free是库函数，不在编译器的控制权限之内，不能够把执行构造函数和析构函数的任务强加给mallo/free。因此，C++需要一个能完成动态内存分配和初始化的运算符和清理与释放内存工作的运算符。</li>
+</ul>
+<ul>
+<li><p>new操作符分配内存时会经历三个过程：</p>
+<ul>
+<li><p>第一步是调用 operator new函数，分配一块合适的，原始的，未命名的内存空间。</p>
+</li>
+<li><p>第二步是编译器运行相应的构造函数以构造该对象。</p>
+</li>
+<li><p>第三步是对象构造完成后，返回一个指向该对象的指针。</p>
+<p><img src="https://teemo-tristana.github.io/images/malloc-new.png" alt="malloc与new区别"></p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><font color="#dd0000">malloc内存分配原理</font><br> </p>
+<ul>
+<li>malloc在申请内存时，一般会通过brk或者mmap系统调用进行申请空间。<font color="#006666">malloc申请内存小于128k时，使用 brk分配内存，申请内存大于128k时，使用mmap分配内存</font><br> </li>
+<li>brk和mmap这两种方式分配的都是<strong>虚拟内存</strong>，而非物理内存；当第一次访问已分配的虚拟地址空间时，会发生缺页中断，操作系统负责物理分配物理内存，然后建立虚拟内存和物理内存之间的映射关系。brk与sbrk， mmap与munmap</li>
+<li>brk/sbrk/mmap属于系统调用，如果每次申请内存，都调用其中一个，系统调用开销较大，若每次都用系统调用，则会影响性能。</li>
+<li>这样申请内存容易产生内存碎片，<strong>因为堆是从低地址往高地址方向增长，若低地址没有释放，高地址内存就不能回收。</strong></li>
+<li>因此，<font color="#006666">malloc采用内存池的方法</font><br>,来减少内存碎片的产生和减少系统调用的开销。<strong>先申请一个大内存，然后将其分为不同大小的内存块，并以块为管理的基本单位</strong>。用户申请内存时，就直接从内存池中选择一块相近的内存块即可。</li>
+<li>malloc使用链表来管理内存块：<ul>
+<li><font color="#006600">隐式空闲链表</font><br> :将堆区分为地址连续，大小不一的块，包含已分配和未分配的内存块。</li>
+<li><font color="#006600">显示空闲链表</font><br> :用一个链表将可用的内存块连接起来，组成一个双向的空闲链表，链表节点含有一个前向指针和后继指针，每个节点记录一个地址连续，未被使用的内存块，节点同时记录内存首地址和大小。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><font color="#dd0000"> malloc之ptmlloc/tcmaclloc/jemalloc：</font><br></p>
+<ul>
+<li>gcc默认使用的是ptmalloc分配器对内存碎片进行优化，但是这种优化不理想，胆汁看似内存泄漏，实际上时内存碎片的问题。</li>
+<li>为了更好解决该问题，google开发了tcmalloc和jemalloc内存管理工具，比如在Redis中就使用的时tcmalloc和jemalloc。</li>
+<li>tcmalloc/jemlloc原理很类似，都是在链接时期替换标准库的maloc和free，在不改变diamond情况下，解决内存碎片的问题。</li>
+<li>tcmalloc就是一个内存分配器，管理堆内存，主要影响malloc和free，用于降低频繁分配、释放内存造成的性能影响，且有效地控制内存碎片。</li>
+<li>tcmalloc比ptmalloc快，一次malloc和free操作，ptmalloc需要大约300ns，而tcmalloc只需要50ns。+ + tcmalloc优化了存储对象，需要的空间更少，tcmalloc对多线程做了优化，对于小对象的分配基本不存在锁竞争</li>
+</ul>
+</li>
+<li><p><font color="#006600">引用和指针有什么区别</font><br></p>
+<ul>
+<li>指针有自己的一块空间，而引用只是一个别名。</li>
+<li>指针可以被初始化为NULL，而引用必须被初始化且必须是一个已有对象的引用。</li>
+<li>使用sizeof看一个指针的大小是4，而引用则是被引用对象的大小。   </li>
+<li>指针在使用中可以指向其他对象，但是引用只能是一个对象的引用，不可被改变。</li>
+</ul>
+</li>
+<li><p><font color="#006600">sizeof和strlen()的区别</font><br></p>
+<ul>
+<li>sizeof 是一个操作符， strlen()是一个库函数</li>
+<li>sizeof的参数可以是数据类，也可以是变量， 而strlen()只能以结尾’\0’的字符串作为参数</li>
+<li>sizeof在编译时期就确定了结果，strlen()需要在运行时才能计算出结果</li>
+<li>sizeof 计算的是分配的内存大小，strlen()则是字符串实际的长度</li>
+<li>数组作为sizeof参数时，不退化， 作为strlen()参数时，则退化为指针。</li>
+</ul>
+</li>
+<li><p>产生coredump文件的原因</p>
+<ul>
+<li><p>访问内存越界（如使用下标访问字符串未进行结束符判断，strcpy，strcmp,strcat等越界）</p>
+</li>
+<li><p>非法指针(使用空指针或随意转使用指针转换)</p>
+</li>
+<li><p>堆栈溢出</p>
+</li>
+<li><p>多线程使用了线程不安全的函数</p>
+</li>
+<li><p>多线程读写的数据没有加锁保护</p>
+</li>
+<li><p>定位coredump文件：</p>
+<ul>
+<li>先编译生成含有调试信息的可执行文件 gcc –g test.cpp –o test</li>
+<li>在执行 ./test,从而产生coredump文件</li>
+<li>在执行 gdb ./test ./core</li>
+<li>在gdb下输入 where</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>gdb调试</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">g++ -g test.cpp –o test</span><br><span class="line">./test</span><br><span class="line">l (<span class="built_in">list</span>)  			    罗列出当前代码信息</span><br><span class="line">b (<span class="keyword">break</span> point)         设置断点</span><br><span class="line">r (run)    		        运行直到断点或结束 </span><br><span class="line">n (next)  			    单步调试，不会进入函数 类似 vs的 F10</span><br><span class="line">s (step)  			    单步调试  会进入函数体 类似 vs的 F11</span><br><span class="line">f (frame)				切换函数的栈帧</span><br><span class="line">p (print)  			    打印</span><br><span class="line">t (thread)	 		    切换线程	</span><br><span class="line">c (<span class="keyword">continue</span>) 			程序继续执行直到下一个断点或程序结束</span><br><span class="line">bt (backtrace)		    显示堆栈信息</span><br><span class="line">i (info) 				查看信息</span><br><span class="line">d (<span class="keyword">delete</span>) 			    删除断点</span><br><span class="line">fin (finish) 			退出函数    </span><br></pre></td></tr></table></figure>
+</li>
+<li><p>缓存淘汰算法</p>
+<ul>
+<li>LRU（least recently used, 最近最少使用），根据数据的历史访问记录来进行淘汰数据，其核心思想是“如果数据最近被访问过，那么将来被访问的几率也更高”。<ul>
+<li>新数据插入到链表头部；</li>
+<li>每当缓存命中（即缓存数据被访问），则将数据移到链表头部；</li>
+<li>当链表满的时候，将链表尾部的数据丢弃。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<ol start="25">
+<li>Linux的valgrind工具:<ul>
+<li>内存分析工具，由Memcheck，Cachegrind，Helgrind等组成。</li>
+<li><strong>Memcheck是一款 内存泄漏 检测工具</strong></li>
+<li><font color="#006600"> Memcheck能够检测出内存问题的原理：关键在于建立两个全局表</font><br>:<ul>
+<li>Valid-Value表：对于进程的整个地址空间的每一个字节(Byte）,都与之对应的 8 bit，这些bit负责记录该字节或寄存器的值是否有效，是否被初始化等。（CPU的每个继承寄存器，也有与之对的bit向量）</li>
+<li>Valid-Address 表：对于进程整个地址空间中每一个字节（Byte）,还有与之对应的1bit,负责记录该地是否能够被读写。</li>
+</ul>
+</li>
+<li><font color="#006600">MemCheck原理</font><br>:<ul>
+<li>当要读写某个字节时，首先检测该字节的 A bit,若A bit显示无效位置，memcheck则报告错误。</li>
+<li>当字节加载到cpu时，它对应的 v bit也被加载到cpu环境中，首先检测对应的 v bit，若为初始化，则memcheck报错。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<ol start="26">
+<li><p><font color="#006600"> 进程通讯的几种方法</font><br></p>
+<ul>
+<li>管道。管道的机制类似于缓存，是单向传输的，效率较为低下，比如：a进程给b进程传输数据，只能等待b进程取了数据之后a进程才能返回。</li>
+<li>消息队列。优点：把进程的数据放在某内存以后，无需等待其他进程来取就返回。缺点：<ul>
+<li>如果a进程发送的数据占内存比较大，并且两个进程之间通信较为频繁，消息队列模型就不合适，因为a发送的数据很大的话，发送消息（拷贝）这个过程需要花很多时间来读内存。</li>
+</ul>
+</li>
+<li>共享内存。系统加载一个进程的时候，分配给进程的内存并不是实际物理内存，二是虚拟内存空间。将两个进程的虚拟内存空间映射到同一个实际物理内存中，就实现了内存共享的机制。</li>
+<li>信号量。为了解决共享内存的线程安全问题，引入信号量的通信方式。</li>
+</ul>
+</li>
+<li><p><font color="#006600">编译的过程/font&gt;<br></font></p>
+<ul>
+<li><p>编译的分别四步, 也即是：预编译处理(.c) －&gt; 编译、优化程序（.s）－&gt;汇编程序(.obj、.o、.a、.ko) －&gt; 链接程序（.exe、.elf、.axf等），具体如下：    </p>
+</li>
+<li><p>预处理 : 预处理器指令处理 # 号开头的，比如#include, #define;一般来讲因为引入了头文件，预处理编译的文件比源文件大，将 .cpp文件转为 .i 文件。</p>
+<ul>
+<li>命令 g++ -E test.cpp  -o  test.i </li>
+<li>主要处理以 # 开始的预编译指令， 如 #include、 #define 和 注释</li>
+<li>#pragma 则保留，编译器需要它们</li>
+</ul>
+</li>
+<li><p>编译 :  通过预处理后的 .i 文件中，只有常量，数字，字符串及关键字等，编译主要是通过语法分析和词法分析，来确定所有指令是否符号规则，并将其转换成汇编代码， 将 .i 文件转为 .s 文件。</p>
+<ul>
+<li>命令 ： g++ -S test.i –o test.s </li>
+<li>主要进行词法分析，语法分析，语义分析等</li>
+<li>汇编：将汇编语言翻译成目标机器指令的过程，将 .s 文件转为 .o 文件。</li>
+<li>命令 ：g++ -c test.s –o test.o</li>
+</ul>
+</li>
+<li><p>链接：汇编生成的目标并不能立即执行，还需要通过链接，因为 某个文件可能调用另外一个源文件中的函数或常量，或是函数中调用了库函数；链接的主要工作就是将有关目标文件连接起来， 将 .o 文件转为可执行文件。</p>
+<ul>
+<li>静态链接 ： 在编译期间就确定了 <ul>
+<li>对库函数的链接是在编译期间完成的。 Libxxx.a</li>
+<li>动态链接 ： 在运行时再载入 </li>
+</ul>
+</li>
+<li>在程序运行时期才载入</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><font color="#006600">:g++与gcc的区别</font><br></p>
+<ul>
+<li>它们都可以编译.c和.cpp文件；后缀为 .c 的文件， gcc把它当作C程序， g++ 则将它当作 C++ 程序，对于 .cpp文件，gcc和g++都将其视为 c++程序。</li>
+<li>编译阶段，g++会调用gcc，对于cpp文件，两者等价，但gcc 命令不能自动和C++程序使用的库链接。因此，对于cpp文件，一般使用g++。</li>
+<li>对于 extern ”C” ，gcc/g++都将以C的方式进行编译。</li>
+</ul>
+</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/C/" rel="tag"># C++</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/10/25/%E7%BA%BF%E7%A8%8B%E5%90%8C%E6%AD%A5%E9%97%AE%E9%A2%98/" rel="prev" title="线程同步问题">
+      <i class="fa fa-chevron-left"></i> 线程同步问题
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/10/25/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E4%B9%8B%E4%BC%A0%E8%BE%93%E5%B1%82/" rel="next" title="计算机网络之传输层">
+      计算机网络之传输层 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Han Cheng"
+      src="/images/teemo.png">
+  <p class="site-author-name" itemprop="name">Han Cheng</p>
+  <div class="site-description" itemprop="description">记录平日所学</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">15</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Han Cheng</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
