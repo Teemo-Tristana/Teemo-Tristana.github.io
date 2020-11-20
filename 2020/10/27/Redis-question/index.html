@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="什么是热key ？ 热key的问题怎么解决 所谓 热key问题就是，突然有大量的请求比如几十万去访问redis某个特定的key,那么这样会导致流量过于集中，而到达物理网卡的上限，从而导致这台redis服务器宕机引发雪崩。 针对热key的解决方案: 提前把热key打散到不同的服务器,降低压力 加入二级缓存，提前加载热key数据到内存中，若redis宕机，走内存查询。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis question">
+<meta property="og:url" content="http://example.com/2020/10/27/Redis-question/index.html">
+<meta property="og:site_name" content="Teemo-Tristana">
+<meta property="og:description" content="什么是热key ？ 热key的问题怎么解决 所谓 热key问题就是，突然有大量的请求比如几十万去访问redis某个特定的key,那么这样会导致流量过于集中，而到达物理网卡的上限，从而导致这台redis服务器宕机引发雪崩。 针对热key的解决方案: 提前把热key打散到不同的服务器,降低压力 加入二级缓存，提前加载热key数据到内存中，若redis宕机，走内存查询。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://teemo-tristana.github.io/images/redis%E7%83%ADkey.jpg">
+<meta property="og:image" content="https://teemo-tristana.github.io/images/redis%E7%BC%93%E5%AD%98%E5%87%BB%E7%A9%BF.jpg">
+<meta property="og:image" content="https://teemo-tristana.github.io/images/redis%E7%9A%84%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F.jpg">
+<meta property="og:image" content="https://teemo-tristana.github.io/images/redis%E7%9A%84%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F%E5%B8%83%E9%9A%86%E6%BB%A4%E6%B3%A2.jpg">
+<meta property="og:image" content="https://teemo-tristana.github.io/images/redis%E7%9A%84%E7%BC%93%E5%AD%98%E9%9B%AA%E5%B4%A9.jpg">
+<meta property="og:image" content="https://teemo-tristana.github.io/images/redis%E6%83%B0%E6%80%A7%E5%88%A0%E9%99%A4.jpg">
+<meta property="article:published_time" content="2020-10-27T07:44:40.000Z">
+<meta property="article:modified_time" content="2020-10-27T08:17:03.639Z">
+<meta property="article:author" content="Han Cheng">
+<meta property="article:tag" content="Redis">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://teemo-tristana.github.io/images/redis%E7%83%ADkey.jpg">
+
+<link rel="canonical" href="http://example.com/2020/10/27/Redis-question/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Redis question | Teemo-Tristana</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Teemo-Tristana</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">每日进步一点</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="user fa-fw"></i>关于</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/10/27/Redis-question/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/teemo.png">
+      <meta itemprop="name" content="Han Cheng">
+      <meta itemprop="description" content="记录平日所学">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Teemo-Tristana">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Redis question
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-10-27 15:44:40 / 修改时间：16:17:03" itemprop="dateCreated datePublished" datetime="2020-10-27T15:44:40+08:00">2020-10-27</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="什么是热key-？-热key的问题怎么解决"><a href="#什么是热key-？-热key的问题怎么解决" class="headerlink" title="什么是热key ？ 热key的问题怎么解决"></a>什么是热key ？ 热key的问题怎么解决</h1><ul>
+<li>所谓 热key问题就是，突然有大量的请求比如几十万去访问redis某个特定的key,那么这样会导致流量过于集中，而到达物理网卡的上限，从而导致这台redis服务器宕机引发雪崩。<br><img src="https://teemo-tristana.github.io/images/redis%E7%83%ADkey.jpg" alt="redis的热key"></li>
+<li>针对热key的解决方案:<ol>
+<li>提前把热key打散到不同的服务器,降低压力</li>
+<li>加入二级缓存，提前加载热key数据到内存中，若redis宕机，走内存查询。<a id="more"></a>
+<h1 id="什么是缓存击穿"><a href="#什么是缓存击穿" class="headerlink" title="什么是缓存击穿"></a>什么是缓存击穿</h1></li>
+</ol>
+</li>
+<li>缓存击穿就是单个key并发访问过高，过期时导致所有请求直接达到db上，与热key类似，只是过期请求全部打到DB上路。</li>
+<li>解决方案：<ol>
+<li>加锁更新，比如请求查询A，发现缓存中没有，对A这个key加锁，同时去数据库查询数据，写入缓存，再返回给用户，这样后面的请求就可以从缓存中拿到数据了。</li>
+<li>将过期时间组合写在value中，通过异步的方式不断的刷新过期时间，防止此类现象。<br><img src="https://teemo-tristana.github.io/images/redis%E7%BC%93%E5%AD%98%E5%87%BB%E7%A9%BF.jpg" alt="redis缓存击穿"><h1 id="什么是缓存穿透"><a href="#什么是缓存穿透" class="headerlink" title="什么是缓存穿透"></a>什么是缓存穿透</h1></li>
+</ol>
+</li>
+<li>缓存穿透是指查询不存在缓存中的数据，每次请求都会打到DB，就像缓存不存在一样。<br><img src="https://teemo-tristana.github.io/images/redis%E7%9A%84%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F.jpg" alt="redis缓存穿透"></li>
+<li>解决方法：<ol>
+<li>加一层 <font color="#dd0dd0">布隆滤波</font>，布隆滤波的原理是在存入数据时，会通过散列函数将其映射为一个位数组中的k个点，同时将其置为1。<ul>
+<li>当用户再次查询A时，而A在布隆滤波的值为0，直接返回，就不会产生击穿请求而打到DB上了。</li>
+<li>布隆滤波之后可能会有<strong>误判</strong>，因为它本身是一个数组，可能会有多个值落到同一个位置，那么理论上来说只要我们的数组长度够长，误判的概率就会越低，这种问题就根据实际情况来就好了。<br><img src="https://teemo-tristana.github.io/images/redis%E7%9A%84%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F%E5%B8%83%E9%9A%86%E6%BB%A4%E6%B3%A2.jpg" alt="redis缓存穿透布隆滤波"></li>
+</ul>
+</li>
+</ol>
+</li>
+</ul>
+<h1 id="什么是透缓存雪崩"><a href="#什么是透缓存雪崩" class="headerlink" title="什么是透缓存雪崩"></a>什么是透缓存雪崩</h1><ul>
+<li>缓存雪崩是指当某一时刻发生大规模的缓存失效的情况，比如你的缓存服务宕机了，会有大量的请求进来直接打到DB上，这样可能导致整个系统的崩溃。与缓存击穿、热key不同的是<strong>雪崩是指大规模的缓存过期失效。</strong><br><img src="https://teemo-tristana.github.io/images/redis%E7%9A%84%E7%BC%93%E5%AD%98%E9%9B%AA%E5%B4%A9.jpg" alt="redis的缓存雪崩"></li>
+</ul>
+<h1 id="Reids的过期策略"><a href="#Reids的过期策略" class="headerlink" title="Reids的过期策略"></a>Reids的过期策略</h1><h2 id="惰性删除"><a href="#惰性删除" class="headerlink" title="惰性删除"></a>惰性删除</h2><ul>
+<li>惰性删除是当我们查询key的时候才对key进行检测，如果已经达到过期时间，则删除。显然，他有一个<strong>缺点就是如果这些过期的key没有被访问，那么他就一直无法被删除，而且一直占用内存</strong>。<br><img src="https://teemo-tristana.github.io/images/redis%E6%83%B0%E6%80%A7%E5%88%A0%E9%99%A4.jpg" alt="redis惰性删除"><h2 id="定期删除"><a href="#定期删除" class="headerlink" title="定期删除"></a>定期删除</h2></li>
+<li>定期删除指的是redis每隔一段时间对数据库做一次检查，删除里面的过期key。由于不可能对所有key去做轮询来删除，所以redis会每次随机取一些key去做检查和删除。</li>
+</ul>
+<h1 id="Redis持久化方式"><a href="#Redis持久化方式" class="headerlink" title="Redis持久化方式"></a>Redis持久化方式</h1><ul>
+<li>redis持久化<h2 id="AOF"><a href="#AOF" class="headerlink" title="AOF"></a>AOF</h2><h2 id="RDB"><a href="#RDB" class="headerlink" title="RDB"></a>RDB</h2></li>
+</ul>
+<h1 id="Redis的高可用"><a href="#Redis的高可用" class="headerlink" title="Redis的高可用"></a>Redis的高可用</h1><h2 id="主从架构"><a href="#主从架构" class="headerlink" title="主从架构"></a>主从架构</h2><h2 id="哨兵"><a href="#哨兵" class="headerlink" title="哨兵"></a>哨兵</h2><h1 id="redis集群的原理"><a href="#redis集群的原理" class="headerlink" title="redis集群的原理"></a>redis集群的原理</h1><h2 id="节点"><a href="#节点" class="headerlink" title="节点"></a>节点</h2><h2 id="槽slot"><a href="#槽slot" class="headerlink" title="槽slot"></a>槽slot</h2><h2 id="故障转移"><a href="#故障转移" class="headerlink" title="故障转移"></a>故障转移</h2><h1 id="Redis事务机制"><a href="#Redis事务机制" class="headerlink" title="Redis事务机制"></a>Redis事务机制</h1>
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Redis/" rel="tag"># Redis</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/10/27/Redis%E5%AD%A6%E4%B9%A001/" rel="prev" title="Redis学习01">
+      <i class="fa fa-chevron-left"></i> Redis学习01
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/10/30/%E9%98%85%E8%AF%BB%E9%A1%BA%E5%BA%8F/" rel="next" title="">
+       <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E7%83%ADkey-%EF%BC%9F-%E7%83%ADkey%E7%9A%84%E9%97%AE%E9%A2%98%E6%80%8E%E4%B9%88%E8%A7%A3%E5%86%B3"><span class="nav-number">1.</span> <span class="nav-text">什么是热key ？ 热key的问题怎么解决</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E7%BC%93%E5%AD%98%E5%87%BB%E7%A9%BF"><span class="nav-number">2.</span> <span class="nav-text">什么是缓存击穿</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F"><span class="nav-number">3.</span> <span class="nav-text">什么是缓存穿透</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E9%80%8F%E7%BC%93%E5%AD%98%E9%9B%AA%E5%B4%A9"><span class="nav-number">4.</span> <span class="nav-text">什么是透缓存雪崩</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Reids%E7%9A%84%E8%BF%87%E6%9C%9F%E7%AD%96%E7%95%A5"><span class="nav-number">5.</span> <span class="nav-text">Reids的过期策略</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%83%B0%E6%80%A7%E5%88%A0%E9%99%A4"><span class="nav-number">5.1.</span> <span class="nav-text">惰性删除</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9A%E6%9C%9F%E5%88%A0%E9%99%A4"><span class="nav-number">5.2.</span> <span class="nav-text">定期删除</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Redis%E6%8C%81%E4%B9%85%E5%8C%96%E6%96%B9%E5%BC%8F"><span class="nav-number">6.</span> <span class="nav-text">Redis持久化方式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#AOF"><span class="nav-number">6.1.</span> <span class="nav-text">AOF</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RDB"><span class="nav-number">6.2.</span> <span class="nav-text">RDB</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Redis%E7%9A%84%E9%AB%98%E5%8F%AF%E7%94%A8"><span class="nav-number">7.</span> <span class="nav-text">Redis的高可用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BB%E4%BB%8E%E6%9E%B6%E6%9E%84"><span class="nav-number">7.1.</span> <span class="nav-text">主从架构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%93%A8%E5%85%B5"><span class="nav-number">7.2.</span> <span class="nav-text">哨兵</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#redis%E9%9B%86%E7%BE%A4%E7%9A%84%E5%8E%9F%E7%90%86"><span class="nav-number">8.</span> <span class="nav-text">redis集群的原理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%8A%82%E7%82%B9"><span class="nav-number">8.1.</span> <span class="nav-text">节点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A7%BDslot"><span class="nav-number">8.2.</span> <span class="nav-text">槽slot</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%85%E9%9A%9C%E8%BD%AC%E7%A7%BB"><span class="nav-number">8.3.</span> <span class="nav-text">故障转移</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Redis%E4%BA%8B%E5%8A%A1%E6%9C%BA%E5%88%B6"><span class="nav-number">9.</span> <span class="nav-text">Redis事务机制</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Han Cheng"
+      src="/images/teemo.png">
+  <p class="site-author-name" itemprop="name">Han Cheng</p>
+  <div class="site-description" itemprop="description">记录平日所学</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">14</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Han Cheng</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
