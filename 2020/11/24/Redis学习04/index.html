@@ -20,22 +20,24 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="如何阅读Redis源码  阅读数据结构的实现： 相关文件： sds.h     sds.c adlist.h  adlist.c dict.h    dict.c redis.h   zskiplist zskiplistNode t_zset.c 所有zsl开头的函数如zslCreate, zslInsert, zslDeleteNode hyperloglog.c 中hlhdr结构，以及所有h">
+  <meta name="description" content="Redis事件在 Redis 中， 事件分为两大类：文件事件和时间时间。文件事件指代的是主要包含以下三类：    客户端的网络连接请求达到事件    客户端发来的命令请求达到事件    服务端发出命令应答事件 文件事件（file event）Redis 服务器通过套接字与客户端进行连接，文件事件就是服务器对套接字操作的抽象服务器与客户端的通信会产生相应的文件事件，而服务器则通过监听并处理这些事件来">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Teemo-Tristana">
-<meta property="og:url" content="http://example.com/2020/10/30/%E9%98%85%E8%AF%BB%E9%A1%BA%E5%BA%8F/index.html">
+<meta property="og:title" content="Redis事件">
+<meta property="og:url" content="http://example.com/2020/11/24/Redis%E5%AD%A6%E4%B9%A004/index.html">
 <meta property="og:site_name" content="Teemo-Tristana">
-<meta property="og:description" content="如何阅读Redis源码  阅读数据结构的实现： 相关文件： sds.h     sds.c adlist.h  adlist.c dict.h    dict.c redis.h   zskiplist zskiplistNode t_zset.c 所有zsl开头的函数如zslCreate, zslInsert, zslDeleteNode hyperloglog.c 中hlhdr结构，以及所有h">
+<meta property="og:description" content="Redis事件在 Redis 中， 事件分为两大类：文件事件和时间时间。文件事件指代的是主要包含以下三类：    客户端的网络连接请求达到事件    客户端发来的命令请求达到事件    服务端发出命令应答事件 文件事件（file event）Redis 服务器通过套接字与客户端进行连接，文件事件就是服务器对套接字操作的抽象服务器与客户端的通信会产生相应的文件事件，而服务器则通过监听并处理这些事件来">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/.com//readRedis.png">
-<meta property="article:published_time" content="2020-10-30T08:26:25.674Z">
-<meta property="article:modified_time" content="2020-11-03T02:30:41.278Z">
+<meta property="og:image" content="https://teemo-tristana.github.io/images/%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%AF%B9%E5%AE%A2%E6%88%B7%E7%AB%AF%E7%9A%84%E8%BF%9E%E6%8E%A5%E8%AF%B7%E6%B1%82%E8%BF%9B%E8%A1%8C%E5%BA%94%E7%AD%94.PNG">
+<meta property="og:image" content="https://teemo-tristana.github.io/images/%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%8E%A5%E6%94%B6%E5%AE%A2%E6%88%B7%E7%AB%AF%E7%9A%84%E5%91%BD%E4%BB%A4%E8%AF%B7%E6%B1%82.PNG">
+<meta property="og:image" content="https://teemo-tristana.github.io/images/%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%90%91%E5%AE%A2%E6%88%B7%E7%AB%AF%E7%9A%84%E5%9B%9E%E5%A4%8D%E5%91%BD%E4%BB%A4%E8%AF%B7%E6%B1%82.PNG">
+<meta property="article:published_time" content="2020-11-24T02:24:40.000Z">
+<meta property="article:modified_time" content="2020-11-24T03:13:26.873Z">
 <meta property="article:author" content="Han Cheng">
-<meta property="article:tag" content="C++,python，图像处理">
+<meta property="article:tag" content="redis">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://example.com/.com//readRedis.png">
+<meta name="twitter:image" content="https://teemo-tristana.github.io/images/%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%AF%B9%E5%AE%A2%E6%88%B7%E7%AB%AF%E7%9A%84%E8%BF%9E%E6%8E%A5%E8%AF%B7%E6%B1%82%E8%BF%9B%E8%A1%8C%E5%BA%94%E7%AD%94.PNG">
 
-<link rel="canonical" href="http://example.com/2020/10/30/%E9%98%85%E8%AF%BB%E9%A1%BA%E5%BA%8F/">
+<link rel="canonical" href="http://example.com/2020/11/24/Redis%E5%AD%A6%E4%B9%A004/">
 
 
 <script id="page-configurations">
@@ -48,7 +50,7 @@
   };
 </script>
 
-  <title> | Teemo-Tristana</title>
+  <title>Redis事件 | Teemo-Tristana</title>
   
 
 
@@ -169,7 +171,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/10/30/%E9%98%85%E8%AF%BB%E9%A1%BA%E5%BA%8F/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/11/24/Redis%E5%AD%A6%E4%B9%A004/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/teemo.png">
@@ -182,7 +184,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          
+          Redis事件
         </h1>
 
         <div class="post-meta">
@@ -191,16 +193,10 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
+              
 
-              <time title="创建时间：2020-10-30 16:26:25" itemprop="dateCreated datePublished" datetime="2020-10-30T16:26:25+08:00">2020-10-30</time>
+              <time title="创建时间：2020-11-24 10:24:40 / 修改时间：11:13:26" itemprop="dateCreated datePublished" datetime="2020-11-24T10:24:40+08:00">2020-11-24</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-11-03 10:30:41" itemprop="dateModified" datetime="2020-11-03T10:30:41+08:00">2020-11-03</time>
-              </span>
 
           
 
@@ -213,105 +209,30 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="如何阅读Redis源码"><a href="#如何阅读Redis源码" class="headerlink" title="如何阅读Redis源码"></a>如何阅读Redis源码</h1><ul>
-<li><ol>
-<li>阅读数据结构的实现：<ul>
-<li>相关文件：<ul>
-<li>sds.h     sds.c</li>
-<li>adlist.h  adlist.c</li>
-<li>dict.h    dict.c</li>
-<li>redis.h   zskiplist zskiplistNode t_zset.c 所有zsl开头的函数如zslCreate, zslInsert, zslDeleteNode</li>
-<li>hyperloglog.c 中hlhdr结构，以及所有hll开头的文件</li>
+        <h1 id="Redis事件"><a href="#Redis事件" class="headerlink" title="Redis事件"></a>Redis事件</h1><p>在 Redis 中， 事件分为两大类：文件事件和时间时间。<br>文件事件指代的是主要包含以下三类：<br>    客户端的网络连接请求达到事件<br>    客户端发来的命令请求达到事件<br>    服务端发出命令应答事件</p>
+<h1 id="文件事件（file-event）"><a href="#文件事件（file-event）" class="headerlink" title="文件事件（file event）"></a>文件事件（file event）</h1><p>Redis 服务器通过套接字与客户端进行连接，文件事件就是服务器对套接字操作的抽象<br>服务器与客户端的通信会产生相应的文件事件，而服务器则通过监听并处理这些事件来完成一些列网络操作。</p>
+<h2 id="文件事件的处理器"><a href="#文件事件的处理器" class="headerlink" title="文件事件的处理器"></a>文件事件的处理器</h2><p>Redis为文件事件编写了多个处理器，用于处理不同的网路请求</p>
+<ol>
+<li><font color="#00ddd00"> 连接应答处理器</font> , 用于处理客户端的应答<ul>
+<li>newworking.c/acceptTcpHandler(),用于对连接服务器监听套接字的客户端进行应答</li>
+<li>Redis 服务器初始化时，会将 连接应答处理器和服务器监听套接字的 ae_readable 事件关联起来，当有 connect 连接事件时，会触发 ae_readable，从而引发连接应答处理器执行相应的操作。<br><img src="https://teemo-tristana.github.io/images/%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%AF%B9%E5%AE%A2%E6%88%B7%E7%AB%AF%E7%9A%84%E8%BF%9E%E6%8E%A5%E8%AF%B7%E6%B1%82%E8%BF%9B%E8%A1%8C%E5%BA%94%E7%AD%94.PNG" alt="服务器对客户端的连接请求进行应答"></li>
 </ul>
 </li>
+<li><font color="#00ddd00"> 命令请求处理器</font> , 用于处理客户端的请求<ul>
+<li>newworking.c/readyQueryFromClient(), 从套接字中读取客户端发送的请求命令</li>
+<li>在客户端与服务器连接连接后，客户端发送请求命令给服务器时，套接字会产生 readable 事件， 从而引发执行命令请求处理器</li>
+<li>在客户端连接服务器期间，此关联一直存在<br><img src="https://teemo-tristana.github.io/images/%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%8E%A5%E6%94%B6%E5%AE%A2%E6%88%B7%E7%AB%AF%E7%9A%84%E5%91%BD%E4%BB%A4%E8%AF%B7%E6%B1%82.PNG" alt="服务器接收客户端的命令请求"></li>
 </ul>
 </li>
+<li><font color="#00ddd00"> 命令回复处理器</font> , 用于将服务器处理结果返回给客户端<ul>
+<li>newworking.c/sendReplyToClient(), 将服务器处理结果通过套接字返回给客户端</li>
+<li>服务器有命令回复给client时，会将套接字的 ae_writable  与 命令恢复执行器关联，当有命令回复时，会产生 ae_writable，从而引发回复命令执行器的执行</li>
+<li>执行完毕后，服务器就会解除此关联<br><img src="https://teemo-tristana.github.io/images/%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%90%91%E5%AE%A2%E6%88%B7%E7%AB%AF%E7%9A%84%E5%9B%9E%E5%A4%8D%E5%91%BD%E4%BB%A4%E8%AF%B7%E6%B1%82.PNG" alt="服务器向客户端的回复命令请求"></li>
+</ul>
+</li>
+<li><font color="#00ddd00">复制处理器</font> , 用于主从服务器的复制操作<br>其中，前三个最常使用。<h1 id="时间事件-time-event"><a href="#时间事件-time-event" class="headerlink" title="时间事件(time event)"></a>时间事件(time event)</h1>Redis 服务器的一些操作需要定期执行，时间事件就服务器对此类定时操作的抽象</li>
 </ol>
-</li>
-<li><ol start="2">
-<li>阅读内存编码[encoding]数据结构的实现<ul>
-<li>和普通的数据结构一样， 内存编码数据结构基本上是独立的， 不和其他模块耦合<ul>
-<li>intset.h intset.c[整数集合intset数据结构]</li>
-<li>ziplist.h ziplist.c[压缩列表zip-list数据结构]</li>
-</ul>
-</li>
-</ul>
-</li>
-</ol>
-</li>
-<li><ol start="3">
-<li>阅读数据类型实现：<ul>
-<li>Redis6种不同类型的键[字符串-散列-列表-集合-有序集合-HyperLogLog]所有底层实现结构<ul>
-<li>object.c Redis对象类型系统实现</li>
-<li>t_string.c 字符串键的实现</li>
-<li>t_list.c 列表键的实现</li>
-<li>t_hash.c 散列键的实现</li>
-<li>t_set.c 集合键的实现</li>
-<li>t_zset.c中除zsl开头的函数之外的所有函数 有序集合键的实现</li>
-<li>hyperloglog.c 中所有以pf开头的函数</li>
-</ul>
-</li>
-</ul>
-</li>
-</ol>
-</li>
-<li><ol start="4">
-<li><p>阅读数据库相关实现代码:</p>
-<ul>
-<li><p>数据库相关</p>
-<ul>
-<li>redis.h中redisDb结构和db.c  Redis数据库实现</li>
-<li>notify.c                   Redis的数据库通知功能实现代码</li>
-<li>rdb.h和rdb.c               Redis的RDB持久化实现代码</li>
-<li>aof.c                      Redis的AOF持久化实现代码</li>
-</ul>
-</li>
-<li><p>Redis独立功能模块：</p>
-<ul>
-<li>redis.h中pubsubPattern结构以及pubsub.c   发布与阅读功能实现</li>
-<li>redis.h中multiState结构以及multiCmd结构   事务功能的实现</li>
-<li>sort.c                                   SORT命令的实现</li>
-<li>bitops.c                                 GETBIT|SETBIT等二进制操作命令的实现</li>
-</ul>
-</li>
-</ul>
-</li>
-</ol>
-</li>
-<li><ol start="5">
-<li><p>阅读客户端和服务器相关代码：</p>
-<ul>
-<li><p>客户端-服务器代码：</p>
-<ul>
-<li>ae.c 以及任意一个ae_*.c文件           Redis的事件处理器实现[基于Reactor模式]</li>
-<li>networking.c                         Redis的网络链接库，负责发送回复和接受命令请求，同时也负责创建/销毁客户端以及分析通信协议等工作</li>
-<li>redis.h 和 redis.c中和单机Redis服务器相关部分     单机Redis服务器的实现</li>
-</ul>
-</li>
-<li><p>独立模块:</p>
-<ul>
-<li>scripting.c   Lua脚本功能实现</li>
-<li>slowlog.c     慢查询功能的实现</li>
-<li>monitor.c     监视器功能的实现</li>
-</ul>
-</li>
-</ul>
-</li>
-</ol>
-</li>
-<li><ol start="6">
-<li>阅读多机功能的实现<ul>
-<li>多级功能代码：<ul>
-<li>replication.c     复制功能的实现</li>
-<li>sentinel.c        Redis Sentinel的实现代码</li>
-<li>cluster.c         Redis集群的实现代码<br><img src="/.com//readRedis.png" alt="readRedis.png"></li>
-</ul>
-</li>
-</ul>
-</li>
-</ol>
-</li>
-</ul>
+<p>时间事件主要是 Redis 内部的定时处理器</p>
 
     </div>
 
@@ -320,6 +241,9 @@
     
 
       <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/redis/" rel="tag"># redis</a>
+          </div>
 
         
 
@@ -327,13 +251,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2020/10/27/Redis-question/" rel="prev" title="Redis question">
-      <i class="fa fa-chevron-left"></i> Redis question
+    <a href="/2020/11/20/RPC/" rel="prev" title="RPC">
+      <i class="fa fa-chevron-left"></i> RPC
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2020/11/03/Redis%E5%AD%A6%E4%B9%A002/" rel="next" title="Redis学习02">
-      Redis学习02 <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -392,7 +313,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E9%98%85%E8%AF%BBRedis%E6%BA%90%E7%A0%81"><span class="nav-number">1.</span> <span class="nav-text">如何阅读Redis源码</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Redis%E4%BA%8B%E4%BB%B6"><span class="nav-number">1.</span> <span class="nav-text">Redis事件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E4%BA%8B%E4%BB%B6%EF%BC%88file-event%EF%BC%89"><span class="nav-number">2.</span> <span class="nav-text">文件事件（file event）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E4%BA%8B%E4%BB%B6%E7%9A%84%E5%A4%84%E7%90%86%E5%99%A8"><span class="nav-number">2.1.</span> <span class="nav-text">文件事件的处理器</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%97%B6%E9%97%B4%E4%BA%8B%E4%BB%B6-time-event"><span class="nav-number">3.</span> <span class="nav-text">时间事件(time event)</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
