@@ -195,7 +195,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-11-25 11:36:20" itemprop="dateModified" datetime="2020-11-25T11:36:20+08:00">2020-11-25</time>
+                <time title="修改时间：2020-11-25 15:02:52" itemprop="dateModified" datetime="2020-11-25T15:02:52+08:00">2020-11-25</time>
               </span>
 
           
@@ -212,7 +212,7 @@
           <h1 id="Redis事件"><a href="#Redis事件" class="headerlink" title="Redis事件"></a>Redis事件</h1><p>在 Redis 中， 事件分为两大类：文件事件和时间时间。<br>文件事件指代的是主要包含以下三类：<br>    客户端的网络连接请求达到事件<br>    客户端发来的命令请求达到事件<br>    服务端发出命令应答事件</p>
 <h1 id="文件事件（file-event）"><a href="#文件事件（file-event）" class="headerlink" title="文件事件（file event）"></a>文件事件（file event）</h1><p>Redis 服务器通过套接字与客户端进行连接，文件事件就是服务器对套接字操作的抽象<br>服务器与客户端的通信会产生相应的文件事件，而服务器则通过监听并处理这些事件来完成一些列网络操作。</p>
 <h2 id="文件事件的处理器"><a href="#文件事件的处理器" class="headerlink" title="文件事件的处理器"></a>文件事件的处理器</h2><p>文件事件节点定义：</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ae.h</span></span><br><span class="line"><span class="comment">/* File event structure */</span></span><br><span class="line"><span class="comment">/* 文件事件结构 */</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">aeFileEvent</span> &#123;</span></span><br><span class="line">    <span class="comment">// 可监听事件的掩码(可选项 ：ae_readable | ae_writable | ae_barrier)</span></span><br><span class="line">    <span class="keyword">int</span> mask; <span class="comment">/* one of AE_(READABLE|WRITABLE|BARRIER) */</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 读事件处理器</span></span><br><span class="line">    aeFileProc *rfileProc;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 写事件处理器</span></span><br><span class="line">    aeFileProc *wfileProc;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 函数指针，指向对应的客户端对象(多路复用私有数据)</span></span><br><span class="line">    <span class="keyword">void</span> *clientData;</span><br><span class="line">&#125; aeFileEvent;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ae.h</span></span><br><span class="line"><span class="comment">/* File event structure */</span></span><br><span class="line"><span class="comment">/* 文件事件结构 */</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">aeFileEvent</span> &#123;</span></span><br><span class="line">    <span class="comment">// 可监听事件的掩码(可选项 ：ae_readable | ae_writable 、可读(readable)时，相应的文件事件机会产生</span></span><br><span class="line">    + 文件事件分为可读(AE_READABLE)和可写(AE_WRIATABLE</span><br><span class="line">    + 时间事件分为定时时间和周期事件：定时事件在指定时间达到一次，执行后即删除；而周期性事件则是每隔一段时间达到一次。</span><br><span class="line">    + Redis 服务器一般只执行 serverCron函数的一个时间事件且是周期性时间</span><br><span class="line">    + 文件事件和时间事件是同等的，Redis 服务器轮流执行这两种事件，处理过程是按序、同步、原子地执行，不会抢占或中断。</span><br><span class="line">    + 时间事件实际的处理实践通常比设定的实践稍微一些。| ae_barrier)</span><br><span class="line">    <span class="keyword">int</span> mask; <span class="comment">/* one of AE_(READABLE|writable|、可读(readable)时，相应的文件事件机会产生</span></span><br><span class="line"><span class="comment">    + 文件事件分为可读(AE_READABLE)和可写(AE_WRIATABLE</span></span><br><span class="line"><span class="comment">    + 时间事件分为定时时间和周期事件：定时事件在指定时间达到一次，执行后即删除；而周期性事件则是每隔一段时间达到一次。</span></span><br><span class="line"><span class="comment">    + Redis 服务器一般只执行 serverCron函数的一个时间事件且是周期性时间</span></span><br><span class="line"><span class="comment">    + 文件事件和时间事件是同等的，Redis 服务器轮流执行这两种事件，处理过程是按序、同步、原子地执行，不会抢占或中断。</span></span><br><span class="line"><span class="comment">    + 时间事件实际的处理实践通常比设定的实践稍微一些。BARRIER) */</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 读事件处理器</span></span><br><span class="line">    aeFileProc *rfileProc;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 写事件处理器</span></span><br><span class="line">    aeFileProc *wfileProc;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 函数指针，指向对应的客户端对象(多路复用私有数据)</span></span><br><span class="line">    <span class="keyword">void</span> *clientData;</span><br><span class="line">&#125; aeFileEvent;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 <p>Redis为文件事件编写了多个处理器，用于处理不同的网路请求</p>
 <ol>
 <li><font color="#00ddd00"> 连接应答处理器</font> , 用于处理客户端的应答<ul>
@@ -228,7 +228,17 @@
 </li>
 <li><font color="#00ddd00"> 命令回复处理器</font> , 用于将服务器处理结果返回给客户端<ul>
 <li>newworking.c/sendReplyToClient(), 将服务器处理结果通过套接字返回给客户端</li>
-<li>服务器有命令回复给client时，会将套接字的 ae_writable  与 命令恢复执行器关联，当有命令回复时，会产生 ae_writable，从而引发回复命令执行器的执行</li>
+<li>服务器有命令回复给client时，会将套接字的 ae_writable 、可读(readable)时，相应的文件事件机会产生</li>
+<li>文件事件分为可读(AE_READABLE)和可写(AE_WRIATABLE</li>
+<li>时间事件分为定时时间和周期事件：定时事件在指定时间达到一次，执行后即删除；而周期性事件则是每隔一段时间达到一次。</li>
+<li>Redis 服务器一般只执行 serverCron函数的一个时间事件且是周期性时间</li>
+<li>文件事件和时间事件是同等的，Redis 服务器轮流执行这两种事件，处理过程是按序、同步、原子地执行，不会抢占或中断。</li>
+<li>时间事件实际的处理实践通常比设定的实践稍微一些。 与 命令恢复执行器关联，当有命令回复时，会产生 ae_writable，、可读(readable)时，相应的文件事件机会产生</li>
+<li>文件事件分为可读(AE_READABLE)和可写(AE_WRIATABLE</li>
+<li>时间事件分为定时时间和周期事件：定时事件在指定时间达到一次，执行后即删除；而周期性事件则是每隔一段时间达到一次。</li>
+<li>Redis 服务器一般只执行 serverCron函数的一个时间事件且是周期性时间</li>
+<li>文件事件和时间事件是同等的，Redis 服务器轮流执行这两种事件，处理过程是按序、同步、原子地执行，不会抢占或中断。</li>
+<li>时间事件实际的处理实践通常比设定的实践稍微一些。从而引发回复命令执行器的执行</li>
 <li>执行完毕后，服务器就会解除此关联<br><img src="https://teemo-tristana.github.io/images/%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%90%91%E5%AE%A2%E6%88%B7%E7%AB%AF%E7%9A%84%E5%9B%9E%E5%A4%8D%E5%91%BD%E4%BB%A4%E8%AF%B7%E6%B1%82.PNG" alt="服务器向客户端的回复命令请求"></li>
 </ul>
 </li>
@@ -272,8 +282,38 @@
 <li>维持一个无序链表，每次将时间事件插入链表头[最新到达的事件插入表头]，每次时间事件执行时，则遍历链表，查找已到达的时间事件，并调用相应的时间处理器。</li>
 <li>这里的无序链表，指代的是<font color="#00dd00">不按 when 属性排序</font>,因此，当时间事件执行时，必须遍历整个链表确保所有已到达的时间事件都会被处理。<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ae.c</span></span><br><span class="line"><span class="comment">// 时间事件处理相关 API </span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">//创建时间事件节点，然后添加到时间事件链表中</span></span><br><span class="line"><span class="function"><span class="keyword">long</span> <span class="keyword">long</span> <span class="title">aeCreateTimeEvent</span><span class="params">(aeEventLoop *eventLoop, <span class="keyword">long</span> <span class="keyword">long</span> milliseconds,</span></span></span><br><span class="line"><span class="function"><span class="params">        aeTimeProc *proc, <span class="keyword">void</span> *clientData,</span></span></span><br><span class="line"><span class="function"><span class="params">        aeEventFinalizerProc *finalizerProc)</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="comment">// 删除时间事件</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">aeDeleteTimeEvent</span><span class="params">(aeEventLoop *eventLoop, <span class="keyword">long</span> <span class="keyword">long</span> id)</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="comment">// 查找距当前时间最近的时间事件</span></span></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">long</span> <span class="title">msUntilEarliestTimer</span><span class="params">(aeEventLoop *eventLoop)</span> </span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="comment">// 处理已到达的时间事件</span></span></span><br><span class="line"><span class="function"><span class="comment">// 已到达指代的是 when 属性记录的 UNIX 时间戳等于或小于当前时间时间戳</span></span></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">processTimeEvents</span><span class="params">(aeEventLoop *eventLoop)</span></span>;</span><br></pre></td></tr></table></figure>
 
-
 </li>
+</ul>
+<h1 id="事件的调度与执行"><a href="#事件的调度与执行" class="headerlink" title="事件的调度与执行"></a>事件的调度与执行</h1><p>Redis 服务器中同时存在文件事件和时间事件，因此，必须对这两种事件进行调度，决定在合适处理时间事件，何时处理文件事件；以及花多少时间处理它们等等。</p>
+<p>Redis 中，事件的调度和执行由 ae/aeProcessEvetns() 函数负责，函数原型如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ae.c</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">aeProcessEvents</span><span class="params">(aeEventLoop *eventLoop, <span class="keyword">int</span> flags)</span></span></span><br></pre></td></tr></table></figure>
+
+<h2 id="调度和执行的规则："><a href="#调度和执行的规则：" class="headerlink" title="调度和执行的规则："></a>调度和执行的规则：</h2><ol>
+<li><p>aeApiPoll() 函数的阻塞时间由时间事件决定，具体的就是到当前时间最近的时间事件的时间</p>
+<ul>
+<li>避免服务器对时间事件进行频繁的轮询(忙等的)</li>
+<li>确保 aeApiPoll()函数不会阻塞过长时间</li>
+</ul>
+</li>
+<li><p>文件事件是随机出现的，若等待并处理完一次文件事件后，时间事件仍未到达，则会继续等待文件事件，随着文件时间的执行，则会不断接近时间事件所设置的时间，此时，则可以处理时间事件。</p>
+</li>
+<li><p>对事件(文件事件/时间事件)的处理都是<font color="#00dd00">同步、有序、原子</font>地执行，因此，事件处理时，服务器不会中断或抢占。</p>
+</li>
+<li><p>Redis 会尽可能地建时程序阻塞事件，在需要时主动让出执行权，减少事件饥饿的可能。比如回复的字节数超过预设值，则命令回复处理器会主动跳出(break),余下的数据留到下次再写；或是将耗时的持久化操作(AOF或RDB)放置到子进程中执行。</p>
+</li>
+<li><p>时间事件是在文件事件之后执行，而事件之间是不会抢占的；因此，<font color="#00dd00">时间事件的实际处理通常比设定的时间要稍晚一些</font>。</p>
+<p><img src="https://teemo-tristana.github.io/images/%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%BA%8B%E4%BB%B6%E5%A4%84%E7%90%86%E7%9A%84%E6%B5%81%E7%A8%8B.PNG" alt="服务器事件处理的流程"></p>
+</li>
+</ol>
+<h2 id="summary"><a href="#summary" class="headerlink" title="summary"></a>summary</h2><ul>
+<li>Redis 服务器是一个事件驱动程序，它的事件可以分为文件事件和时间事件</li>
+<li>文件事件处理器是基于 Reactor 模式实现的网络通信程序</li>
+<li>文件事件是对套接字的抽象：当套接字变为可应答(acceptable)、可写(writable)、可读(readable)时，相应的文件事件机会产生</li>
+<li>文件事件分为可读(AE_READABLE)和可写(AE_WRIATABLE</li>
+<li>时间事件分为定时时间和周期事件：定时事件在指定时间达到一次，执行后即删除；而周期性事件则是每隔一段时间达到一次。</li>
+<li>Redis 服务器一般只执行 serverCron函数的一个时间事件且是周期性时间</li>
+<li>文件事件和时间事件是同等的，Redis 服务器轮流执行这两种事件，处理过程是按序、同步、原子地执行，不会抢占或中断。</li>
+<li>时间事件实际的处理实践通常比设定的实践稍微一些。</li>
 </ul>
 
       
