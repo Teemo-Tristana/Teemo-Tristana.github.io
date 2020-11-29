@@ -20,20 +20,22 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="Redis基本数据结构类型 Redis有6种基本类型的数据结构，分别是字符串string、列表linklist、哈希(字典)hastable、跳跃表skiplist、压缩列表ziplist和整数列表intset。">
+  <meta name="description" content="Redis基本类型 Redis有6种基本数据类型，分别是字符串string、列表linklist、哈希(字典)hastable、跳跃表skiplist、压缩列表ziplist和整数列表intset。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Redis数据结构">
 <meta property="og:url" content="http://example.com/2020/10/27/Redis%E5%AD%A6%E4%B9%A001/index.html">
 <meta property="og:site_name" content="Teemo-Tristana">
-<meta property="og:description" content="Redis基本数据结构类型 Redis有6种基本类型的数据结构，分别是字符串string、列表linklist、哈希(字典)hastable、跳跃表skiplist、压缩列表ziplist和整数列表intset。">
+<meta property="og:description" content="Redis基本类型 Redis有6种基本数据类型，分别是字符串string、列表linklist、哈希(字典)hastable、跳跃表skiplist、压缩列表ziplist和整数列表intset。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://teemo-tristana.github.io/images/sds-c.png">
 <meta property="og:image" content="https://teemo-tristana.github.io/images/redis%E7%9A%84hash%E8%A1%A8%E7%9A%84%E5%93%88%E5%B8%8C%E5%86%B2%E7%AA%81.jpg">
 <meta property="og:image" content="https://teemo-tristana.github.io/images/redis%E7%9A%84%E8%B7%B3%E8%A1%A8%E7%9A%84%E6%9F%A5%E6%89%BE%E8%BF%87%E7%A8%8B.jpg">
 <meta property="og:image" content="https://teemo-tristana.github.io/images/redis%E7%9A%84%E5%8E%8B%E7%BC%A9%E5%88%97%E8%A1%A8%E7%9A%84%E6%9F%A5%E6%89%BE%E8%BF%87%E7%A8%8B.jpg">
 <meta property="og:image" content="https://teemo-tristana.github.io/images/Redis%E5%BA%95%E5%B1%82%E7%BB%93%E6%9E%84%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E5%AF%B9%E5%BA%94%E5%85%B3%E7%B3%BB.jpg">
+<meta property="og:image" content="https://teemo-tristana.github.io/images/%E4%B8%89%E7%BB%B4%E8%BD%AC%E4%B8%BA%E4%BA%8C%E7%BB%B4.png">
+<meta property="og:image" content="https://teemo-tristana.github.io/images/%E4%BA%8C%E7%BB%B4%E5%8F%98%E4%B8%BA%E4%B8%80%E7%BB%B4.png">
 <meta property="article:published_time" content="2020-10-27T01:41:38.000Z">
-<meta property="article:modified_time" content="2020-11-23T06:32:24.931Z">
+<meta property="article:modified_time" content="2020-11-29T14:16:26.231Z">
 <meta property="article:author" content="Han Cheng">
 <meta property="article:tag" content="Redis">
 <meta name="twitter:card" content="summary">
@@ -203,7 +205,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-11-23 14:32:24" itemprop="dateModified" datetime="2020-11-23T14:32:24+08:00">2020-11-23</time>
+                <time title="修改时间：2020-11-29 22:16:26" itemprop="dateModified" datetime="2020-11-29T22:16:26+08:00">2020-11-29</time>
               </span>
 
           
@@ -217,8 +219,8 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="Redis基本数据结构类型"><a href="#Redis基本数据结构类型" class="headerlink" title="Redis基本数据结构类型"></a>Redis基本数据结构类型</h1><ul>
-<li>Redis有6种基本类型的数据结构，分别是字符串string、列表linklist、哈希(字典)hastable、跳跃表skiplist、压缩列表ziplist和整数列表intset。</li>
+        <h1 id="Redis基本类型"><a href="#Redis基本类型" class="headerlink" title="Redis基本类型"></a>Redis基本类型</h1><ul>
+<li>Redis有6种基本数据类型，分别是字符串string、列表linklist、哈希(字典)hastable、跳跃表skiplist、压缩列表ziplist和整数列表intset。</li>
 </ul>
 <a id="more"></a>
 <h2 id="字符串string"><a href="#字符串string" class="headerlink" title="字符串string"></a><font color="#dd0000">字符串string</font><br></h2><ul>
@@ -320,25 +322,66 @@
 <h2 id="整数列表intset"><a href="#整数列表intset" class="headerlink" title="整数列表intset"></a><font color="#dd0000">整数列表intset</font><br></h2><ul>
 <li>用于保存整数值的集合抽象数据结构，<strong>不会出现重复元素</strong>，底层是用<strong>数组</strong>实现，</li>
 </ul>
-<h1 id="Redis数据类型"><a href="#Redis数据类型" class="headerlink" title="Redis数据类型"></a>Redis数据类型</h1><ul>
-<li>基于上述6种基本类型，Redis封装了自己的5种数据对象，每个对象至少用到了一种基本的数据结构.</li>
-</ul>
+<h1 id="Redis数据类型"><a href="#Redis数据类型" class="headerlink" title="Redis数据类型"></a>Redis数据类型</h1><h2 id="五种基本数据结构"><a href="#五种基本数据结构" class="headerlink" title="五种基本数据结构"></a>五种基本数据结构</h2><p>基于上述6种基本类型，Redis封装了自己的5种数据结构，每种数据结构至少用到了一种基本的数据结构.</p>
+<p>Redis有5种数据结构类型，分别是:字符串String、列表List、哈希表Hash、集合Set和有序集合SortSet</p>
+<p>redis通过 <strong>encoding</strong> 属性来设置编码形式，从而提升灵活性和效率，基于不同的应用场景redis自动做出优化具体如下</p>
+<blockquote>
+</blockquote>
+<pre><code>1. 字符串对象string: int整数、embstr编码的简单动态字符串、raw简单动态字符串
+2. 列表对象list: linklist、ziplist 
+3. 哈希对象hash: hashtable、ziplist
+4. 集合对象set: hashtable、intset
+5. 有序集合对象zset: ziplist、skiplist</code></pre>
+<p>Redis的基本类型和数据类型对应关系如下:<br><img src="https://teemo-tristana.github.io/images/Redis%E5%BA%95%E5%B1%82%E7%BB%93%E6%9E%84%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E5%AF%B9%E5%BA%94%E5%85%B3%E7%B3%BB.jpg" alt="Redis底层结构与数据类型对应关系"></p>
+<h2 id="高级数据结构"><a href="#高级数据结构" class="headerlink" title="高级数据结构"></a>高级数据结构</h2><p>redis 除了上述的 5 种基本类型数据结构外，还有 HyperLogLog、Geo、Pub/Sub等类型的高级数据结构。</p>
+<h3 id="HyperLogLog"><a href="#HyperLogLog" class="headerlink" title="HyperLogLog"></a>HyperLogLog</h3><p>HyperLogLog 是 Redis 的高级数据结构，主要用于<font color="#00dd00">基数统计</font>。基数统计也就是集合元素中不重复的个数。<br>优点在于<font color="#0ff">在输入元素的数量或者体积非常大时，计算基数所需的空间总是固定的、并且是很小的</font>。</p>
+<h4 id="统计基数的常见方法"><a href="#统计基数的常见方法" class="headerlink" title="统计基数的常见方法"></a>统计基数的常见方法</h4><ul>
+<li><p>Set <br>Redis 中有集合 Set 的数据结构，可以把数据保存在 set 中，然后统计结果，比如 zcard [key]<br>但这是存在一定问题的，若数据量非常大，则会消耗大量的存储空间。若只是用来统计基数，则会导致资源浪费。</p>
+</li>
+<li><p>bitmap<br>bitmap 也是一种统计基数的方法，也即是用bit数组来存储元素，相比于 set 可以节约大量内存，但是若统计的对象很多，则需要的内存也很大，显示也存在不足，</p>
+</li>
+<li><p>HyperLogLog<br>基于以上分析， 就采用了 HyperLogLog。 HyperLogLog <font color="#FF0000">不会存储</font>每个元素的值，它本质上是<font color="#bb00ff">概率算法</font>: <font color="#00ee00">通过存储元素的 hash 值 的第一个 1 的位置，来计算元素数量</font>。这会涉及到数学概念和公式推导。</p>
 <ul>
-<li><p>Redis有5种数据类型，分别是:字符串String、列表List、哈希表Hash、集合Set和有序集合SortSet</p>
-</li>
-<li><p>redis通过 <strong>encoding</strong> 属性来设置编码形式，从而提升灵活性和效率，基于不同的应用场景redis自动做出优化具体如下</p>
-<ol>
-<li>字符串对象string: int整数、embstr编码的简单动态字符串、raw简单动态字符串</li>
-<li>列表对象list: linklist、ziplist </li>
-<li>哈希对象hash: hashtable、ziplist</li>
-<li>集合对象set: hashtable、intset</li>
-<li>有序集合对象zset: ziplist、skiplist</li>
-</ol>
-</li>
-<li><p>Redis的基本类型和数据类型对应关系如下:<br><img src="https://teemo-tristana.github.io/images/Redis%E5%BA%95%E5%B1%82%E7%BB%93%E6%9E%84%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E5%AF%B9%E5%BA%94%E5%85%B3%E7%B3%BB.jpg" alt="Redis底层结构与数据类型对应关系"></p>
+<li><p>HyperLogLog 的命令</p>
+<blockquote>
+<p><font color="#ff00aa">PFADD</font> <br>将任意数量的元素添加到指定的 HyperLogLog 里面<br>时间复杂度： 每添加一个元素的复杂度为 O(1),如果 HyperLogLog 估计的近似基数（approximated cardinality）在命令执行之后出现了变化， 那么命令返回 1 ， 否则返回 0 <br>如果命令执行时给定的键不存在， 那么程序将先创建一个空的 HyperLogLog 结构， 然后再执行命令</p>
+</blockquote>
+<blockquote>
+<p><font color="#ff00aa">PFCOUNT</font> <br>形式： PFCOUNT key [key …]  <br>作用于单个键时，返回储存在给定键的 HyperLogLog 的近似基数，如果键不存在，那么返回 0，复杂度为 O(1)，并且具有非常低的平均常数时间<br>作用于多个键时，返回所有给定 HyperLogLog 的并集的近似基数，这个近似基数是通过将所有给定 HyperLogLog 合并至一个临时 HyperLogLog 来计算得出的，复杂度为 O(N)<br>HyperLogLog的结果并不精确，错误率在0.81%<br>该命令会改变 HyperLogLog</p>
+</blockquote>
+<blockquote>
+<p><font color="#ff00aa">PFMERGE</font> <br>将多个 HyperLogLog 合并（merge）为一个 HyperLogLog，合并后的 HyperLogLog 的基数接近于所有输入 HyperLogLog 的可见集合（observed set）的并集<br>时间复杂度是 O(N)，其中 N 为被合并的 HyperLogLog 数量</p>
+</blockquote>
 </li>
 </ul>
-<h1 id="对象"><a href="#对象" class="headerlink" title="对象"></a>对象</h1><h2 id="Redis对象"><a href="#Redis对象" class="headerlink" title="Redis对象"></a>Redis对象</h2><ul>
+</li>
+</ul>
+<p>HyperLogLog 数据结构是在 2.8.9版本种添加的，主要用于做<font color="#00dd00">基数统计</font>.每个 HyperLogLog的键可以计算接近 2^64个不同的基数，而只需要<font color="#FF0000">12KB</font>。</p>
+<h4 id="HyperLogLog-的应用场景"><a href="#HyperLogLog-的应用场景" class="headerlink" title="HyperLogLog 的应用场景"></a>HyperLogLog 的应用场景</h4><p>HyperLogLog 并不保存数据内容，因此只适合特定的常见，比如：统计用户活跃量等</p>
+<h3 id="Geo"><a href="#Geo" class="headerlink" title="Geo"></a>Geo</h3><p>Geo 是 redis3.2 版本中加入的，用于计算 &lt;/font color=”#dd0000”&gt; 地理位置信息 相关的功能。</p>
+<p>Geo 用于存储经纬度、计算两地之间的距离、范围计算等。Geo 底层是使用的 zset 来实现的。利用这个功能可以将用户的地理位置信息存储起来，在需要的时候对其进行操作。</p>
+<p>Redis 的 Geo 特性主要有 geo.h 和 geo.c 两个文件实现。</p>
+<ul>
+<li>Geo原理<br>Redis Geo 原理： GeoHash<blockquote>
+<p>如何唯一表示地球上的一块区域？</p>
+</blockquote>
+</li>
+</ul>
+<blockquote>
+<p>如何将地球分成大小近似的区块，并支持不同的粒度表示？</p>
+</blockquote>
+<blockquote>
+<p>大致方法:<br>第一步： 将三维地球变成二维<br><img src="https://teemo-tristana.github.io/images/%E4%B8%89%E7%BB%B4%E8%BD%AC%E4%B8%BA%E4%BA%8C%E7%BB%B4.png" alt="三维转为二维"></p>
+</blockquote>
+<blockquote>
+<p>第二步： 将二维再转为一维<br><img src="https://teemo-tristana.github.io/images/%E4%BA%8C%E7%BB%B4%E5%8F%98%E4%B8%BA%E4%B8%80%E7%BB%B4.png" alt="二维变为一维"></p>
+</blockquote>
+<blockquote>
+<p>第三步： 将一维表示成二进制码存储</p>
+</blockquote>
+<p>Geohash 本质上是将三维转为二维，再对二维进行划分转为一维，然后对一维进行编码，最后使用 B树索引 快速找出所需要的数据。</p>
+<p>GeoHash算法使用的是Penno空间填充曲线，Geohash 是空间索引的一种方法，特别适合 <font color="#00dd00">点数据</font>,对于其他类型的数据比如线、面数据则采用<strong>R树索引</strong>更为合适。</p>
+<h3 id="Pub-Sub"><a href="#Pub-Sub" class="headerlink" title="Pub/Sub"></a>Pub/Sub</h3><h3 id="Bitmap"><a href="#Bitmap" class="headerlink" title="Bitmap"></a>Bitmap</h3><h1 id="对象"><a href="#对象" class="headerlink" title="对象"></a>对象</h1><h2 id="Redis对象"><a href="#Redis对象" class="headerlink" title="Redis对象"></a>Redis对象</h2><ul>
 <li><p>Redis实现了实现了字节的特定6中数据结构： 简单动态字符串sds、双向链表linklist、跳表skiplist、哈希表hashtable、集合set和有序集合。但是Redis并未直接使用这些基本的数据结构，而是基于这些数据结构实现了一个对象系统，这个系统包含：字符串对象、列表对象、哈希对象、集合对象和有序集合对象。其中，每个对象至少包含了一种基本的数据结构 。</p>
 </li>
 <li><p>Redis在执行命令之前，根据对象的类型来判断对象是否可执行给定的命令。</p>
@@ -577,13 +620,13 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Redis%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E7%B1%BB%E5%9E%8B"><span class="nav-number">1.</span> <span class="nav-text">Redis基本数据结构类型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%97%E7%AC%A6%E4%B8%B2string"><span class="nav-number">1.1.</span> <span class="nav-text">字符串string
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Redis%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B"><span class="nav-number">1.</span> <span class="nav-text">Redis基本类型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%97%E7%AC%A6%E4%B8%B2string"><span class="nav-number">1.1.</span> <span class="nav-text">字符串string
 </span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%93%BE%E8%A1%A8-linklist"><span class="nav-number">1.2.</span> <span class="nav-text">链表 linklist
 </span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%93%88%E5%B8%8C-%E5%AD%97%E5%85%B8-hastable"><span class="nav-number">1.3.</span> <span class="nav-text">哈希(字典)hastable
 </span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B7%B3%E8%B7%83%E8%A1%A8skiplist"><span class="nav-number">1.4.</span> <span class="nav-text">跳跃表skiplist
 </span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8E%8B%E7%BC%A9%E5%88%97%E8%A1%A8ziplist"><span class="nav-number">1.5.</span> <span class="nav-text">压缩列表ziplist
 </span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B4%E6%95%B0%E5%88%97%E8%A1%A8intset"><span class="nav-number">1.6.</span> <span class="nav-text">整数列表intset
-</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Redis%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="nav-number">2.</span> <span class="nav-text">Redis数据类型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AF%B9%E8%B1%A1"><span class="nav-number">3.</span> <span class="nav-text">对象</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis%E5%AF%B9%E8%B1%A1"><span class="nav-number">3.1.</span> <span class="nav-text">Redis对象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%B9%E8%B1%A1%E7%B1%BB%E5%9E%8B%E4%B8%8E%E7%BC%96%E7%A0%81"><span class="nav-number">3.2.</span> <span class="nav-text">对象类型与编码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%AF%B9%E8%B1%A1"><span class="nav-number">3.3.</span> <span class="nav-text">字符串对象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%97%E8%A1%A8%E5%AF%B9%E8%B1%A1"><span class="nav-number">3.4.</span> <span class="nav-text">列表对象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%93%88%E5%B8%8C%E5%AF%B9%E8%B1%A1"><span class="nav-number">3.5.</span> <span class="nav-text">哈希对象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%94%9F%E6%88%90%E6%97%B6%E9%97%B4-%E6%88%96-%E8%BF%87%E6%9C%9F%E6%97%B6%E9%97%B4"><span class="nav-number">3.6.</span> <span class="nav-text">生成时间 或 过期时间</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%87%E6%9C%9F%E5%88%A0%E9%99%A4%E7%AD%96%E7%95%A5%EF%BC%9A"><span class="nav-number">3.7.</span> <span class="nav-text">过期删除策略：</span></a></li></ol></li></ol></div>
+</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Redis%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="nav-number">2.</span> <span class="nav-text">Redis数据类型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E7%A7%8D%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="nav-number">2.1.</span> <span class="nav-text">五种基本数据结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%AB%98%E7%BA%A7%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="nav-number">2.2.</span> <span class="nav-text">高级数据结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#HyperLogLog"><span class="nav-number">2.2.1.</span> <span class="nav-text">HyperLogLog</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BB%9F%E8%AE%A1%E5%9F%BA%E6%95%B0%E7%9A%84%E5%B8%B8%E8%A7%81%E6%96%B9%E6%B3%95"><span class="nav-number">2.2.1.1.</span> <span class="nav-text">统计基数的常见方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#HyperLogLog-%E7%9A%84%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-number">2.2.1.2.</span> <span class="nav-text">HyperLogLog 的应用场景</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Geo"><span class="nav-number">2.2.2.</span> <span class="nav-text">Geo</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Pub-Sub"><span class="nav-number">2.2.3.</span> <span class="nav-text">Pub&#x2F;Sub</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Bitmap"><span class="nav-number">2.2.4.</span> <span class="nav-text">Bitmap</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AF%B9%E8%B1%A1"><span class="nav-number">3.</span> <span class="nav-text">对象</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis%E5%AF%B9%E8%B1%A1"><span class="nav-number">3.1.</span> <span class="nav-text">Redis对象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%B9%E8%B1%A1%E7%B1%BB%E5%9E%8B%E4%B8%8E%E7%BC%96%E7%A0%81"><span class="nav-number">3.2.</span> <span class="nav-text">对象类型与编码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%AF%B9%E8%B1%A1"><span class="nav-number">3.3.</span> <span class="nav-text">字符串对象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%97%E8%A1%A8%E5%AF%B9%E8%B1%A1"><span class="nav-number">3.4.</span> <span class="nav-text">列表对象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%93%88%E5%B8%8C%E5%AF%B9%E8%B1%A1"><span class="nav-number">3.5.</span> <span class="nav-text">哈希对象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%94%9F%E6%88%90%E6%97%B6%E9%97%B4-%E6%88%96-%E8%BF%87%E6%9C%9F%E6%97%B6%E9%97%B4"><span class="nav-number">3.6.</span> <span class="nav-text">生成时间 或 过期时间</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%87%E6%9C%9F%E5%88%A0%E9%99%A4%E7%AD%96%E7%95%A5%EF%BC%9A"><span class="nav-number">3.7.</span> <span class="nav-text">过期删除策略：</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 

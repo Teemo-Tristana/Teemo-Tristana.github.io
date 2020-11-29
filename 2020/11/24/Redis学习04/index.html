@@ -33,10 +33,10 @@
 <meta property="og:image" content="https://teemo-tristana.github.io/images/%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%90%91%E5%AE%A2%E6%88%B7%E7%AB%AF%E7%9A%84%E5%9B%9E%E5%A4%8D%E5%91%BD%E4%BB%A4%E8%AF%B7%E6%B1%82.PNG">
 <meta property="og:image" content="https://teemo-tristana.github.io/images/%E5%AE%A2%E6%88%B7%E7%AB%AF%E4%B8%8E%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%80%9A%E4%BF%A1%E8%BF%87%E7%A8%8B.PNG">
 <meta property="og:image" content="https://teemo-tristana.github.io/images/%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%BA%8B%E4%BB%B6%E5%A4%84%E7%90%86%E7%9A%84%E6%B5%81%E7%A8%8B.PNG">
-<meta property="og:image" content="https://teemo-tristana.github.io/imagesreactor%E6%A8%A1%E5%BC%8F.png">
 <meta property="og:image" content="https://teemo-tristana.github.io文件事件处理过程.png/">
+<meta property="og:image" content="https://teemo-tristana.github.io/images/reactor%E6%A8%A1%E5%BC%8F.png">
 <meta property="article:published_time" content="2020-11-24T02:24:40.000Z">
-<meta property="article:modified_time" content="2020-11-28T13:20:50.267Z">
+<meta property="article:modified_time" content="2020-11-29T06:41:30.864Z">
 <meta property="article:author" content="Han Cheng">
 <meta property="article:tag" content="redis">
 <meta name="twitter:card" content="summary">
@@ -206,7 +206,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-11-28 21:20:50" itemprop="dateModified" datetime="2020-11-28T21:20:50+08:00">2020-11-28</time>
+                <time title="修改时间：2020-11-29 14:41:30" itemprop="dateModified" datetime="2020-11-29T14:41:30+08:00">2020-11-29</time>
               </span>
 
           
@@ -325,7 +325,7 @@ Redis为文件事件编写了多个处理器，用于处理不同的网路请求
 <p><img src="https://teemo-tristana.github.io/images/%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%BA%8B%E4%BB%B6%E5%A4%84%E7%90%86%E7%9A%84%E6%B5%81%E7%A8%8B.PNG" alt="服务器事件处理的流程"></p>
 <h1 id="summary"><a href="#summary" class="headerlink" title="summary"></a>summary</h1><ul>
 <li>Redis 服务器是一个事件驱动程序，它的事件可以分为文件事件和时间事件</li>
-<li>文件事件处理器是基于 Reactor 模式实现的网络通信程序<br><img src="https://teemo-tristana.github.io/imagesreactor%E6%A8%A1%E5%BC%8F.png" alt="reactor模式"></li>
+<li>文件事件处理器是基于 Reactor 模式实现的网络通信程序</li>
 <li>文件事件是对套接字的抽象：当套接字变为可应答(acceptable)、可写(writable)、可读(readable)时，相应的文件事件机会产生</li>
 <li>文件事件分为可读(AE_READABLE)和可写(AE_WRIATABLE<br><img src="https://teemo-tristana.github.io文件事件处理过程.png/" alt="文件事件处理过程"></li>
 <li>时间事件分为定时时间和周期事件：定时事件在指定时间达到一次，执行后即删除；而周期性事件则是每隔一段时间达到一次。</li>
@@ -333,6 +333,20 @@ Redis为文件事件编写了多个处理器，用于处理不同的网路请求
 <li>文件事件和时间事件是同等的，Redis 服务器轮流执行这两种事件，处理过程是按序、同步、原子地执行，不会抢占或中断。</li>
 <li>时间事件实际的处理实践通常比设定的实践稍微一些。</li>
 </ul>
+<h1 id="Reactor模式"><a href="#Reactor模式" class="headerlink" title="Reactor模式"></a>Reactor模式</h1><p>Racactor 是一种事件处理的模式，将多个输入同时交给服务器处理程序，然后对请求进程多路解析，并同步分发到对应的处理器中，<br>Reactor 也即是 反应堆， 是一种事件驱动机制。应用程序口提供需要的接口并注册到 Reactor 上，在某时刻，该事件发生，Reactor这会主动调用注册该接口的程序(回调函数)<br><img src="https://teemo-tristana.github.io/images/reactor%E6%A8%A1%E5%BC%8F.png" alt="reactor模式"></p>
+<h2 id="Reactor-必备组件："><a href="#Reactor-必备组件：" class="headerlink" title="Reactor 必备组件："></a>Reactor 必备组件：</h2><p> Reactor 必备组件： 事件源、 Reactor框架、多路复用机制、事件处理程序</p>
+<h3 id="事件源"><a href="#事件源" class="headerlink" title="事件源"></a>事件源</h3><p>在Linux系统中，对应的事件源即为文件描述符(fd),在window上即为socket或handle，统一称为 句柄集合。</p>
+<p>程序在指定的句柄上注册关心的事件，比如 I/O事件</p>
+<h3 id="事件多路分发机制"><a href="#事件多路分发机制" class="headerlink" title="事件多路分发机制"></a>事件多路分发机制</h3><p>由操作系统提供 I/O 多路复用机制， 比如 select/poll，在linuxe下的epoll，或其他系统的kqueue。</p>
+<ul>
+<li><p>首先，将句柄(事件源)及其关系的事件通过 I/O 多路复用机制注册到 事件多路分发器(event demultiplexer) </p>
+</li>
+<li><p>其次，当事件到达时，事件多路分发器(event demultiplexer) 则发出通知给程序。</p>
+</li>
+</ul>
+<h3 id="Reactor"><a href="#Reactor" class="headerlink" title="Reactor"></a>Reactor</h3><p>Reactor反应堆是时间管理的接口， 在其内部调用 事件多路分发器(event demultiplexer) 来注册、注销事件</p>
+<p>在 Reactor 运行循环事件，当有事件进入 ready 状态时，就会调用注册该事件的函数(回调函数)进行处理。</p>
+<h3 id="event-hanlder-事件处理程序"><a href="#event-hanlder-事件处理程序" class="headerlink" title="event hanlder(事件处理程序)"></a>event hanlder(事件处理程序)</h3><p>事件处理程序 提供一组接口，每个接口对应了一种类型的事件，供 Reactor 在相应事件发生时调用，并执行相应的事件处理，一般会绑定一个有效的句柄。</p>
 
     </div>
 
@@ -416,7 +430,7 @@ Redis为文件事件编写了多个处理器，用于处理不同的网路请求
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Redis%E4%BA%8B%E4%BB%B6"><span class="nav-number">1.</span> <span class="nav-text">Redis事件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E4%BA%8B%E4%BB%B6%EF%BC%88file-event%EF%BC%89"><span class="nav-number">2.</span> <span class="nav-text">文件事件（file event）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E4%BA%8B%E4%BB%B6%E7%9A%84%E5%A4%84%E7%90%86%E5%99%A8"><span class="nav-number">2.1.</span> <span class="nav-text">文件事件的处理器</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%97%B6%E9%97%B4%E4%BA%8B%E4%BB%B6-time-event"><span class="nav-number">3.</span> <span class="nav-text">时间事件(time event)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8B%E4%BB%B6%E7%9A%84%E8%B0%83%E5%BA%A6%E4%B8%8E%E6%89%A7%E8%A1%8C"><span class="nav-number">4.</span> <span class="nav-text">事件的调度与执行</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B0%83%E5%BA%A6%E5%92%8C%E6%89%A7%E8%A1%8C%E7%9A%84%E8%A7%84%E5%88%99%EF%BC%9A"><span class="nav-number">4.1.</span> <span class="nav-text">调度和执行的规则：</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#summary"><span class="nav-number">5.</span> <span class="nav-text">summary</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Redis%E4%BA%8B%E4%BB%B6"><span class="nav-number">1.</span> <span class="nav-text">Redis事件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E4%BA%8B%E4%BB%B6%EF%BC%88file-event%EF%BC%89"><span class="nav-number">2.</span> <span class="nav-text">文件事件（file event）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E4%BA%8B%E4%BB%B6%E7%9A%84%E5%A4%84%E7%90%86%E5%99%A8"><span class="nav-number">2.1.</span> <span class="nav-text">文件事件的处理器</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%97%B6%E9%97%B4%E4%BA%8B%E4%BB%B6-time-event"><span class="nav-number">3.</span> <span class="nav-text">时间事件(time event)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8B%E4%BB%B6%E7%9A%84%E8%B0%83%E5%BA%A6%E4%B8%8E%E6%89%A7%E8%A1%8C"><span class="nav-number">4.</span> <span class="nav-text">事件的调度与执行</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B0%83%E5%BA%A6%E5%92%8C%E6%89%A7%E8%A1%8C%E7%9A%84%E8%A7%84%E5%88%99%EF%BC%9A"><span class="nav-number">4.1.</span> <span class="nav-text">调度和执行的规则：</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#summary"><span class="nav-number">5.</span> <span class="nav-text">summary</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Reactor%E6%A8%A1%E5%BC%8F"><span class="nav-number">6.</span> <span class="nav-text">Reactor模式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Reactor-%E5%BF%85%E5%A4%87%E7%BB%84%E4%BB%B6%EF%BC%9A"><span class="nav-number">6.1.</span> <span class="nav-text">Reactor 必备组件：</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%8B%E4%BB%B6%E6%BA%90"><span class="nav-number">6.1.1.</span> <span class="nav-text">事件源</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%8B%E4%BB%B6%E5%A4%9A%E8%B7%AF%E5%88%86%E5%8F%91%E6%9C%BA%E5%88%B6"><span class="nav-number">6.1.2.</span> <span class="nav-text">事件多路分发机制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Reactor"><span class="nav-number">6.1.3.</span> <span class="nav-text">Reactor</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#event-hanlder-%E4%BA%8B%E4%BB%B6%E5%A4%84%E7%90%86%E7%A8%8B%E5%BA%8F"><span class="nav-number">6.1.4.</span> <span class="nav-text">event hanlder(事件处理程序)</span></a></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
