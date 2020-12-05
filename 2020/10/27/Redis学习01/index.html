@@ -36,7 +36,7 @@
 <meta property="og:image" content="https://teemo-tristana.github.io/images/%E4%BA%8C%E7%BB%B4%E5%8F%98%E4%B8%BA%E4%B8%80%E7%BB%B4.png">
 <meta property="og:image" content="https://teemo-tristana.github.io/images/geoCommand.png">
 <meta property="article:published_time" content="2020-10-27T01:41:38.000Z">
-<meta property="article:modified_time" content="2020-11-30T08:55:53.590Z">
+<meta property="article:modified_time" content="2020-11-30T12:45:12.236Z">
 <meta property="article:author" content="Han Cheng">
 <meta property="article:tag" content="Redis">
 <meta name="twitter:card" content="summary">
@@ -206,7 +206,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-11-30 16:55:53" itemprop="dateModified" datetime="2020-11-30T16:55:53+08:00">2020-11-30</time>
+                <time title="修改时间：2020-11-30 20:45:12" itemprop="dateModified" datetime="2020-11-30T20:45:12+08:00">2020-11-30</time>
               </span>
 
           
@@ -383,8 +383,32 @@
 <p>Geohash 本质上是将三维转为二维，再对二维进行划分转为一维，然后对一维进行编码，最后使用 B树索引 快速找出所需要的数据。</p>
 <p>GeoHash算法使用的是Penno空间填充曲线，Geohash 是空间索引的一种方法，特别适合 <font color="#00dd00">点数据</font>,对于其他类型的数据比如线、面数据则采用<strong>R树索引</strong>更为合适。</p>
 <p><img src="https://teemo-tristana.github.io/images/geoCommand.png" alt="geo命令"></p>
-<h3 id="Bitmap"><a href="#Bitmap" class="headerlink" title="Bitmap"></a>Bitmap</h3><p>本质上就是 Redis 实现的 布隆滤波(bloomFilter)</p>
-<h3 id="Pub-Sub"><a href="#Pub-Sub" class="headerlink" title="Pub/Sub"></a>Pub/Sub</h3><h1 id="对象"><a href="#对象" class="headerlink" title="对象"></a>对象</h1><h2 id="Redis对象"><a href="#Redis对象" class="headerlink" title="Redis对象"></a>Redis对象</h2><ul>
+<h3 id="Bitmap"><a href="#Bitmap" class="headerlink" title="Bitmap"></a>Bitmap</h3><p>本质上就是 Redis 实现的 布隆滤波(bloomFilter)，用一个比特位来映射某个元素的状态，一个bit位要么是0要么是1；因此， Bitmap 能映射的状态有限，但是能够节省大量的内存空间</p>
+<p>Bitmap 底层是基于 Redis 的 字符串 类型来实现的</p>
+<ul>
+<li>相关命令<blockquote>
+<p>setbit 设置某一位上的值</p>
+</blockquote>
+</li>
+</ul>
+<blockquote>
+<p>getbit 获取某一位上的值</p>
+</blockquote>
+<blockquote>
+<p>bitops 返回指定值0或者1在指定区间上首次出现的下标</p>
+</blockquote>
+<blockquote>
+<p>bitcount 统计指定位区间上值为1的个数</p>
+</blockquote>
+<ul>
+<li>应用场景  <ul>
+<li>用户签到</li>
+<li>统计活跃用户（用户登陆情况）</li>
+<li>用户在线状态<h3 id="Pub-Sub"><a href="#Pub-Sub" class="headerlink" title="Pub/Sub"></a>Pub/Sub</h3></li>
+</ul>
+</li>
+</ul>
+<h1 id="对象"><a href="#对象" class="headerlink" title="对象"></a>对象</h1><h2 id="Redis对象"><a href="#Redis对象" class="headerlink" title="Redis对象"></a>Redis对象</h2><ul>
 <li><p>Redis实现了实现了字节的特定6中数据结构： 简单动态字符串sds、双向链表linklist、跳表skiplist、哈希表hashtable、集合set和有序集合。但是Redis并未直接使用这些基本的数据结构，而是基于这些数据结构实现了一个对象系统，这个系统包含：字符串对象、列表对象、哈希对象、集合对象和有序集合对象。其中，每个对象至少包含了一种基本的数据结构 。</p>
 </li>
 <li><p>Redis在执行命令之前，根据对象的类型来判断对象是否可执行给定的命令。</p>
