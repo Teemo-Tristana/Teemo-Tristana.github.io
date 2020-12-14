@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Go 程序结构命名 Go 语言中的函数名、变量名、常量名、类型名、语句标号和包名等所有的命名，都遵循一个简单的命名规则 : 以字母（Unicode字母）或下划线开头。  Go 语言的 25 个关键字(关键字不能用于自定义名字，只能在特定的程序结构中使用) 12345break      default        func       interface       select      ca">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Go 学习之程序结构">
+<meta property="og:url" content="http://example.com/2020/12/14/Go%20%E5%AD%A6%E4%B9%A0%E4%B9%8B%E7%A8%8B%E5%BA%8F%E7%BB%93%E6%9E%84/index.html">
+<meta property="og:site_name" content="Teemo-Tristana">
+<meta property="og:description" content="Go 程序结构命名 Go 语言中的函数名、变量名、常量名、类型名、语句标号和包名等所有的命名，都遵循一个简单的命名规则 : 以字母（Unicode字母）或下划线开头。  Go 语言的 25 个关键字(关键字不能用于自定义名字，只能在特定的程序结构中使用) 12345break      default        func       interface       select      ca">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-12-14T01:12:20.000Z">
+<meta property="article:modified_time" content="2020-12-14T02:39:20.770Z">
+<meta property="article:author" content="Han Cheng">
+<meta property="article:tag" content="golang">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2020/12/14/Go%20%E5%AD%A6%E4%B9%A0%E4%B9%8B%E7%A8%8B%E5%BA%8F%E7%BB%93%E6%9E%84/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Go 学习之程序结构 | Teemo-Tristana</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Teemo-Tristana</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">每日进步一点</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="user fa-fw"></i>关于</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/12/14/Go%20%E5%AD%A6%E4%B9%A0%E4%B9%8B%E7%A8%8B%E5%BA%8F%E7%BB%93%E6%9E%84/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/teemo.png">
+      <meta itemprop="name" content="Han Cheng">
+      <meta itemprop="description" content="记录平日所学">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Teemo-Tristana">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Go 学习之程序结构
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-12-14 09:12:20 / 修改时间：10:39:20" itemprop="dateCreated datePublished" datetime="2020-12-14T09:12:20+08:00">2020-12-14</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Go-程序结构"><a href="#Go-程序结构" class="headerlink" title="Go 程序结构"></a>Go 程序结构</h1><h2 id="命名"><a href="#命名" class="headerlink" title="命名"></a>命名</h2><ol>
+<li><p>Go 语言中的函数名、变量名、常量名、类型名、语句标号和包名等所有的命名，都遵循一个简单的命名规则 : <font color="#dd00dd">以字母（Unicode字母）或下划线开头</font>。</p>
+</li>
+<li><p>Go 语言的 25 个关键字(关键字不能用于自定义名字，只能在特定的程序结构中使用)</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">break</span>      <span class="keyword">default</span>        <span class="function"><span class="keyword">func</span>       <span class="title">interface</span>       <span class="title">select</span></span>      </span><br><span class="line"><span class="keyword">case</span>       <span class="keyword">defer</span>          <span class="keyword">go</span>         <span class="keyword">map</span>             <span class="keyword">struct</span>      </span><br><span class="line"><span class="keyword">chan</span>       <span class="keyword">else</span>           <span class="keyword">goto</span>       <span class="keyword">package</span>         <span class="keyword">switch</span></span><br><span class="line"><span class="keyword">const</span>      <span class="keyword">fallthrough</span>    <span class="keyword">if</span>         <span class="keyword">range</span>           <span class="keyword">type</span></span><br><span class="line"><span class="keyword">continue</span>   <span class="keyword">for</span>            <span class="keyword">import</span>     <span class="keyword">return</span>          <span class="keyword">var</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Go语言中，有 30 多个预定义的名字，主要是内置常量、类型和函数</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 内置常量</span></span><br><span class="line"><span class="literal">true</span>        <span class="literal">false</span>       <span class="literal">iota</span>        <span class="literal">nil</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 内置类型</span></span><br><span class="line"><span class="keyword">int</span>         <span class="keyword">int8</span>       <span class="keyword">int16</span>        <span class="keyword">int32</span>       <span class="keyword">int64</span></span><br><span class="line"><span class="keyword">uint</span>        <span class="keyword">uint8</span>      <span class="keyword">uint16</span>       <span class="keyword">uint32</span>      <span class="keyword">uint64</span>      <span class="keyword">uintptr</span></span><br><span class="line"><span class="keyword">float32</span>     <span class="keyword">float64</span>    <span class="keyword">complex128</span>  <span class="keyword">complex64</span>   <span class="keyword">bool</span>        <span class="keyword">byte</span></span><br><span class="line"><span class="keyword">rune</span>        <span class="keyword">string</span>     error</span><br><span class="line"></span><br><span class="line"><span class="comment">// 内置函数</span></span><br><span class="line"><span class="built_in">make</span>()    <span class="built_in">len</span>()     <span class="built_in">cap</span>()     <span class="built_in">new</span>()     <span class="built_in">append</span>()      <span class="built_in">copy</span>()</span><br><span class="line"><span class="built_in">close</span>()   <span class="built_in">delete</span>()  <span class="built_in">complex</span>() <span class="built_in">real</span>()    <span class="built_in">imag</span>()        <span class="built_in">panic</span>()</span><br><span class="line"><span class="built_in">recover</span>()</span><br></pre></td></tr></table></figure>
+<p>内部预定义的名字<strong>不是关键字</strong>,因此可以重新使用它们，但是尽量少重复使用，避免引起语义混乱。</p>
+</li>
+<li><p>函数名字的开头字母的大小写决定了该函数在包外的可见性，若是<strong>大写字母</strong>开头，则是可导出的，比如 fmt的Println()函数</p>
+</li>
+<li><p>推荐使用 <strong>驼峰式</strong> 命名</p>
+</li>
+</ol>
+<h1 id="声明"><a href="#声明" class="headerlink" title="声明"></a>声明</h1><p>Go 语言主要有四种类型的声明语句：</p>
+<ul>
+<li><p>var   用于 变量</p>
+</li>
+<li><p>const 用于 常量</p>
+</li>
+<li><p>type  用于 类型</p>
+</li>
+<li><p>func  用于 函数</p>
+<h2 id="变量"><a href="#变量" class="headerlink" title="变量"></a>变量</h2><p>包一级的声明可以对整个包有效，而函数内部的声明只能局部有效</p>
+</li>
+<li><p>变量的声明方式</p>
+<ol>
+<li><p>var 变量名 类型 = 表达式<br> 如果初始化表达式被省略，那么将用零值初始化该变量。 数值类型变量对应的零值是0，布尔类型变量对应的零值是false，字符串类型对应的零值是空字符串，接口或引用类型（包括slice、指针、map、chan和函数）变量对应的零值是nil。数组或结构体等聚合类型对应的零值是每个元素或字段都是对应该类型的零值。<br> 零值初始化机制可以确保每个声明的变量总是有一个值，因此  <font color="#dd00dd">Go 语言中不存在未初始化的变量</font>。</p>
+</li>
+<li><p>多种类型同时声明</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> i, j, k <span class="keyword">int</span>                 <span class="comment">// int, int, int</span></span><br><span class="line"><span class="keyword">var</span> b, f, s = <span class="literal">true</span>, <span class="number">2.3</span>, <span class="string">&quot;four&quot;</span> <span class="comment">// bool, float64, string</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>简短变量声明<br> 名字 := 表达式</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">i :&#x3D; 0</span><br></pre></td></tr></table></figure>
+
+
+</li>
+</ol>
+</li>
+</ul>
+<h2 id="指针"><a href="#指针" class="headerlink" title="指针"></a>指针</h2><p>一个指针的值是另一个变量的地址。一个指针对应变量在内存中的存储位置。并不是每一个值都会有一个内存地址，但是对于每一个变量必然有对应的内存地址</p>
+<p>任何类型的指针的零值都是 nil</p>
+<p>Go 语言中返回函数局部变量的地址也是<strong>安全的</strong></p>
+<h2 id="new函数"><a href="#new函数" class="headerlink" title="new函数"></a>new函数</h2><p>new 函数开业用于创建变量， new(T) 将创建一个T类型的匿名变量，并初始化为T类型的零值,并返回 变量地址(即指针), 返回类型是 T 类型的指针(T*)</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">p := <span class="built_in">new</span>(<span class="keyword">int</span>) <span class="comment">// p 是一个 int 类型的指针，指向匿名的 int 变量</span></span><br></pre></td></tr></table></figure>
+
+<p>用new创建变量和普通变量声明语句方式创建变量没有什么区别，换言之，new函数类似是一种语法糖，而不是一个新的基础概念。</p>
+<h2 id="变量的声明周期"><a href="#变量的声明周期" class="headerlink" title="变量的声明周期"></a>变量的声明周期</h2><p>变量的生命周期指的是在程序运行期间变量有效存在的时间段。对于在包一级声明的变量来说，它们的生命周期和整个程序的运行周期是一致的。而相比之下，局部变量的生命周期则是动态的：每次从创建一个新变量的声明语句开始，直到该变量不再被引用为止，然后变量的存储空间可能被回收。函数的参数变量和返回值变量都是局部变量。它们在函数每次被调用的时候创建。</p>
+<p>Go 语言的自动垃圾收集器(基本思路)：<br>    从每个包级的变量和每个当前运行函数的每一个局部变量开始，通过指针或引用的访问路径遍历，是否可以找到该变量。如果不存在这样的访问路径，那么说明该变量是不可达的，也就是说它是否存在并不会影响程序后续的计算结果</p>
+<p>编译器会自动选择在堆或栈上分配局部变量的存储空间，但是，<font color="#00dd00">并不是由 var 或 new 声明方式决定的，有编译器决定</font>。</p>
+<p><font color="#dd00dd">逃逸的变量需要额外分配内存</font>，同时对性能的优化可能会产生细微的影响。</p>
+<h2 id="类型"><a href="#类型" class="headerlink" title="类型"></a>类型</h2><p>变量或表达式的类型定义了对应存储值的属性特征</p>
+<blockquote>
+<p>type 类型名字 底层类型</p>
+</blockquote>
+<h2 id="包-和-文件"><a href="#包-和-文件" class="headerlink" title="包 和 文件"></a>包 和 文件</h2><p>Go 语言中的 包 类似其他语言的模块或库，目的是为了支持模块化、封装、单独编译和代码复用。</p>
+<h1 id="数据类型"><a href="#数据类型" class="headerlink" title="数据类型"></a>数据类型</h1><p>Go 语言将数据类型分为四类 : 基础类型、复合类型、引用类型和接口类型</p>
+<h2 id="基础类型"><a href="#基础类型" class="headerlink" title="基础类型"></a>基础类型</h2><p>基础类型比如 数字、字符串、布尔等类型 </p>
+<ul>
+<li><p>整数类型</p>
+<ul>
+<li><p>Go 提供了四种不同大小的整数类型: int8/int16/int32/int64 和 uint8/uint16/uint32/uint64。</p>
+</li>
+<li><p>也提供了特定的CPU的 int 和 uint(32bit/64bit),具体大小与编译器有关。</p>
+</li>
+<li><p>Go采用的是 Unicode 字符，UTF8 编码， 它的 rune 类型和 int32 等价，表示一个 Unicode 码点</p>
+</li>
+<li><p>byte 和 uint8 等价，一般用于数值。</p>
+</li>
+<li><p>不管它们的具体大小，int、uint和uintptr是不同类型的兄弟类型。其中int和int32也是不同的类型，即使int的大小也是32bit，在需要将int当作int32类型的地方需要一个显式的类型转换操作。</p>
+</li>
+</ul>
+</li>
+<li><p>浮点数类型</p>
+<ul>
+<li>Go语言提供了两种精度的浮点数，float32和float64</li>
+</ul>
+</li>
+<li><p>复数<br>  Go语言提供了两种精度的复数类型：complex64和complex128，分别对应float32和float64两种浮点数精度。内置的complex函数用于构建复数，内建的real()和imag()函数分别返回复数的实部和虚部</p>
+</li>
+<li><p>布尔类型</p>
+<ul>
+<li> 一个布尔类型的值只有两种：true和false。if和for语句的条件部分都是布尔类型的值，并且==和&lt;等比较操作也会产生布尔型的值。</li>
+</ul>
+</li>
+<li><p>字符串</p>
+<ul>
+<li>一个字符串是一个不可改变的字节序列(<strong>字符串是只读</strong>)。字符串可以包含任意的数据，包括byte值0，但是通常是用来包含人类可读的文本。文本字符串通常被解释为采用UTF8编码的Unicode码点（rune）序列。</li>
+<li>len() 返回字符串的<strong>字节数目</strong>(而不是 rune 字符数目)</li>
+</ul>
+<ul>
+<li>标准库中有四个包对字符串处理尤为重要：bytes、strings、strconv和unicode包<ul>
+<li>strings 提供字符串相关操作比如替换、查询、比较等</li>
+<li>bytes 功能和 strings 包类型，但是只要是争对 []byte 类型</li>
+<li>strconv包提供了布尔型、整型数、浮点数和对应字符串的相互转换，还提供了双引号转义相关的转换。</li>
+<li>unicode包提供了IsDigit、IsLetter、IsUpper和IsLower等类似功能，它们用于给字符分类</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>常量</p>
+<ul>
+<li>常量表达式的值在<strong>编译期</strong>就已经确定了，所有常量的运算都可以在编译期完成，这样可以减少运行时的工作，也方便其他编译优化</li>
+</ul>
+<ul>
+<li>iota<ul>
+<li>在一个const声明语句中，在第一个声明的常量所在的行，iota将会被置为0，然后在每一个有常量声明的行加一。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="复合类型"><a href="#复合类型" class="headerlink" title="复合类型"></a>复合类型</h2><p>复合类型比如数组和结构体</p>
+<h2 id="引用类型"><a href="#引用类型" class="headerlink" title="引用类型"></a>引用类型</h2><p>数组、结构体的组合</p>
+<h2 id="接口类型"><a href="#接口类型" class="headerlink" title="接口类型"></a>接口类型</h2><p>指针、切片、字典、函数、通道</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/golang/" rel="tag"># golang</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/12/10/learning-sql/" rel="prev" title="learning-sql">
+      <i class="fa fa-chevron-left"></i> learning-sql
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Go-%E7%A8%8B%E5%BA%8F%E7%BB%93%E6%9E%84"><span class="nav-number">1.</span> <span class="nav-text">Go 程序结构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%91%BD%E5%90%8D"><span class="nav-number">1.1.</span> <span class="nav-text">命名</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%A3%B0%E6%98%8E"><span class="nav-number">2.</span> <span class="nav-text">声明</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%98%E9%87%8F"><span class="nav-number">2.1.</span> <span class="nav-text">变量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8C%87%E9%92%88"><span class="nav-number">2.2.</span> <span class="nav-text">指针</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#new%E5%87%BD%E6%95%B0"><span class="nav-number">2.3.</span> <span class="nav-text">new函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%98%E9%87%8F%E7%9A%84%E5%A3%B0%E6%98%8E%E5%91%A8%E6%9C%9F"><span class="nav-number">2.4.</span> <span class="nav-text">变量的声明周期</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B1%BB%E5%9E%8B"><span class="nav-number">2.5.</span> <span class="nav-text">类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8C%85-%E5%92%8C-%E6%96%87%E4%BB%B6"><span class="nav-number">2.6.</span> <span class="nav-text">包 和 文件</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="nav-number">3.</span> <span class="nav-text">数据类型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E7%A1%80%E7%B1%BB%E5%9E%8B"><span class="nav-number">3.1.</span> <span class="nav-text">基础类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%8D%E5%90%88%E7%B1%BB%E5%9E%8B"><span class="nav-number">3.2.</span> <span class="nav-text">复合类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%95%E7%94%A8%E7%B1%BB%E5%9E%8B"><span class="nav-number">3.3.</span> <span class="nav-text">引用类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8E%A5%E5%8F%A3%E7%B1%BB%E5%9E%8B"><span class="nav-number">3.4.</span> <span class="nav-text">接口类型</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Han Cheng"
+      src="/images/teemo.png">
+  <p class="site-author-name" itemprop="name">Han Cheng</p>
+  <div class="site-description" itemprop="description">记录平日所学</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">20</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Han Cheng</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

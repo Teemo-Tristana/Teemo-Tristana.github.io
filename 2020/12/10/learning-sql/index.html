@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="初识数据库DBMS的种类数据库是将大量数据保存起来，通过计算机加工而成的可以进行高效访问的数据集合。该数据集合称为数据库（Database，DB）。用来管理数据库的计算机系统称为数据库管理系统（Database Management System，DBMS）。 DBMS 主要通过数据的保存格式（数据库的种类）来进行分类，现阶段主要有以下 5 种类型.  Oracle Database：甲骨文公司的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="learning-sql">
+<meta property="og:url" content="http://example.com/2020/12/10/learning-sql/index.html">
+<meta property="og:site_name" content="Teemo-Tristana">
+<meta property="og:description" content="初识数据库DBMS的种类数据库是将大量数据保存起来，通过计算机加工而成的可以进行高效访问的数据集合。该数据集合称为数据库（Database，DB）。用来管理数据库的计算机系统称为数据库管理系统（Database Management System，DBMS）。 DBMS 主要通过数据的保存格式（数据库的种类）来进行分类，现阶段主要有以下 5 种类型.  Oracle Database：甲骨文公司的">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://teemo-tristana.github.io/images/%E5%B8%B8%E8%A7%81DBMS%E7%B3%BB%E7%BB%9F%E7%BB%93%E6%9E%84%E5%9B%BE.jpg">
+<meta property="og:image" content="https://teemo-tristana.github.io/images/%E8%A7%86%E5%9B%BE%E4%B8%8E%E8%A1%A8.png">
+<meta property="og:image" content="https://teemo-tristana.github.io/images/%E8%A7%86%E5%9B%BE%E5%AD%98%E5%9C%A8%E5%9F%BA%E7%A1%80.png">
+<meta property="article:published_time" content="2020-12-10T02:45:10.000Z">
+<meta property="article:modified_time" content="2020-12-12T05:14:10.011Z">
+<meta property="article:author" content="Han Cheng">
+<meta property="article:tag" content="C++,python，图像处理">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://teemo-tristana.github.io/images/%E5%B8%B8%E8%A7%81DBMS%E7%B3%BB%E7%BB%9F%E7%BB%93%E6%9E%84%E5%9B%BE.jpg">
+
+<link rel="canonical" href="http://example.com/2020/12/10/learning-sql/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>learning-sql | Teemo-Tristana</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Teemo-Tristana</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">每日进步一点</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="user fa-fw"></i>关于</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/12/10/learning-sql/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/teemo.png">
+      <meta itemprop="name" content="Han Cheng">
+      <meta itemprop="description" content="记录平日所学">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Teemo-Tristana">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          learning-sql
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-12-10 10:45:10" itemprop="dateCreated datePublished" datetime="2020-12-10T10:45:10+08:00">2020-12-10</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-12-12 13:14:10" itemprop="dateModified" datetime="2020-12-12T13:14:10+08:00">2020-12-12</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="初识数据库"><a href="#初识数据库" class="headerlink" title="初识数据库"></a>初识数据库</h2><h3 id="DBMS的种类"><a href="#DBMS的种类" class="headerlink" title="DBMS的种类"></a>DBMS的种类</h3><p>数据库是将大量数据保存起来，通过计算机加工而成的可以进行高效访问的数据集合。该数据集合称为数据库（Database，DB）。用来管理数据库的计算机系统称为数据库管理系统（Database Management System，DBMS）。</p>
+<p>DBMS 主要通过数据的保存格式（数据库的种类）来进行分类，现阶段主要有以下 5 种类型.</p>
+<ul>
+<li>Oracle Database：甲骨文公司的RDBMS</li>
+<li>SQL Server：微软公司的RDBMS</li>
+<li>DB2：IBM公司的RDBMS</li>
+<li>PostgreSQL：开源的RDBMS</li>
+<li>MySQL：开源的RDBMS</li>
+</ul>
+<h3 id="常见DBMS系统结构图"><a href="#常见DBMS系统结构图" class="headerlink" title="常见DBMS系统结构图"></a>常见DBMS系统结构图</h3><p>使用 RDBMS 时，最常见的系统结构就是客户端 / 服务器类型（C/S类型）这种结构<br><img src="https://teemo-tristana.github.io/images/%E5%B8%B8%E8%A7%81DBMS%E7%B3%BB%E7%BB%9F%E7%BB%93%E6%9E%84%E5%9B%BE.jpg" alt="常见DBMS系统结构图"></p>
+<h2 id="SQL"><a href="#SQL" class="headerlink" title="SQL"></a>SQL</h2><p>数据库中存储的表的结构类似 excel 中的行和列。在数据库中，行称为<strong>记录</strong>，也即是一条数据的记录。列称为<strong>字段</strong>，代表了表中存储的数据项目。行和列的交汇位置称为单元格。</p>
+<h3 id="SQL指令"><a href="#SQL指令" class="headerlink" title="SQL指令"></a>SQL指令</h3><p><strong>SQL的书写顺序</strong>:</p>
+<blockquote>
+<p><font color="#d0d">select -&gt; from -&gt; where -&gt; group by -&gt; having -&gt; order by </font></p>
+</blockquote>
+<p><strong>SQL的执行顺序</strong>:</p>
+<blockquote>
+<p><font color="#d0d"> from -&gt; where -&gt; group by -&gt; having -&gt; select -&gt; order by </font></p>
+</blockquote>
+<p>根据对 DBMS 赋予的指令的不同，SQL语句可以分为四类：</p>
+<ul>
+<li>DDL(Data Definition Language:数据定义语言)：用于创建或删除存储数据用的数据库或表等对象，DDL包含了以下指令：<ul>
+<li>create ： 创建数据库/表等对象</li>
+<li>drop   ： 删除数据库/表等对象</li>
+<li>alter  ： 修改数据库/表等对象。</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li>DML(Data Manipulation Language:数据操作语言)：用于查询或变更<strong>表</strong>中的记录，DML 包含了以下指令：<ul>
+<li>select ：查询表中数据</li>
+<li>insert ：向表中插入数据</li>
+<li>update ：更新表中数据</li>
+<li>delete ：删除表中数据</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li>DCL(Data Control Language: 数据控制语言)：用于确认或取消对数据库中的数据的变更以及权限设置等。DCL 包含了以下指令：<ul>
+<li>commit    : 确认对数据库中数据的变更</li>
+<li>rollback  : 取消对数据中的数据进行的变更(回滚)</li>
+<li>grant     : 赋予用户权限</li>
+<li>revoke    : 取消用户的操作权限</li>
+</ul>
+</li>
+</ul>
+<h3 id="数据类型"><a href="#数据类型" class="headerlink" title="数据类型"></a>数据类型</h3><p>数据库创建的表，所以列都必须指定数据类型，且每列存储的数据类型必须相符。</p>
+<ul>
+<li><p>interger ： 用来指定存储整数的列(数字类型)，不能用于存储小数</p>
+</li>
+<li><p>char     ： 用来存储<strong>指定长度</strong>的字符串，若长度不足则用空格填充，超过则会截取[由于会浪费存储空间，一般很少用]</p>
+</li>
+<li><p>varchar  ： 用于存储<strong>可变长度</strong>的字符串.</p>
+</li>
+<li><p>date     ： 用来存储日期的类型</p>
+</li>
+</ul>
+<h3 id="约束"><a href="#约束" class="headerlink" title="约束"></a>约束</h3><p>约束是除了数据类型之外，对列中的数据进行的限制(追加)条件</p>
+<blockquote>
+<p>NOT NULL     表示非空约束, 该列必须有数据输入</p>
+</blockquote>
+<blockquote>
+<p>primary key  表示主键约束, 该列是唯一值，可以通过该列取出特定的行的数。</p>
+</blockquote>
+<h3 id="表的删除与更新"><a href="#表的删除与更新" class="headerlink" title="表的删除与更新"></a>表的删除与更新</h3><h4 id="删除"><a href="#删除" class="headerlink" title="删除"></a>删除</h4><p>drop、delete、truncate</p>
+<ol>
+<li><p>一般来说，三者删除速度：drop&gt;truncate&gt;delete；</p>
+</li>
+<li><p>delete是DML，需要手动提交操作才能生效，可以回滚，可以触发触发器；truncate和drop是DDL，会隐式提交，不能回滚，不会触发触发器。</p>
+</li>
+<li><ul>
+<li><p>执行delete操作时，每次从表中删除一行，并且同时将该行的的删除操作记录日志文件中。delete可根据条件删除表中满足条件的数据，如果不指定where子句，则跟truncate一样，可以删除表中所有记录。</p>
+</li>
+<li><p>truncate会一次性删除表中所有记录，通过释放存储表数据所用的页来删除数据，不会将删除的数据记录在日志文件中，只在日志文件中记录页的释放，使用的系统和事务日志资源少，所以执行速度比delete快。对于外键（foreignkey ）约束引用的表，不能使用 truncate table，而应使用不带 where 子句的 delete 语句。</p>
+</li>
+<li><p>drop则删除整个表的结构和数据，但是被依赖的约束、触发器、索引、依赖于该表的存储过程、函数将被保留，但其状态会变为invalid。</p>
+</li>
+</ul>
+</li>
+<li><p>删除后，表和索引所占空间：</p>
+<ul>
+<li>delete操作不会减少表或索引所占用的空间；</li>
+<li>当表被truncate后，这个表和索引所占用的空间会恢复到初始大小，但表结构及其列、约束、索引的定义等保持不变。</li>
+<li>drop语句将表所占用的空间全释放掉。</li>
+</ul>
+</li>
+<li><p>使用场景：</p>
+</li>
+</ol>
+<ul>
+<li><p>如果想删除表，当然用drop； </p>
+</li>
+<li><p>如果想保留表而将所有数据删除，而且和事务无关，用truncate即可；</p>
+</li>
+<li><p>果和事务有关，或者想触发trigger，还是用delete；</p>
+</li>
+</ul>
+<ul>
+<li><p>删除表：</p>
+<blockquote>
+<p>drop table &lt;表名&gt;<br>  drop table product; //删除 produtc 表<br>  Note: drop删除的表是无法恢复的，只能通过新插入恢复。</p>
+</blockquote>
+</li>
+<li><p>给已有的表新增加列</p>
+<blockquote>
+<p>alter table &lt;表名&gt;  add column &lt;列的定义&gt;<br>alter table product add column product_name_pingyin varchar(100);// 添加一列可以存储100位的可变长字符串的 product_name_pinyin 列</p>
+</blockquote>
+</li>
+<li><p>删除列</p>
+<blockquote>
+<p>alter table &lt;表名&gt; drop column &lt;列名&gt;;<br>  alter table product drop column product_pingyin;//删除 product_name_pinyin 列(删除后无法恢复)</p>
+</blockquote>
+</li>
+<li><p>清空表的内容</p>
+<blockquote>
+<p>truncate table &lt;表名&gt;\</p>
+<pre><code>truncate table product; // 清空product表\
+相比drop / delete，truncate用来清除数据时，速度最快。(可恢复？)</code></pre>
+</blockquote>
+</li>
+</ul>
+<h4 id="更新"><a href="#更新" class="headerlink" title="更新"></a>更新</h4><p>使用 update 更新数据时需要添加 where 条件，否则将按 SQL语句改变所有行。</p>
+<blockquote>
+<p>UPDATE &lt;表名&gt;<br>    SET &lt;列名&gt; = &lt;表达式&gt; [, &lt;列名2&gt;=&lt;表达式2&gt;…];<br> WHERE &lt;条件&gt;;  – 可选，非常重要。<br> ORDER BY 子句;  –可选<br> LIMIT 子句; –可选</p>
+</blockquote>
+<h3 id="对表的聚合查询"><a href="#对表的聚合查询" class="headerlink" title="对表的聚合查询"></a>对表的聚合查询</h3><p>聚合函数<br>5个聚合函数</p>
+<blockquote>
+<p>count(): 计算表中记录数目(行数)<br>sum(): 计算表中数值列的总和<br>avg(): 计算表中数值的平均值<br>max(): 计算指定列的最大值<br>min(): 计算指定列的最小值</p>
+</blockquote>
+<ul>
+<li>COUNT函数的结果根据参数的不同而不同。<font color="#dd0000">COUNT(*)</font>会得到<strong>包含NULL</strong>的数据行数，而<font color="#dd0000">COUNT(&lt;列名&gt;)</font>会得到<strong>NULL之外</strong>的数据行数。</li>
+<li><font color="#00dd00">聚合函数会将NULL排除在外。但COUNT(*)例外，并不会排除NULL</font>。</li>
+<li>MAX/MIN函数几乎适用于所有数据类型的列。SUM/AVG函数只适用于数值类型的列。</li>
+<li>想要计算值的种类时，可以在COUNT函数的参数中使用DISTINCT。</li>
+<li>在聚合函数的参数中使用DISTINCT，可以删除重复数据。</li>
+</ul>
+<h3 id="对表进行分组"><a href="#对表进行分组" class="headerlink" title="对表进行分组"></a>对表进行分组</h3><h4 id="group-by"><a href="#group-by" class="headerlink" title="group by"></a>group by</h4><ul>
+<li><p>在 GROUP BY 子句中指定的列称为聚合键或分组列。</p>
+</li>
+<li><p>顺序：</p>
+<blockquote>
+<p>select -&gt; from -&gt; where -&gt; group by</p>
+</blockquote>
+</li>
+<li><p>group by 子句不能使用 select 子句定义的别名，但是在 order by 中却可以使用。</p>
+</li>
+</ul>
+<blockquote>
+<p>原因: 在 SQL 中使用 having 子句时，select 语句的顺序为:<br>from -&gt; where -&gt; group by -&gt; having -&gt; select -&gt; order by<br>其中 select 的执行顺序在 group by 之后，在 order by 之前，也就是说，当在ORDER BY中使用别名时，已经知道了SELECT设置的别名存在，但是在GROUP BY中使用别名时还不知道别名的存在，所以不能在ORDER BY中可以使用别名，但是在GROUP BY中不能使用别名</p>
+</blockquote>
+<h4 id="having"><a href="#having" class="headerlink" title="having"></a>having</h4><p>having 子句用于对<font color="#dd0000">分组</font>进行过滤，可以使用数字、聚合数和group by 中指定的列名(聚合键)</p>
+<h4 id="order-by"><a href="#order-by" class="headerlink" title="order by"></a>order by</h4><p>SQL 执行的结果是随机排序的，当需要指定顺序排序时，可使用 order by 子句进行排序。</p>
+<ul>
+<li>SQL 默认是升序排列(asc), 降序排列则为(desc)</li>
+</ul>
+<h2 id="视图"><a href="#视图" class="headerlink" title="视图"></a>视图</h2><p>表面上来看视图和表是相同的，两者大部分操作相同。那为什么会有视图呢？</p>
+<h3 id="什么是视图"><a href="#什么是视图" class="headerlink" title="什么是视图"></a>什么是视图</h3><p><font color="#00dd00">视图是一张虚拟的表</font>, 不同于实际存在的表，视图是由 select 语句创建而来，因此，视图是由 select 语句生成的一张虚拟的表，操作视图即操作这张虚拟的表[零时缓存?]</p>
+<h3 id="视图与表"><a href="#视图与表" class="headerlink" title="视图与表"></a>视图与表</h3><p>视图与表的区别:<font color="#00dd00">是否保存了实际的数据</font>，视图和数据表的本质，即视图是基于真实表的一张虚拟的表，其数据来源均建立在真实表的基础上。 视图并不是真正存储数据，它是一个窗口，通过这个窗口可以看到表中的真实数据。<br><img src="https://teemo-tristana.github.io/images/%E8%A7%86%E5%9B%BE%E4%B8%8E%E8%A1%A8.png" alt="视图与表"><br>“视图不是表，视图是虚表，视图依赖于表”</p>
+<h3 id="视图存在的原因："><a href="#视图存在的原因：" class="headerlink" title="视图存在的原因："></a>视图存在的原因：</h3><ul>
+<li>通过视图可以将频繁使用的select 语句保存以提高效率。</li>
+<li>通过视图可以使用户看到的数据更加清晰(?)</li>
+<li>通过视图可以不对外公开表的全部字段，增强数据的保密性。</li>
+<li>通过视图可以降低数据的冗余</li>
+</ul>
+<h3 id="创建视图"><a href="#创建视图" class="headerlink" title="创建视图"></a>创建视图</h3><p><font color="#00dd00">视图中保存的是 select语句</font>。</p>
+<blockquote>
+<p>CREATE VIEW &lt;视图名称&gt;(&lt;列名1&gt;,&lt;列名2&gt;,…) AS &lt;SELECT语句&gt; //SELECT 语句中列的排列顺序和视图中列的排列顺序相同</p>
+</blockquote>
+<p><font color="#00dd00">视图名称在数据中必须唯一，不能与其他视图或表重名</font>，视图可以基于表，也可以基于其他视图。但是多重视图会降低 SQL的性能，因此，一般少用。</p>
+<p><img src="https://teemo-tristana.github.io/images/%E8%A7%86%E5%9B%BE%E5%AD%98%E5%9C%A8%E5%9F%BA%E7%A1%80.png" alt="视图存在基础"></p>
+<h3 id="视图操作"><a href="#视图操作" class="headerlink" title="视图操作"></a>视图操作</h3><p>因为视图是一个虚拟表，所以对视图的操作就是对底层基础表的操作，所以在修改时只有满足底层基本表的定义才能成功修改。</p>
+<p>视图本质上还是由表派生而来，若原表更新，则视图也会被更新，反之亦然(修改视图的数据，原表的数据也会更新，否则两者的数据会不一致)。</p>
+<p>视图只是原表的一个窗口，因此它只能修改通过窗口能够看到的内容(数据)[视图是一个窗口，类似临时缓存？]</p>
+<p>不推荐通过视图修改原表数据。</p>
+<h4 id="视图修改"><a href="#视图修改" class="headerlink" title="视图修改"></a>视图修改</h4><h4 id="视图删除"><a href="#视图删除" class="headerlink" title="视图删除"></a>视图删除</h4><blockquote>
+<p>DROP VIEW &lt;视图名1&gt; [ , &lt;视图名2&gt; …]</p>
+</blockquote>
+<h2 id="子查询"><a href="#子查询" class="headerlink" title="子查询"></a>子查询</h2><p>子查询是指一个查询语句嵌套在另外一个查询语句内部的查询。在 select 子句中线计算子查询，子查询结果作为外层查询的过滤条件。</p>
+<h3 id="子查询与视图"><a href="#子查询与视图" class="headerlink" title="子查询与视图"></a>子查询与视图</h3><p>子查询就是将用来定义视图的 select 语句直接作为子句。但子句查询是一次<br>性的，而视图则可以保存在存储介质中，后续可以继续用。</p>
+<h3 id="嵌套子查询"><a href="#嵌套子查询" class="headerlink" title="嵌套子查询"></a>嵌套子查询</h3><p>嵌套子句可以查询出结果，但是随着嵌套子句层数的增加，SQL语句难以理解同时会<font color="#00ddd00"> 执行效率</font>。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> product_type, cnt_product</span><br><span class="line"><span class="keyword">FROM</span> (<span class="keyword">SELECT</span> *</span><br><span class="line">        <span class="keyword">FROM</span> (<span class="keyword">SELECT</span> product_type, </span><br><span class="line">                      <span class="keyword">COUNT</span>(*) <span class="keyword">AS</span> cnt_product</span><br><span class="line">                <span class="keyword">FROM</span> product </span><br><span class="line">               <span class="keyword">GROUP</span> <span class="keyword">BY</span> product_type) <span class="keyword">AS</span> productsum</span><br><span class="line">       <span class="keyword">WHERE</span> cnt_product = <span class="number">4</span>) <span class="keyword">AS</span> productsum2;</span><br></pre></td></tr></table></figure>
+
+<h3 id="标量子查询"><a href="#标量子查询" class="headerlink" title="标量子查询"></a>标量子查询</h3><p>标量就是单一的意思，那么标量子查询也就是单一的子查询，那什么叫做单一的子查询呢？</p>
+<p>所谓单一就是要求我们执行的SQL语句只能返回一个值，也就是要返回表中具体的某一行的某一列</p>
+<h3 id="关联子查询"><a href="#关联子查询" class="headerlink" title="关联子查询"></a>关联子查询</h3><p>关联子查询包含了关联的两字段，因此，意味着查询与查询之间存在某种关联。</p>
+<p>关联子查询就是通过一些<strong>标志</strong>将内外层的查询连接起来起到过滤数据的目的</p>
+<ul>
+<li><p>关联子查询的执行逻辑完全不同于正常的SELECT语句。</p>
+<ul>
+<li><p>正常的select 语句(或者说简单的select语句)按照</p>
+<blockquote>
+<p>from -&gt; where -&gt; group by -&gt; having -&gt; select -&gt;  order by</p>
+</blockquote>
+<p>的来执行。</p>
+</li>
+<li><p>关联子查询，则是从先执行主查询，然后从主查询结果中逐步去执行子查询。</p>
+<ol>
+<li>首先执行不带 where  的主查询</li>
+<li>根据主查询结果匹配 指定条件， 获取子查询结果</li>
+<li>将子查询结果与主查询结果执行完整的 SQL 语句。<br>具体可参考<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/41844742">连接</a></li>
+</ol>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="函数"><a href="#函数" class="headerlink" title="函数"></a>函数</h2><h3 id="算术函数"><a href="#算术函数" class="headerlink" title="算术函数"></a>算术函数</h3><p>用来进行数值计算的函数</p>
+<ul>
+<li><p>ABS() : 取绝对值<br>当 ABS() 的参数是 NULL 时， 返回值也是 NULL。</p>
+</li>
+<li><p>MOD()   : 取余<br>MOD  是计算除法余数的函数，即 modulo， 只能对整数求余。</p>
+</li>
+<li><p>ROUDN() : 四舍五入<br>round() 用来进行四舍五入</p>
+</li>
+</ul>
+<h3 id="字符串函数"><a href="#字符串函数" class="headerlink" title="字符串函数"></a>字符串函数</h3><h3 id="日期函数"><a href="#日期函数" class="headerlink" title="日期函数"></a>日期函数</h3><h3 id="转换函数"><a href="#转换函数" class="headerlink" title="转换函数"></a>转换函数</h3><h3 id="聚合函数"><a href="#聚合函数" class="headerlink" title="聚合函数"></a>聚合函数</h3>
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/12/06/C++-%E5%90%8E%E5%8F%B0%E9%9D%A2%E8%AF%95%E5%A4%8D%E4%B9%A0%E7%B4%A2%E5%BC%95/" rel="prev" title="C++后台面试复习索引">
+      <i class="fa fa-chevron-left"></i> C++后台面试复习索引
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/12/14/Go%20%E5%AD%A6%E4%B9%A0%E4%B9%8B%E7%A8%8B%E5%BA%8F%E7%BB%93%E6%9E%84/" rel="next" title="Go 学习之程序结构">
+      Go 学习之程序结构 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9D%E8%AF%86%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="nav-number">1.</span> <span class="nav-text">初识数据库</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#DBMS%E7%9A%84%E7%A7%8D%E7%B1%BB"><span class="nav-number">1.1.</span> <span class="nav-text">DBMS的种类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81DBMS%E7%B3%BB%E7%BB%9F%E7%BB%93%E6%9E%84%E5%9B%BE"><span class="nav-number">1.2.</span> <span class="nav-text">常见DBMS系统结构图</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SQL"><span class="nav-number">2.</span> <span class="nav-text">SQL</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#SQL%E6%8C%87%E4%BB%A4"><span class="nav-number">2.1.</span> <span class="nav-text">SQL指令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="nav-number">2.2.</span> <span class="nav-text">数据类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BA%A6%E6%9D%9F"><span class="nav-number">2.3.</span> <span class="nav-text">约束</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A1%A8%E7%9A%84%E5%88%A0%E9%99%A4%E4%B8%8E%E6%9B%B4%E6%96%B0"><span class="nav-number">2.4.</span> <span class="nav-text">表的删除与更新</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%A0%E9%99%A4"><span class="nav-number">2.4.1.</span> <span class="nav-text">删除</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9B%B4%E6%96%B0"><span class="nav-number">2.4.2.</span> <span class="nav-text">更新</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AF%B9%E8%A1%A8%E7%9A%84%E8%81%9A%E5%90%88%E6%9F%A5%E8%AF%A2"><span class="nav-number">2.5.</span> <span class="nav-text">对表的聚合查询</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AF%B9%E8%A1%A8%E8%BF%9B%E8%A1%8C%E5%88%86%E7%BB%84"><span class="nav-number">2.6.</span> <span class="nav-text">对表进行分组</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#group-by"><span class="nav-number">2.6.1.</span> <span class="nav-text">group by</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#having"><span class="nav-number">2.6.2.</span> <span class="nav-text">having</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#order-by"><span class="nav-number">2.6.3.</span> <span class="nav-text">order by</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%86%E5%9B%BE"><span class="nav-number">3.</span> <span class="nav-text">视图</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E8%A7%86%E5%9B%BE"><span class="nav-number">3.1.</span> <span class="nav-text">什么是视图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%86%E5%9B%BE%E4%B8%8E%E8%A1%A8"><span class="nav-number">3.2.</span> <span class="nav-text">视图与表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%86%E5%9B%BE%E5%AD%98%E5%9C%A8%E7%9A%84%E5%8E%9F%E5%9B%A0%EF%BC%9A"><span class="nav-number">3.3.</span> <span class="nav-text">视图存在的原因：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E8%A7%86%E5%9B%BE"><span class="nav-number">3.4.</span> <span class="nav-text">创建视图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%86%E5%9B%BE%E6%93%8D%E4%BD%9C"><span class="nav-number">3.5.</span> <span class="nav-text">视图操作</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%A7%86%E5%9B%BE%E4%BF%AE%E6%94%B9"><span class="nav-number">3.5.1.</span> <span class="nav-text">视图修改</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%A7%86%E5%9B%BE%E5%88%A0%E9%99%A4"><span class="nav-number">3.5.2.</span> <span class="nav-text">视图删除</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%90%E6%9F%A5%E8%AF%A2"><span class="nav-number">4.</span> <span class="nav-text">子查询</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AD%90%E6%9F%A5%E8%AF%A2%E4%B8%8E%E8%A7%86%E5%9B%BE"><span class="nav-number">4.1.</span> <span class="nav-text">子查询与视图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B5%8C%E5%A5%97%E5%AD%90%E6%9F%A5%E8%AF%A2"><span class="nav-number">4.2.</span> <span class="nav-text">嵌套子查询</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A0%87%E9%87%8F%E5%AD%90%E6%9F%A5%E8%AF%A2"><span class="nav-number">4.3.</span> <span class="nav-text">标量子查询</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B3%E8%81%94%E5%AD%90%E6%9F%A5%E8%AF%A2"><span class="nav-number">4.4.</span> <span class="nav-text">关联子查询</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%BD%E6%95%B0"><span class="nav-number">5.</span> <span class="nav-text">函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%97%E6%9C%AF%E5%87%BD%E6%95%B0"><span class="nav-number">5.1.</span> <span class="nav-text">算术函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%87%BD%E6%95%B0"><span class="nav-number">5.2.</span> <span class="nav-text">字符串函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%97%A5%E6%9C%9F%E5%87%BD%E6%95%B0"><span class="nav-number">5.3.</span> <span class="nav-text">日期函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BD%AC%E6%8D%A2%E5%87%BD%E6%95%B0"><span class="nav-number">5.4.</span> <span class="nav-text">转换函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%81%9A%E5%90%88%E5%87%BD%E6%95%B0"><span class="nav-number">5.5.</span> <span class="nav-text">聚合函数</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Han Cheng"
+      src="/images/teemo.png">
+  <p class="site-author-name" itemprop="name">Han Cheng</p>
+  <div class="site-description" itemprop="description">记录平日所学</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">20</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Han Cheng</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
