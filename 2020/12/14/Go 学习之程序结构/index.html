@@ -28,7 +28,7 @@
 <meta property="og:description" content="Go 程序结构命名 Go 语言中的函数名、变量名、常量名、类型名、语句标号和包名等所有的命名，都遵循一个简单的命名规则 : 以字母（Unicode字母）或下划线开头。  Go 语言的 25 个关键字(关键字不能用于自定义名字，只能在特定的程序结构中使用) 12345break      default        func       interface       select      ca">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2020-12-14T01:12:20.000Z">
-<meta property="article:modified_time" content="2020-12-14T02:39:20.770Z">
+<meta property="article:modified_time" content="2020-12-19T15:14:57.807Z">
 <meta property="article:author" content="Han Cheng">
 <meta property="article:tag" content="golang">
 <meta name="twitter:card" content="summary">
@@ -189,10 +189,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2020-12-14 09:12:20 / 修改时间：10:39:20" itemprop="dateCreated datePublished" datetime="2020-12-14T09:12:20+08:00">2020-12-14</time>
+              <time title="创建时间：2020-12-14 09:12:20" itemprop="dateCreated datePublished" datetime="2020-12-14T09:12:20+08:00">2020-12-14</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-12-19 23:14:57" itemprop="dateModified" datetime="2020-12-19T23:14:57+08:00">2020-12-19</time>
+              </span>
 
           
 
@@ -319,8 +325,18 @@
 </li>
 </ul>
 <h2 id="复合类型"><a href="#复合类型" class="headerlink" title="复合类型"></a>复合类型</h2><p>复合类型比如数组和结构体</p>
+<h3 id="数组"><a href="#数组" class="headerlink" title="数组"></a>数组</h3><p>数组是一个由固定长度的特定类型元素组成的序列，一个数组可以由零个或多个元素组成，一旦声明了，数组的长度就固定了，不能动态变化。</p>
+<p>len() 和 cap() 返回结果始终一样。</p>
+<h3 id="结构体"><a href="#结构体" class="headerlink" title="结构体"></a>结构体</h3><p>结构体是将零个或多个任意类型的变量，组合在一起的聚合数据类型，也可以看做是数据的集合。</p>
 <h2 id="引用类型"><a href="#引用类型" class="headerlink" title="引用类型"></a>引用类型</h2><p>数组、结构体的组合</p>
 <h2 id="接口类型"><a href="#接口类型" class="headerlink" title="接口类型"></a>接口类型</h2><p>指针、切片、字典、函数、通道</p>
+<h3 id="指针-1"><a href="#指针-1" class="headerlink" title="指针"></a>指针</h3><h3 id="切片"><a href="#切片" class="headerlink" title="切片"></a>切片</h3><p>切片是一种动态数组，比数组更为灵活，长度不固定，可以进行追加和删除等，类似C++中的vector</p>
+<h3 id="字典map"><a href="#字典map" class="headerlink" title="字典map"></a>字典map</h3><p>map 集合是无序的 key-value数据结构</p>
+<p>map 集合中的 key 和 value 可以是任意类型，但所有的 key 必须属于同一数据类型，所有value 也必须是同一类型， key 和 value 的类型可以不同</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> p1 <span class="keyword">map</span>[<span class="keyword">int</span>]<span class="keyword">string</span> </span><br><span class="line"><span class="keyword">var</span> p2 <span class="keyword">map</span>[<span class="keyword">int</span>]<span class="keyword">string</span> = <span class="keyword">map</span>[<span class="keyword">int</span>]<span class="keyword">string</span>&#123;&#125;</span><br><span class="line">str := <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="keyword">int</span>]<span class="keyword">string</span>)</span><br></pre></td></tr></table></figure>
+<h3 id="函数"><a href="#函数" class="headerlink" title="函数"></a>函数</h3><ol>
+<li>defer 函数 ：defer 声明的函数不会立即去执行，而是在函数 return 后再去执行，主要用在 异常处理、日志记录、清理数据、释放资源的等场景<h3 id="通道-Channels"><a href="#通道-Channels" class="headerlink" title="通道 Channels"></a><font color="#dd00dd">通道 Channels</font></h3></li>
+</ol>
 
     </div>
 
@@ -401,7 +417,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Go-%E7%A8%8B%E5%BA%8F%E7%BB%93%E6%9E%84"><span class="nav-number">1.</span> <span class="nav-text">Go 程序结构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%91%BD%E5%90%8D"><span class="nav-number">1.1.</span> <span class="nav-text">命名</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%A3%B0%E6%98%8E"><span class="nav-number">2.</span> <span class="nav-text">声明</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%98%E9%87%8F"><span class="nav-number">2.1.</span> <span class="nav-text">变量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8C%87%E9%92%88"><span class="nav-number">2.2.</span> <span class="nav-text">指针</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#new%E5%87%BD%E6%95%B0"><span class="nav-number">2.3.</span> <span class="nav-text">new函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%98%E9%87%8F%E7%9A%84%E5%A3%B0%E6%98%8E%E5%91%A8%E6%9C%9F"><span class="nav-number">2.4.</span> <span class="nav-text">变量的声明周期</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B1%BB%E5%9E%8B"><span class="nav-number">2.5.</span> <span class="nav-text">类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8C%85-%E5%92%8C-%E6%96%87%E4%BB%B6"><span class="nav-number">2.6.</span> <span class="nav-text">包 和 文件</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="nav-number">3.</span> <span class="nav-text">数据类型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E7%A1%80%E7%B1%BB%E5%9E%8B"><span class="nav-number">3.1.</span> <span class="nav-text">基础类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%8D%E5%90%88%E7%B1%BB%E5%9E%8B"><span class="nav-number">3.2.</span> <span class="nav-text">复合类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%95%E7%94%A8%E7%B1%BB%E5%9E%8B"><span class="nav-number">3.3.</span> <span class="nav-text">引用类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8E%A5%E5%8F%A3%E7%B1%BB%E5%9E%8B"><span class="nav-number">3.4.</span> <span class="nav-text">接口类型</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Go-%E7%A8%8B%E5%BA%8F%E7%BB%93%E6%9E%84"><span class="nav-number">1.</span> <span class="nav-text">Go 程序结构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%91%BD%E5%90%8D"><span class="nav-number">1.1.</span> <span class="nav-text">命名</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%A3%B0%E6%98%8E"><span class="nav-number">2.</span> <span class="nav-text">声明</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%98%E9%87%8F"><span class="nav-number">2.1.</span> <span class="nav-text">变量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8C%87%E9%92%88"><span class="nav-number">2.2.</span> <span class="nav-text">指针</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#new%E5%87%BD%E6%95%B0"><span class="nav-number">2.3.</span> <span class="nav-text">new函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%98%E9%87%8F%E7%9A%84%E5%A3%B0%E6%98%8E%E5%91%A8%E6%9C%9F"><span class="nav-number">2.4.</span> <span class="nav-text">变量的声明周期</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B1%BB%E5%9E%8B"><span class="nav-number">2.5.</span> <span class="nav-text">类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8C%85-%E5%92%8C-%E6%96%87%E4%BB%B6"><span class="nav-number">2.6.</span> <span class="nav-text">包 和 文件</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="nav-number">3.</span> <span class="nav-text">数据类型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E7%A1%80%E7%B1%BB%E5%9E%8B"><span class="nav-number">3.1.</span> <span class="nav-text">基础类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%8D%E5%90%88%E7%B1%BB%E5%9E%8B"><span class="nav-number">3.2.</span> <span class="nav-text">复合类型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E7%BB%84"><span class="nav-number">3.2.1.</span> <span class="nav-text">数组</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%93%E6%9E%84%E4%BD%93"><span class="nav-number">3.2.2.</span> <span class="nav-text">结构体</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%95%E7%94%A8%E7%B1%BB%E5%9E%8B"><span class="nav-number">3.3.</span> <span class="nav-text">引用类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8E%A5%E5%8F%A3%E7%B1%BB%E5%9E%8B"><span class="nav-number">3.4.</span> <span class="nav-text">接口类型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8C%87%E9%92%88-1"><span class="nav-number">3.4.1.</span> <span class="nav-text">指针</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%87%E7%89%87"><span class="nav-number">3.4.2.</span> <span class="nav-text">切片</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AD%97%E5%85%B8map"><span class="nav-number">3.4.3.</span> <span class="nav-text">字典map</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%87%BD%E6%95%B0"><span class="nav-number">3.4.4.</span> <span class="nav-text">函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%9A%E9%81%93-Channels"><span class="nav-number">3.4.5.</span> <span class="nav-text">通道 Channels</span></a></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 

@@ -187,10 +187,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2020-12-14 09:12:20 / 修改时间：10:39:20" itemprop="dateCreated datePublished" datetime="2020-12-14T09:12:20+08:00">2020-12-14</time>
+              <time title="创建时间：2020-12-14 09:12:20" itemprop="dateCreated datePublished" datetime="2020-12-14T09:12:20+08:00">2020-12-14</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-12-19 23:14:57" itemprop="dateModified" datetime="2020-12-19T23:14:57+08:00">2020-12-19</time>
+              </span>
 
           
 
@@ -317,8 +323,18 @@
 </li>
 </ul>
 <h2 id="复合类型"><a href="#复合类型" class="headerlink" title="复合类型"></a>复合类型</h2><p>复合类型比如数组和结构体</p>
+<h3 id="数组"><a href="#数组" class="headerlink" title="数组"></a>数组</h3><p>数组是一个由固定长度的特定类型元素组成的序列，一个数组可以由零个或多个元素组成，一旦声明了，数组的长度就固定了，不能动态变化。</p>
+<p>len() 和 cap() 返回结果始终一样。</p>
+<h3 id="结构体"><a href="#结构体" class="headerlink" title="结构体"></a>结构体</h3><p>结构体是将零个或多个任意类型的变量，组合在一起的聚合数据类型，也可以看做是数据的集合。</p>
 <h2 id="引用类型"><a href="#引用类型" class="headerlink" title="引用类型"></a>引用类型</h2><p>数组、结构体的组合</p>
 <h2 id="接口类型"><a href="#接口类型" class="headerlink" title="接口类型"></a>接口类型</h2><p>指针、切片、字典、函数、通道</p>
+<h3 id="指针-1"><a href="#指针-1" class="headerlink" title="指针"></a>指针</h3><h3 id="切片"><a href="#切片" class="headerlink" title="切片"></a>切片</h3><p>切片是一种动态数组，比数组更为灵活，长度不固定，可以进行追加和删除等，类似C++中的vector</p>
+<h3 id="字典map"><a href="#字典map" class="headerlink" title="字典map"></a>字典map</h3><p>map 集合是无序的 key-value数据结构</p>
+<p>map 集合中的 key 和 value 可以是任意类型，但所有的 key 必须属于同一数据类型，所有value 也必须是同一类型， key 和 value 的类型可以不同</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> p1 <span class="keyword">map</span>[<span class="keyword">int</span>]<span class="keyword">string</span> </span><br><span class="line"><span class="keyword">var</span> p2 <span class="keyword">map</span>[<span class="keyword">int</span>]<span class="keyword">string</span> = <span class="keyword">map</span>[<span class="keyword">int</span>]<span class="keyword">string</span>&#123;&#125;</span><br><span class="line">str := <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="keyword">int</span>]<span class="keyword">string</span>)</span><br></pre></td></tr></table></figure>
+<h3 id="函数"><a href="#函数" class="headerlink" title="函数"></a>函数</h3><ol>
+<li>defer 函数 ：defer 声明的函数不会立即去执行，而是在函数 return 后再去执行，主要用在 异常处理、日志记录、清理数据、释放资源的等场景<h3 id="通道-Channels"><a href="#通道-Channels" class="headerlink" title="通道 Channels"></a><font color="#dd00dd">通道 Channels</font></h3></li>
+</ol>
 
       
     </div>
@@ -369,7 +385,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-12-12 13:14:10" itemprop="dateModified" datetime="2020-12-12T13:14:10+08:00">2020-12-12</time>
+                <time title="修改时间：2020-12-15 10:55:41" itemprop="dateModified" datetime="2020-12-15T10:55:41+08:00">2020-12-15</time>
               </span>
 
           
@@ -560,7 +576,8 @@
 <h4 id="视图修改"><a href="#视图修改" class="headerlink" title="视图修改"></a>视图修改</h4><h4 id="视图删除"><a href="#视图删除" class="headerlink" title="视图删除"></a>视图删除</h4><blockquote>
 <p>DROP VIEW &lt;视图名1&gt; [ , &lt;视图名2&gt; …]</p>
 </blockquote>
-<h2 id="子查询"><a href="#子查询" class="headerlink" title="子查询"></a>子查询</h2><p>子查询是指一个查询语句嵌套在另外一个查询语句内部的查询。在 select 子句中线计算子查询，子查询结果作为外层查询的过滤条件。</p>
+<h2 id="子查询"><a href="#子查询" class="headerlink" title="子查询"></a>子查询</h2><p> 子查询的结果其实也是一张表,只不过是一张虚拟的表, 它并不真实存在于数据库中, 只是数据库中其他表经过筛选,聚合等查询操作后得到的一个”视图”. </p>
+<p>子查询是指一个查询语句嵌套在另外一个查询语句内部的查询。在 select 子句中线计算子查询，子查询结果作为外层查询的过滤条件。</p>
 <h3 id="子查询与视图"><a href="#子查询与视图" class="headerlink" title="子查询与视图"></a>子查询与视图</h3><p>子查询就是将用来定义视图的 select 语句直接作为子句。但子句查询是一次<br>性的，而视图则可以保存在存储介质中，后续可以继续用。</p>
 <h3 id="嵌套子查询"><a href="#嵌套子查询" class="headerlink" title="嵌套子查询"></a>嵌套子查询</h3><p>嵌套子句可以查询出结果，但是随着嵌套子句层数的增加，SQL语句难以理解同时会<font color="#00ddd00"> 执行效率</font>。</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> product_type, cnt_product</span><br><span class="line"><span class="keyword">FROM</span> (<span class="keyword">SELECT</span> *</span><br><span class="line">        <span class="keyword">FROM</span> (<span class="keyword">SELECT</span> product_type, </span><br><span class="line">                      <span class="keyword">COUNT</span>(*) <span class="keyword">AS</span> cnt_product</span><br><span class="line">                <span class="keyword">FROM</span> product </span><br><span class="line">               <span class="keyword">GROUP</span> <span class="keyword">BY</span> product_type) <span class="keyword">AS</span> productsum</span><br><span class="line">       <span class="keyword">WHERE</span> cnt_product = <span class="number">4</span>) <span class="keyword">AS</span> productsum2;</span><br></pre></td></tr></table></figure>
@@ -597,7 +614,90 @@
 <li><p>ROUDN() : 四舍五入<br>round() 用来进行四舍五入</p>
 </li>
 </ul>
-<h3 id="字符串函数"><a href="#字符串函数" class="headerlink" title="字符串函数"></a>字符串函数</h3><h3 id="日期函数"><a href="#日期函数" class="headerlink" title="日期函数"></a>日期函数</h3><h3 id="转换函数"><a href="#转换函数" class="headerlink" title="转换函数"></a>转换函数</h3><h3 id="聚合函数"><a href="#聚合函数" class="headerlink" title="聚合函数"></a>聚合函数</h3>
+<h3 id="字符串函数"><a href="#字符串函数" class="headerlink" title="字符串函数"></a>字符串函数</h3><ul>
+<li><p>concat()    : 拼接</p>
+</li>
+<li><p>lenght()    : 字符串长度</p>
+</li>
+<li><p>lower()     : 小写转大写</p>
+</li>
+<li><p>upper()     : 大小转小写</p>
+</li>
+<li><p>replace()   : 字符串替换</p>
+</li>
+<li><p>substring() : 字符串截取</p>
+</li>
+<li><p>SUBSTRING_INDEX (原始字符串， 分隔符，n) : 字符串按索引截取</p>
+</li>
+</ul>
+<h3 id="日期函数"><a href="#日期函数" class="headerlink" title="日期函数"></a>日期函数</h3><ul>
+<li><p>current_data() :      当前日期</p>
+</li>
+<li><p>current_time() :      当前时间</p>
+</li>
+<li><p>current_timestamp() : 当前日期和时间</p>
+</li>
+</ul>
+<h3 id="转换函数"><a href="#转换函数" class="headerlink" title="转换函数"></a>转换函数</h3><p>“转换”这个词的含义非常广泛，在 SQL 中主要有两层意思：一是数据类型的转换，简称为类型转换，在英语中称为cast；另一层意思是值的转换。</p>
+<ul>
+<li>cast()<h3 id="聚合函数"><a href="#聚合函数" class="headerlink" title="聚合函数"></a>聚合函数</h3></li>
+</ul>
+<h2 id="谓词"><a href="#谓词" class="headerlink" title="谓词"></a>谓词</h2><h3 id="什么是谓词"><a href="#什么是谓词" class="headerlink" title="什么是谓词"></a>什么是谓词</h3><p>谓词就是返回值为真值的函数，包括 TRUE / FALSE / UNKOWN</p>
+<ul>
+<li>主要谓词<ul>
+<li>LIKE      : 用于字符串的部分一致查询<ul>
+<li> 当需要进行字符串的部分一致查询时需要使用该谓词。</li>
+<li>部分一致大体可以分为前方一致、中间一致和后方一致三种类型。</li>
+</ul>
+</li>
+<li>BETWEEN<ul>
+<li>使用 BETWEEN 可以进行范围查询。该谓词与其他谓词或者函数的不同之处在于它使用了 3 个参数。</li>
+<li>between … and … 包含边界</li>
+</ul>
+</li>
+<li>IS NULL</li>
+<li>IS NOT NULL</li>
+<li>IN 和 NOT IN <ul>
+<li>使用IN 和 NOT IN 时是无法选取出NULL数据的</li>
+<li> NULL 只能使用 IS NULL 和 IS NOT NULL 来进行判断。</li>
+</ul>
+</li>
+<li>EXISTS</li>
+</ul>
+</li>
+</ul>
+<h2 id="case-表达式"><a href="#case-表达式" class="headerlink" title="case 表达式"></a>case 表达式</h2><p>case 表达式是函数的一种， 是 SQL 中比较重要的功能。</p>
+<p>case 表达式是区分情况时使用的，常用作 条件分支</p>
+<p>case 表达式可以分为 简单 case 表达式 和 搜索 case 表达式</p>
+<p>语法：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 依次判断 when 表达式是否为真值，是则执行 THEN 后的语句，如果所有的 when 表达式均为假，则执行 ELSE 后的语句。 无论多么庞大的 CASE 表达式，最后也只会返回一个值。</span></span><br><span class="line">CASE WHEN &lt;求值表达式&gt; THEN &lt;表达式&gt;</span><br><span class="line">     WHEN &lt;求值表达式&gt; THEN &lt;表达式&gt;</span><br><span class="line">     WHEN &lt;求值表达式&gt; THEN &lt;表达式&gt;</span><br><span class="line">     .</span><br><span class="line">     .</span><br><span class="line">     .</span><br><span class="line">ELSE &lt;表达式&gt;</span><br><span class="line"><span class="keyword">END</span>  </span><br></pre></td></tr></table></figure>
+
+
+<h2 id="连接-JOIN"><a href="#连接-JOIN" class="headerlink" title="连接(JOIN)"></a>连接(JOIN)</h2><p>连接就是使用某种关联条件将其他表中的列添加过来，进行”添加列”的集合运算。</p>
+<p>连接操作在 SQL 操作中十分重要。</p>
+<p>内连接（inner join）：取出两张表中匹配到的数据，匹配不到的不保留</p>
+<p>外连接（outer join）：取出连接表中匹配到的数据，匹配不到的也会保留，其值为NULL</p>
+<h3 id="内连接-inner-join"><a href="#内连接-inner-join" class="headerlink" title="内连接(inner join)"></a>内连接(inner join)</h3><p><font color="#00dd00">内连接只能选取同时存在于两张表的数据</font><br>内连接的语法:</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">FROM &lt;tb_1&gt; inner join &lt;tb_2&gt; on &lt;condition(s)&gt;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>进行连接时需要在 FROM 子句中使用多张表</li>
+<li>必须使用 on 子句来指定连接条件</li>
+<li>selec 子句中的列最好按照 表名 列名 的格式来使用</li>
+</ol>
+<h4 id="自联结-self-join"><a href="#自联结-self-join" class="headerlink" title="自联结(self join)"></a>自联结(self join)</h4><p>一张表与自身做连接，自连结并不是区分于内连结和外连结的第三种连结, 自连结可以是外连结也可以是内连结, 它是不同于内连结外连结的另一个连结的分类方法.</p>
+<h4 id="自然连结-natural-join"><a href="#自然连结-natural-join" class="headerlink" title="自然连结(natural join)"></a>自然连结(natural join)</h4><p>内连结的一种特例–当两个表进行自然连结时, 会按照两个表中都包含的列名来进行等值内连结, 此时无需使用 ON 来指定连接条件.</p>
+<h3 id="外连接-out-join"><a href="#外连接-out-join" class="headerlink" title="外连接(out join)"></a>外连接(out join)</h3><p><font color="#00dd00">取出连接表中匹配到的数据，匹配不到的也会保留，其值为NULL</font><br>内连结会丢弃两张表中不满足 ON 条件的行,和内连结相对的就是外连结. 外连结会根据外连结的种类有选择地保留无法匹配到的行.</p>
+<p>由于连结时可以交换左表和右表的位置, 因此左连结和右连结并没有本质区别</p>
+<p>left 和 right 关键字则是指定那边的表为主表，外连接会将包含主表的所有数据。</p>
+<h4 id="左外连接"><a href="#左外连接" class="headerlink" title="左外连接"></a>左外连接</h4><p>左连结会保存左表中无法按照 ON 子句匹配到的行</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 左连结     </span></span><br><span class="line">FROM &lt;tb_1&gt; LEFT  OUTER JOIN &lt;tb_2&gt; ON &lt;condition(s)&gt;</span><br></pre></td></tr></table></figure>
+
+
+<h4 id="右外连接"><a href="#右外连接" class="headerlink" title="右外连接"></a>右外连接</h4><p> 右连结则会保存右表中无法按照 ON 子句匹配到的行</p>
+ <figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 右连结     </span></span><br><span class="line">FROM &lt;tb_1&gt; RIGHT OUTER JOIN &lt;tb_2&gt; ON &lt;condition(s)&gt;</span><br></pre></td></tr></table></figure>
+<h4 id="全外连接"><a href="#全外连接" class="headerlink" title="全外连接"></a>全外连接</h4><p>外连结则会同时保存两个表中无法按照 ON子句匹配到的行, </p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 全外连结</span></span><br><span class="line">FROM &lt;tb_1&gt; FULL  OUTER JOIN &lt;tb_2&gt; ON &lt;condition(s)&gt;</span><br></pre></td></tr></table></figure>
+
       
     </div>
 
