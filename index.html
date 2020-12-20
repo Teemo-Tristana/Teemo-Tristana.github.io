@@ -164,6 +164,63 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/12/20/goroutine%E5%92%8Cchannels/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/teemo.png">
+      <meta itemprop="name" content="Han Cheng">
+      <meta itemprop="description" content="记录平日所学">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Teemo-Tristana">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/12/20/goroutine%E5%92%8Cchannels/" class="post-title-link" itemprop="url">goroutine和channels</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-12-20 18:10:35" itemprop="dateCreated datePublished" datetime="2020-12-20T18:10:35+08:00">2020-12-20</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2020/12/14/Go%20%E5%AD%A6%E4%B9%A0%E4%B9%8B%E7%A8%8B%E5%BA%8F%E7%BB%93%E6%9E%84/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -195,7 +252,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-12-19 23:14:57" itemprop="dateModified" datetime="2020-12-19T23:14:57+08:00">2020-12-19</time>
+                <time title="修改时间：2020-12-20 17:55:23" itemprop="dateModified" datetime="2020-12-20T17:55:23+08:00">2020-12-20</time>
               </span>
 
           
@@ -253,8 +310,8 @@
 <h2 id="指针"><a href="#指针" class="headerlink" title="指针"></a>指针</h2><p>一个指针的值是另一个变量的地址。一个指针对应变量在内存中的存储位置。并不是每一个值都会有一个内存地址，但是对于每一个变量必然有对应的内存地址</p>
 <p>任何类型的指针的零值都是 nil</p>
 <p>Go 语言中返回函数局部变量的地址也是<strong>安全的</strong></p>
-<h2 id="new函数"><a href="#new函数" class="headerlink" title="new函数"></a>new函数</h2><p>new 函数开业用于创建变量， new(T) 将创建一个T类型的匿名变量，并初始化为T类型的零值,并返回 变量地址(即指针), 返回类型是 T 类型的指针(T*)</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">p := <span class="built_in">new</span>(<span class="keyword">int</span>) <span class="comment">// p 是一个 int 类型的指针，指向匿名的 int 变量</span></span><br></pre></td></tr></table></figure>
+<h2 id="new函数"><a href="#new函数" class="headerlink" title="new函数"></a>new函数</h2><p>new 函数用于创建变量， new(T) 将创建一个T类型的匿名变量，并初始化为T类型的零值,并返回 变量地址(即指针), 返回类型是 T 类型的指针(T*)</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// new() 原型</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">new</span><span class="params">(Type)</span> *<span class="title">Type</span></span> </span><br><span class="line">p := <span class="built_in">new</span>(<span class="keyword">int</span>) <span class="comment">// p 是一个 int 类型的指针，指向匿名的 int 变量</span></span><br></pre></td></tr></table></figure>
 
 <p>用new创建变量和普通变量声明语句方式创建变量没有什么区别，换言之，new函数类似是一种语法糖，而不是一个新的基础概念。</p>
 <h2 id="变量的声明周期"><a href="#变量的声明周期" class="headerlink" title="变量的声明周期"></a>变量的声明周期</h2><p>变量的生命周期指的是在程序运行期间变量有效存在的时间段。对于在包一级声明的变量来说，它们的生命周期和整个程序的运行周期是一致的。而相比之下，局部变量的生命周期则是动态的：每次从创建一个新变量的声明语句开始，直到该变量不再被引用为止，然后变量的存储空间可能被回收。函数的参数变量和返回值变量都是局部变量。它们在函数每次被调用的时候创建。</p>
@@ -323,18 +380,66 @@
 </li>
 </ul>
 <h2 id="复合类型"><a href="#复合类型" class="headerlink" title="复合类型"></a>复合类型</h2><p>复合类型比如数组和结构体</p>
-<h3 id="数组"><a href="#数组" class="headerlink" title="数组"></a>数组</h3><p>数组是一个由固定长度的特定类型元素组成的序列，一个数组可以由零个或多个元素组成，一旦声明了，数组的长度就固定了，不能动态变化。</p>
+<h3 id="数组"><a href="#数组" class="headerlink" title="数组"></a>数组</h3><ul>
+<li><p>数组是一个由固定长度的特定类型元素组成的序列，一个数组可以由零个或多个元素组成，一旦声明了，数组的长度就固定了，不能动态变化。</p>
+</li>
+<li><p>数组的长度是数组类型的一部分，因此，长度不同的数组肯定不是一个类型的</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">arr1 := [<span class="number">3</span>] <span class="keyword">int</span> </span><br><span class="line">arr2 := [<span class="number">4</span>] <span class="keyword">int</span></span><br></pre></td></tr></table></figure>
+<p>因此，arr1 和 arr2 是不同类型的</p>
+</li>
+<li><p>数组是内置(build-in)类型,是同一类型数据的集合，它是 <font color="#00dd00">值类型</font> , 索引从 0 开始，作为参数传入时， <font color="#00ddddd">是 值传递(复制一份数据)</font>。</p>
+</li>
+<li><p><font color="#dd0000">数组是 值传递 </font></p>
+</li>
+</ul>
 <p>len() 和 cap() 返回结果始终一样。</p>
 <h3 id="结构体"><a href="#结构体" class="headerlink" title="结构体"></a>结构体</h3><p>结构体是将零个或多个任意类型的变量，组合在一起的聚合数据类型，也可以看做是数据的集合。</p>
-<h2 id="引用类型"><a href="#引用类型" class="headerlink" title="引用类型"></a>引用类型</h2><p>数组、结构体的组合</p>
+<h2 id="引用类型"><a href="#引用类型" class="headerlink" title="引用类型"></a>引用类型</h2><p>数组、结构体的组合<br>数组切片、字典、通道(channel)、接口</p>
 <h2 id="接口类型"><a href="#接口类型" class="headerlink" title="接口类型"></a>接口类型</h2><p>指针、切片、字典、函数、通道</p>
-<h3 id="指针-1"><a href="#指针-1" class="headerlink" title="指针"></a>指针</h3><h3 id="切片"><a href="#切片" class="headerlink" title="切片"></a>切片</h3><p>切片是一种动态数组，比数组更为灵活，长度不固定，可以进行追加和删除等，类似C++中的vector</p>
-<h3 id="字典map"><a href="#字典map" class="headerlink" title="字典map"></a>字典map</h3><p>map 集合是无序的 key-value数据结构</p>
-<p>map 集合中的 key 和 value 可以是任意类型，但所有的 key 必须属于同一数据类型，所有value 也必须是同一类型， key 和 value 的类型可以不同</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> p1 <span class="keyword">map</span>[<span class="keyword">int</span>]<span class="keyword">string</span> </span><br><span class="line"><span class="keyword">var</span> p2 <span class="keyword">map</span>[<span class="keyword">int</span>]<span class="keyword">string</span> = <span class="keyword">map</span>[<span class="keyword">int</span>]<span class="keyword">string</span>&#123;&#125;</span><br><span class="line">str := <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="keyword">int</span>]<span class="keyword">string</span>)</span><br></pre></td></tr></table></figure>
-<h3 id="函数"><a href="#函数" class="headerlink" title="函数"></a>函数</h3><ol>
+<h3 id="指针-1"><a href="#指针-1" class="headerlink" title="指针"></a>指针</h3><h3 id="切片-slice"><a href="#切片-slice" class="headerlink" title="切片 slice"></a>切片 slice</h3><ul>
+<li><p>切片是一种动态数组，比数组更为灵活，长度不固定，可以进行追加和删除等，类似C++中的vector</p>
+</li>
+<li><p>切片是一个拥有相同类型元素的 <font color="#00ddd">可变长度</font> 的序列</p>
+</li>
+<li><p>切片的属性：</p>
+<ul>
+<li>指针  : 指向第一个 切片元素对于的底层数组的地址(并不一定是数组的第一个元素)</li>
+<li>长度  : 切片中元素的个数</li>
+<li>容量  : 切片从最多可以容量元素的个数</li>
+</ul>
+</li>
+<li><p>切片不需要指定大小</p>
+</li>
+<li><p>和数组不同， slice 之间是不能比较的，也即是不能使用 == 操作符来判断两个 slice 是否相等。<font color="#00ddd">nil 除外 </font></p>
+</li>
+<li><p><font color="#dd0000">切片是地址传递(指针传递)</font> </p>
+</li>
+<li><p>切片可以通过数组进行初始化，也可以通过 make() 进程初始化，若容量不足时，将按 len 的 <font color="#dd00dd">2倍扩充</font></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 数组初始化 切片</span></span><br><span class="line">sli1 := arr[<span class="number">1</span>:<span class="number">3</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment">// make 进行初始化</span></span><br><span class="line">lenght := <span class="number">1</span></span><br><span class="line"><span class="keyword">var</span> sli1 []<span class="keyword">int</span> = <span class="built_in">make</span>([]<span class="keyword">int</span>, lenght)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h3 id="字典map"><a href="#字典map" class="headerlink" title="字典map"></a>字典map</h3><ul>
+<li><p>map 集合是无序的 key-value数据结构，map 集合中的 key 和 value 可以是任意类型，但所有的 key 必须属于同一数据类型，所有value 也必须是同一类型， key 和 value 的类型可以不同。</p>
+</li>
+<li><p>在 Go 语言中， 一个 map 就是一个哈希表的引用</p>
+</li>
+<li><p>可以用 make () 函数创建 map 或 直接创建</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// make() 函数创建 map</span></span><br><span class="line">ages := <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="keyword">int</span>]<span class="keyword">string</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 直接创建</span></span><br><span class="line"></span><br><span class="line">age := <span class="keyword">map</span>[<span class="keyword">int</span>] <span class="keyword">string</span> &#123;&#125; <span class="comment">// 创建空间 map</span></span><br><span class="line"></span><br><span class="line">age := <span class="keyword">map</span>[<span class="keyword">int</span>] <span class="keyword">string</span>&#123;</span><br><span class="line">    <span class="number">1</span> : <span class="string">&quot;one&quot;</span>,</span><br><span class="line">    <span class="number">2</span> : <span class="string">&quot;two&quot;</span>,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>map 的迭代顺序是不确定的，</p>
+</li>
+<li><p>map 之间<font color="#00dddd">不能进行相等比较的</font>， <font color="#dd00dd">nil 除外</font>。可以通过循环来判断两个 map 是否相等。</p>
+<h3 id="函数"><a href="#函数" class="headerlink" title="函数"></a>函数</h3><p>函数形式：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">name</span><span class="params">(parameter-list)</span> <span class="params">(result-list)</span></span> &#123;</span><br><span class="line">    body</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>实参通过** 值传递** 的方式进行传递，因此，函数的形参是实参的<strong>拷贝</strong>，对形参的改变是不会影响实参的。但是，若实参传递的是 <font color="#00dd00"> 指针、slice(切片)、map、function、channel</font>等类型时，实参可能会由于函数的间接引用而被修改</p>
+</li>
+</ul>
+<ol>
 <li>defer 函数 ：defer 声明的函数不会立即去执行，而是在函数 return 后再去执行，主要用在 异常处理、日志记录、清理数据、释放资源的等场景<h3 id="通道-Channels"><a href="#通道-Channels" class="headerlink" title="通道 Channels"></a><font color="#dd00dd">通道 Channels</font></h3></li>
 </ol>
+<h2 id="常见命令"><a href="#常见命令" class="headerlink" title="常见命令"></a>常见命令</h2><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">go</span> env      <span class="comment">// 查看 go 的环境变量</span></span><br><span class="line"><span class="keyword">go</span> run      <span class="comment">// 编译并运行 go 源码文件</span></span><br><span class="line"><span class="keyword">go</span> build    <span class="comment">// 编译源码文件、代码包、依赖包</span></span><br><span class="line"><span class="keyword">go</span> get      <span class="comment">// 动态获取远程代码包</span></span><br><span class="line"><span class="keyword">go</span> install  <span class="comment">// 编译 go 文件，并将编译结构安装到 bin、pkg 目录</span></span><br><span class="line"><span class="keyword">go</span> clean    <span class="comment">// 清理工作目录，删除编译和安装遗留的目标文件</span></span><br><span class="line"><span class="keyword">go</span> version  <span class="comment">// 查看 go 版本</span></span><br></pre></td></tr></table></figure>
+
 
       
     </div>
@@ -1691,173 +1796,10 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/10/30/%E9%98%85%E8%AF%BB%E9%A1%BA%E5%BA%8F/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/teemo.png">
-      <meta itemprop="name" content="Han Cheng">
-      <meta itemprop="description" content="记录平日所学">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Teemo-Tristana">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/10/30/%E9%98%85%E8%AF%BB%E9%A1%BA%E5%BA%8F/" class="post-title-link" itemprop="url">未命名</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-10-30 16:26:25" itemprop="dateCreated datePublished" datetime="2020-10-30T16:26:25+08:00">2020-10-30</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-11-03 10:30:41" itemprop="dateModified" datetime="2020-11-03T10:30:41+08:00">2020-11-03</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="如何阅读Redis源码"><a href="#如何阅读Redis源码" class="headerlink" title="如何阅读Redis源码"></a>如何阅读Redis源码</h1><ul>
-<li><ol>
-<li>阅读数据结构的实现：<ul>
-<li>相关文件：<ul>
-<li>sds.h     sds.c</li>
-<li>adlist.h  adlist.c</li>
-<li>dict.h    dict.c</li>
-<li>redis.h   zskiplist zskiplistNode t_zset.c 所有zsl开头的函数如zslCreate, zslInsert, zslDeleteNode</li>
-<li>hyperloglog.c 中hlhdr结构，以及所有hll开头的文件</li>
-</ul>
-</li>
-</ul>
-</li>
-</ol>
-</li>
-<li><ol start="2">
-<li>阅读内存编码[encoding]数据结构的实现<ul>
-<li>和普通的数据结构一样， 内存编码数据结构基本上是独立的， 不和其他模块耦合<ul>
-<li>intset.h intset.c[整数集合intset数据结构]</li>
-<li>ziplist.h ziplist.c[压缩列表zip-list数据结构]</li>
-</ul>
-</li>
-</ul>
-</li>
-</ol>
-</li>
-<li><ol start="3">
-<li>阅读数据类型实现：<ul>
-<li>Redis6种不同类型的键[字符串-散列-列表-集合-有序集合-HyperLogLog]所有底层实现结构<ul>
-<li>object.c Redis对象类型系统实现</li>
-<li>t_string.c 字符串键的实现</li>
-<li>t_list.c 列表键的实现</li>
-<li>t_hash.c 散列键的实现</li>
-<li>t_set.c 集合键的实现</li>
-<li>t_zset.c中除zsl开头的函数之外的所有函数 有序集合键的实现</li>
-<li>hyperloglog.c 中所有以pf开头的函数</li>
-</ul>
-</li>
-</ul>
-</li>
-</ol>
-</li>
-<li><ol start="4">
-<li><p>阅读数据库相关实现代码:</p>
-<ul>
-<li><p>数据库相关</p>
-<ul>
-<li>redis.h中redisDb结构和db.c  Redis数据库实现</li>
-<li>notify.c                   Redis的数据库通知功能实现代码</li>
-<li>rdb.h和rdb.c               Redis的RDB持久化实现代码</li>
-<li>aof.c                      Redis的AOF持久化实现代码</li>
-</ul>
-</li>
-<li><p>Redis独立功能模块：</p>
-<ul>
-<li>redis.h中pubsubPattern结构以及pubsub.c   发布与阅读功能实现</li>
-<li>redis.h中multiState结构以及multiCmd结构   事务功能的实现</li>
-<li>sort.c                                   SORT命令的实现</li>
-<li>bitops.c                                 GETBIT|SETBIT等二进制操作命令的实现</li>
-</ul>
-</li>
-</ul>
-</li>
-</ol>
-</li>
-<li><ol start="5">
-<li><p>阅读客户端和服务器相关代码：</p>
-<ul>
-<li><p>客户端-服务器代码：</p>
-<ul>
-<li>ae.c 以及任意一个ae_*.c文件           Redis的事件处理器实现[基于Reactor模式]</li>
-<li>networking.c                         Redis的网络链接库，负责发送回复和接受命令请求，同时也负责创建/销毁客户端以及分析通信协议等工作</li>
-<li>redis.h 和 redis.c中和单机Redis服务器相关部分     单机Redis服务器的实现</li>
-</ul>
-</li>
-<li><p>独立模块:</p>
-<ul>
-<li>scripting.c   Lua脚本功能实现</li>
-<li>slowlog.c     慢查询功能的实现</li>
-<li>monitor.c     监视器功能的实现</li>
-</ul>
-</li>
-</ul>
-</li>
-</ol>
-</li>
-<li><ol start="6">
-<li>阅读多机功能的实现<ul>
-<li>多级功能代码：<ul>
-<li>replication.c     复制功能的实现</li>
-<li>sentinel.c        Redis Sentinel的实现代码</li>
-<li>cluster.c         Redis集群的实现代码<br><img src="/.com//readRedis.png" alt="readRedis.png"></li>
-</ul>
-</li>
-</ul>
-</li>
-</ol>
-</li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -1925,7 +1867,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">20</span>
+          <span class="site-state-item-count">21</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
