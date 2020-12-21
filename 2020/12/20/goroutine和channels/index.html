@@ -20,17 +20,17 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="记录平日所学">
+  <meta name="description" content="Goroutines在 Go 语言中， 每一个并发执行的单元就叫一个 goroutine(go协程)。 goroutinue 是通过 go 语句来创建的，在语法上也即是通过 在普通的函数或方法前面加上 关键字 go, 12f() go f() &#x2F;&#x2F; 创建一个 goroutine   除了主函数退出或直接终止程序外，没有其他方法让一个 goroutine 打断另外一个的执行。  goroutine">
 <meta property="og:type" content="article">
 <meta property="og:title" content="goroutine和channels">
 <meta property="og:url" content="http://example.com/2020/12/20/goroutine%E5%92%8Cchannels/index.html">
 <meta property="og:site_name" content="Teemo-Tristana">
-<meta property="og:description" content="记录平日所学">
+<meta property="og:description" content="Goroutines在 Go 语言中， 每一个并发执行的单元就叫一个 goroutine(go协程)。 goroutinue 是通过 go 语句来创建的，在语法上也即是通过 在普通的函数或方法前面加上 关键字 go, 12f() go f() &#x2F;&#x2F; 创建一个 goroutine   除了主函数退出或直接终止程序外，没有其他方法让一个 goroutine 打断另外一个的执行。  goroutine">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2020-12-20T10:10:35.000Z">
-<meta property="article:modified_time" content="2020-12-20T10:10:35.575Z">
+<meta property="article:modified_time" content="2020-12-21T15:22:52.418Z">
 <meta property="article:author" content="Han Cheng">
-<meta property="article:tag" content="C++,python，图像处理">
+<meta property="article:tag" content="go">
 <meta name="twitter:card" content="summary">
 
 <link rel="canonical" href="http://example.com/2020/12/20/goroutine%E5%92%8Cchannels/">
@@ -192,6 +192,13 @@
 
               <time title="创建时间：2020-12-20 18:10:35" itemprop="dateCreated datePublished" datetime="2020-12-20T18:10:35+08:00">2020-12-20</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-12-21 23:22:52" itemprop="dateModified" datetime="2020-12-21T23:22:52+08:00">2020-12-21</time>
+              </span>
 
           
 
@@ -204,7 +211,65 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        
+        <h2 id="Goroutines"><a href="#Goroutines" class="headerlink" title="Goroutines"></a>Goroutines</h2><p>在 Go 语言中， 每一个并发执行的单元就叫一个 goroutine(go协程)。 goroutinue 是通过 go 语句来创建的，在语法上也即是通过 在普通的函数或方法前面加上 关键字 go,</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">f() </span><br><span class="line"><span class="keyword">go</span> f() <span class="comment">// 创建一个 goroutine</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>除了主函数退出或直接终止程序外，没有其他方法让一个 goroutine 打断另外一个的执行。</li>
+</ul>
+<h3 id="goroutine-特性"><a href="#goroutine-特性" class="headerlink" title="goroutine 特性"></a>goroutine 特性</h3><ul>
+<li><p>go 的执行是非阻塞的，不会等待</p>
+</li>
+<li><p>go 后面的函数的返回值会被 忽略</p>
+</li>
+<li><p>调度器不能保证多个 goroutine 的执行顺序</p>
+</li>
+<li><p>所有的 goroutine 是平等被调度和执行的，无 父子之分</p>
+</li>
+<li><p>Go 程序在执行时会单独为 main 函数创建一个 goroutine， 遇到其他 go 关键字时则再去创建其他的 goroutine</p>
+</li>
+<li><p>Go 没有暴露 goroutine id给用户，因此，不能在一个 goroutine 显示操作另外一个 goroutine。</p>
+</li>
+</ul>
+<h2 id="channel"><a href="#channel" class="headerlink" title="channel"></a>channel</h2><p>channels 是它们之间的通信机制， 一个 channel 是一个通信机制，  goroutines 之间都可以通过 channels 来进行通信。</p>
+<p>chan 是 Go 语言的一个关键字， 是 channel 的缩写， 也即是 通道 ,<font color="#00dd00">channel 也是 引用类型</font></p>
+<p>goroutine 是 go 并发的执行体，channel 是 goroutines 之间通信和同步的重要组件。</p>
+<p>Go 的哲学<font color="#dd00dd"> 不要通过共享内存来通信，而是<strong>通过通信来共享内存</strong></font>。</p>
+<ul>
+<li>通道 是有类型的，可以通过 Go 语言来提供一个<font color="#dd00dd">内置的 make 来创建通道</font> 。通道又可以分为无缓冲通道和有缓冲通道。<ul>
+<li>无缓冲通道的 len 和 cap 都是 0，可用于 普通通信和 两个goroutine的同步<ul>
+<li>一个基于无缓存Channels的发送操作将导致发送者goroutine阻塞，直到另一个goroutine在相同的Channels上执行接收操作，当发送的值通过Channels成功传输之后，两个goroutine可以继续执行后面的语句。反之，如果接收操作先发生，那么接收者goroutine也将阻塞，直到有另一个goroutine在相同的Channels上执行发送操作</li>
+</ul>
+</li>
+<li>有缓冲通道的 len表示没有被读取的元素。 cap 表示通道的容量，主要用于通信<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 无缓冲通道</span></span><br><span class="line">c1 := <span class="built_in">make</span>(<span class="keyword">chan</span> datatype)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 有缓冲通道</span></span><br><span class="line">c2 := <span class="built_in">make</span>(<span class="keyword">chan</span> datatype, <span class="built_in">len</span>)</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li>channel的两个主要行为(通道行为):<ul>
+<li>发送 : 将值发送从一个 goroutine 发送到 channel(ch&lt;-)</li>
+<li>接收 : 从 channel 中读取值(&lt;-)</li>
+<li>关闭 : close，关闭channel 后。对 channel 的任何<font color="#00dd00"> 发送操作</font>都将导致 panic。<ul>
+<li>没有办法直接测试一个 channel 是否关闭，但接收操作有一个变体形式：它多接收一个结果，多接收的第二个结果是一个布尔值ok，<font color="#00dd00">ture表示成功从channels接收到值，false表示channels已经被关闭并且里面没有值可接收</font>。<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 创建 channel</span></span><br><span class="line">ch := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>)</span><br><span class="line">ch &lt;- x  <span class="comment">// 将 x 发送到通过 ch 中</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 从通道 ch 中接收并赋值给 y</span></span><br><span class="line">y = &lt;-ch</span><br><span class="line">&lt;-ch <span class="comment">// 接收ch，忽略其值</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">close</span>(ch) <span class="comment">// 关闭channel</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+goroutine 运行后，<font color="#dd00dd">写入缓冲通道的数据不会消失</font>，它可以缓冲和适配两个 goroutine 处理速率的不一致的情况; <font color="#00dd00">缓冲通道和消息队列类似，有削峰和增大吞吐量的功能</font>。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p>chan 可能引发 panic 的三种行为</p>
+<ol>
+<li><p><font color="#dd00dd"> 向已经关闭的 channel 写入数据</font>，会引发 panic</p>
+<ul>
+<li>改进： 最好是写入者来关闭通道。能最大程度的避免向已关闭的通道再写入而导致 panic。</li>
+</ul>
+</li>
+<li><p><font color="#dd00dd">重复关闭通道 ，会引发 panic</font></p>
+</li>
+<li></li>
+</ol>
+</li>
+</ul>
+
     </div>
 
     
@@ -212,6 +277,9 @@
     
 
       <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/go/" rel="tag"># go</a>
+          </div>
 
         
 
@@ -281,6 +349,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Goroutines"><span class="nav-number">1.</span> <span class="nav-text">Goroutines</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#goroutine-%E7%89%B9%E6%80%A7"><span class="nav-number">1.1.</span> <span class="nav-text">goroutine 特性</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#channel"><span class="nav-number">2.</span> <span class="nav-text">channel</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -301,7 +370,7 @@
         </a>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-count">10</span>
         <span class="site-state-item-name">标签</span>
       </div>
   </nav>
