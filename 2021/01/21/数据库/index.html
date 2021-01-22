@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="数据库MySQL mysql的引擎（全部都问 介绍一下数据库的mysql的引擎[主要是MyISMDB、InnoDB],有什么区别 Mysql和Myisam使用select * 查询的过程的区别（MyIsam是非聚集索引） Mysql使用索引查询和不使用索引查询的查询流程，效率差多少（B+树） 数据库的索引如何加速查询过程，为什么不用红黑树 MySQL主从同步方式，强同步 mysql主从模式 mys">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Teemo-Tristana">
+<meta property="og:url" content="http://example.com/2021/01/21/%E6%95%B0%E6%8D%AE%E5%BA%93/index.html">
+<meta property="og:site_name" content="Teemo-Tristana">
+<meta property="og:description" content="数据库MySQL mysql的引擎（全部都问 介绍一下数据库的mysql的引擎[主要是MyISMDB、InnoDB],有什么区别 Mysql和Myisam使用select * 查询的过程的区别（MyIsam是非聚集索引） Mysql使用索引查询和不使用索引查询的查询流程，效率差多少（B+树） 数据库的索引如何加速查询过程，为什么不用红黑树 MySQL主从同步方式，强同步 mysql主从模式 mys">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-01-21T10:05:11.611Z">
+<meta property="article:modified_time" content="2021-01-21T09:55:27.811Z">
+<meta property="article:author" content="Han Cheng">
+<meta property="article:tag" content="C++,python，图像处理">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2021/01/21/%E6%95%B0%E6%8D%AE%E5%BA%93/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title> | Teemo-Tristana</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Teemo-Tristana</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">每日进步一点</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="user fa-fw"></i>关于</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/01/21/%E6%95%B0%E6%8D%AE%E5%BA%93/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/teemo.png">
+      <meta itemprop="name" content="Han Cheng">
+      <meta itemprop="description" content="记录平日所学">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Teemo-Tristana">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-01-21 18:05:11 / 修改时间：17:55:27" itemprop="dateCreated datePublished" datetime="2021-01-21T18:05:11+08:00">2021-01-21</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="数据库"><a href="#数据库" class="headerlink" title="数据库"></a>数据库</h1><h2 id="MySQL"><a href="#MySQL" class="headerlink" title="MySQL"></a>MySQL</h2><ol start="0">
+<li>mysql的引擎（全部都问</li>
+<li>介绍一下数据库的mysql的引擎[主要是MyISMDB、InnoDB],有什么区别</li>
+<li>Mysql和Myisam使用select * 查询的过程的区别（MyIsam是非聚集索引）</li>
+<li>Mysql使用索引查询和不使用索引查询的查询流程，效率差多少（B+树）</li>
+<li>数据库的索引如何加速查询过程，为什么不用红黑树</li>
+<li>MySQL主从同步方式，强同步</li>
+<li>mysql主从模式</li>
+<li>mysql的sql命令了解么，left join和right join的区别</li>
+<li>mysql的索引，底层实现</li>
+<li>join、left join、right join</li>
+<li><font color="#00dddd">隔离级别与特点</font><blockquote>
+<p>（脏读，不可重复读 ，幻读）<br>事务的特征</p>
+</blockquote>
+</li>
+<li>B树和B+树的区别</li>
+<li>ACID</li>
+<li>mysql 几种索引,事务</li>
+<li>mysql 事务隔离级别,</li>
+<li>索引优化,查询优化</li>
+<li>索引失效</li>
+<li>索引为什么用B+树,不用avl/ RB树</li>
+<li>说一下RB树和AVL区别</li>
+<li>聚簇索引/非聚簇,innodb和myisam用的哪个?好处?</li>
+<li>mvcc的实现原理</li>
+<li>知道几种锁,说一下  <blockquote>
+<p>乐观锁,悲观锁,行锁,表锁</p>
+</blockquote>
+</li>
+<li>讲一讲对MySQL索引的理解。</li>
+<li>MySQL中主键索引和唯一索引的区别；</li>
+<li>innodb引擎中索引的底层数据结构；</li>
+<li>B树和B+树的区别；</li>
+<li>一亿个数据，找最大的一千个，应该怎样解决；</li>
+<li>Mysql性能如何，读写瓶颈是怎样的？缓存呢？</li>
+<li>Mysql常用的优化是怎样的？</li>
+<li>讲讲你见过什么情况索引设了但没用到</li>
+<li>讲讲Mysql分表吧，常用分表有哪些</li>
+<li>(我先讲了读写分离）Mysql主从同步靠什么？；</li>
+</ol>
+<h2 id="Redis"><a href="#Redis" class="headerlink" title="Redis"></a>Redis</h2><ol>
+<li><p>Redis项目里用到了嘛，Redis一般可以干啥用</p>
+</li>
+<li><p>缓存常见的问题，缓存穿透该怎么办</p>
+</li>
+<li><p>Redis的hash字典数据结构是啥样的</p>
+</li>
+<li><p>Redis中用到了哪些数据结构；</p>
+</li>
+<li><p>用过Redis的备份吗；</p>
+</li>
+<li><p>你们的Redis是单机的还是集群的；</p>
+</li>
+<li><p>hash冲突的解决办法；</p>
+</li>
+<li><p>zset底层用的什么数据结构；</p>
+</li>
+<li><ol>
+<li>edis集群有了解吗？</li>
+</ol>
+</li>
+<li><p>Redis的索引是怎么实现的？</p>
+</li>
+<li><p>Redis过期策略是咋样的？</p>
+</li>
+<li><p>Redis主从同步呢</p>
+</li>
+<li><p>Redis的数据结构有哪些？内部编码是什么？选择不同内部编码的原因是什么？</p>
+</li>
+<li><p>讲讲RDB和AOF吧，AOF怎么保证数据处理的没问题？如果同步的时候挂了丢了数据咋办？</p>
+</li>
+<li><p>高并发框架？怎么削峰？</p>
+</li>
+<li><p>对Redis有什么了解，缓存哪些文件，落地策略，单机高并发</p>
+</li>
+<li><p>Redis如何保证高并发和高可用</p>
+</li>
+<li><p>(Hash表提了红黑树)讲讲红黑树吧，Mysql索引底层啥数据结构（B+树），为啥没用红黑树？</p>
+</li>
+<li><p>(我说B+树非叶子结点只存索引，三层树高能存千万级别数据，我说三次IO就能读到最后的数据）同样情况下红黑树要几次IO？</p>
+</li>
+<li><p>redis看过源码吗，内部数据结构讲一下？</p>
+</li>
+<li><p>redis持久化的手段</p>
+</li>
+<li><p>Redis用过吗？什么场景下会用redis？说说对redis内部实现的了解？</p>
+</li>
+<li><p>redis缓存击穿，就是redis里面的key失效了，然后又有很多请求过来造成DB崩掉，怎么解决</p>
+</li>
+<li><p>Redis数据类型？</p>
+</li>
+<li><p>Redis为什么这么快？</p>
+</li>
+<li><p>Redis两种持久化方式？</p>
+</li>
+<li><p>高并发框架？怎么削峰？</p>
+</li>
+<li><p>对Redis有什么了解，缓存哪些文件，落地策略，单机高并发</p>
+</li>
+<li><p>Redis如何保证高并发和高可用</p>
+</li>
+<li><p>redis集群方式</p>
+</li>
+<li><p>redis主从复制的过程</p>
+</li>
+<li><p>如果从服务器某一时刻宕机，重启时同步主服务器的数据过程是怎样的</p>
+</li>
+<li><p><font color="#dd00dd">Redis 源码阅读</font></p>
+</li>
+<li><p>请你回答一下hash表如何rehash，以及怎么处理其中保存的资源？</p>
+</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/01/21/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="prev" title="">
+      <i class="fa fa-chevron-left"></i> 
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/01/21/%E5%88%B7%E9%A2%98/" rel="next" title="">
+       <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="nav-number">1.</span> <span class="nav-text">数据库</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#MySQL"><span class="nav-number">1.1.</span> <span class="nav-text">MySQL</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis"><span class="nav-number">1.2.</span> <span class="nav-text">Redis</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Han Cheng"
+      src="/images/teemo.png">
+  <p class="site-author-name" itemprop="name">Han Cheng</p>
+  <div class="site-description" itemprop="description">记录平日所学</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">31</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Han Cheng</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

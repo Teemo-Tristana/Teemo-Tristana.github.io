@@ -164,7 +164,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/12/20/goroutine%E5%92%8Cchannels/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/01/21/C++%E9%9D%A2%E8%AF%95%E7%9F%A5%E8%AF%86%E7%82%B9/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/teemo.png">
@@ -178,7 +178,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2020/12/20/goroutine%E5%92%8Cchannels/" class="post-title-link" itemprop="url">goroutine和channels</a>
+            <a href="/2021/01/21/C++%E9%9D%A2%E8%AF%95%E7%9F%A5%E8%AF%86%E7%82%B9/" class="post-title-link" itemprop="url">未命名</a>
         </h2>
 
         <div class="post-meta">
@@ -188,14 +188,14 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2020-12-20 18:10:35" itemprop="dateCreated datePublished" datetime="2020-12-20T18:10:35+08:00">2020-12-20</time>
+              <time title="创建时间：2021-01-21 18:05:11" itemprop="dateCreated datePublished" datetime="2021-01-21T18:05:11+08:00">2021-01-21</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-12-22 09:59:58" itemprop="dateModified" datetime="2020-12-22T09:59:58+08:00">2020-12-22</time>
+                <time title="修改时间：2021-01-22 16:52:55" itemprop="dateModified" datetime="2021-01-22T16:52:55+08:00">2021-01-22</time>
               </span>
 
           
@@ -209,1205 +209,239 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h2 id="Goroutines"><a href="#Goroutines" class="headerlink" title="Goroutines"></a>Goroutines</h2><p>在 Go 语言中， 每一个并发执行的单元就叫一个 goroutine(go协程)。 goroutinue 是通过 go 语句来创建的，在语法上也即是通过 在普通的函数或方法前面加上 关键字 go,</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">f() </span><br><span class="line"><span class="keyword">go</span> f() <span class="comment">// 创建一个 goroutine</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>除了主函数退出或直接终止程序外，没有其他方法让一个 goroutine 打断另外一个的执行。</li>
-</ul>
-<h3 id="goroutine-特性"><a href="#goroutine-特性" class="headerlink" title="goroutine 特性"></a>goroutine 特性</h3><ul>
-<li><p>go 的执行是非阻塞的，不会等待</p>
+          <h1 id="C-ready-for-view"><a href="#C-ready-for-view" class="headerlink" title="C++ ready for view"></a>C++ ready for view</h1><ol>
+<li><p>在语言层面上：面试C++程序员的时候一般都是3板斧：<br>首先是基础问答</p>
 </li>
-<li><p>go 后面的函数的返回值会被 忽略</p>
+<li><p>然后就是如虚函数、虚函数表、纯虚函数、抽象类、虚函数和析构函数、虚函数和构造函数，以及拷贝构造函数、操作符重载和STL，内存管理，malloc/free与new/delete等问题，</p>
 </li>
-<li><p>调度器不能保证多个 goroutine 的执行顺序</p>
+<li><p>C++新特性(以C++11为主，可以适当了解C++14/17/20内容)</p>
 </li>
-<li><p>所有的 goroutine 是平等被调度和执行的，无 父子之分</p>
-</li>
-<li><p>Go 程序在执行时会单独为 main 函数创建一个 goroutine， 遇到其他 go 关键字时则再去创建其他的 goroutine</p>
-</li>
-<li><p>Go 没有暴露 goroutine id给用户，因此，不能在一个 goroutine 显示操作另外一个 goroutine。</p>
-</li>
-</ul>
-<h2 id="channel"><a href="#channel" class="headerlink" title="channel"></a>channel</h2><p>channels 是它们之间的通信机制， 一个 channel 是一个通信机制，  goroutines 之间都可以通过 channels 来进行通信。</p>
-<p>chan 是 Go 语言的一个关键字， 是 channel 的缩写， 也即是 通道 ,<font color="#00dd00">channel 也是 引用类型</font></p>
-<p>goroutine 是 go 并发的执行体，channel 是 goroutines 之间通信和同步的重要组件。</p>
-<p>Go 的哲学<font color="#dd00dd"> 不要通过共享内存来通信，而是<strong>通过通信来共享内存</strong></font>。</p>
-<ul>
-<li><p>通道 是有类型的，可以通过 Go 语言来提供一个<font color="#dd00dd">内置的 make 来创建通道</font> 。通道又可以分为无缓冲通道和有缓冲通道。</p>
-<ul>
-<li><p>无缓冲通道的 len 和 cap 都是 0，可用于 普通通信和 两个goroutine的同步</p>
-<ul>
-<li>一个基于无缓存Channels的发送操作将导致发送者goroutine阻塞，直到另一个goroutine在相同的Channels上执行接收操作，当发送的值通过Channels成功传输之后，两个goroutine可以继续执行后面的语句。反之，如果接收操作先发生，那么接收者goroutine也将阻塞，直到有另一个goroutine在相同的Channels上执行发送操作</li>
-</ul>
-</li>
-<li><p>单向 channel </p>
-<ul>
-<li>Go 语言类型提供了单向的 channel 类型， 分别用于 只能发送 或 只能接收 的 channel </li>
-<li>chan 和 &lt;- 的相对位置表明了 channel 的方向<ul>
-<li><font color="#dd00dd">chan &lt;- int </font> 只能发送通道</li>
-<li><font color="#dd00dd">&lt;- chan int </font> 只能接收通道</li>
-<li>若对只接收的 channel 调用 close，则会导致编译错误</li>
-</ul>
-</li>
-<li>任何双向的 channel 向单向 channel 变量的赋值操作将导致隐式转换，不能将 单向转为双向的。</li>
-</ul>
-</li>
-<li><p>有缓冲通道的 len表示没有被读取的元素。 cap 表示通道的容量，主要用于通信</p>
-<ul>
-<li><p>带缓冲的 channel 内部用于一个队列，队列的大小在 make() 函数创建 channel 是由第二个参数指定。</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ch := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">string</span>, <span class="number">3</span>)</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://teemo-tristana.github.io/images/channelWithlen.png" alt="channelWithlen"></p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 无缓冲通道</span></span><br><span class="line">c1 := <span class="built_in">make</span>(<span class="keyword">chan</span> datatype)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 有缓冲通道</span></span><br><span class="line">c2 := <span class="built_in">make</span>(<span class="keyword">chan</span> datatype, <span class="built_in">len</span>)</span><br><span class="line"></span><br><span class="line">so := <span class="keyword">chan</span> &lt;-<span class="keyword">int</span> <span class="comment">// 单向channel 只能用于发送</span></span><br><span class="line">ro := &lt;- <span class="keyword">chan</span> <span class="keyword">int</span> <span class="comment">// 单向 channel 只能用于接收</span></span><br></pre></td></tr></table></figure></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>channel的两个主要行为(通道行为):</p>
-<ul>
-<li>发送 : 将值发送从一个 goroutine 发送到 channel(ch&lt;-)</li>
-<li>接收 : 从 channel 中读取值(&lt;-)</li>
-<li>关闭 : close，关闭channel 后。对 channel 的任何<font color="#00dd00"> 发送操作</font>都将导致 panic。<ul>
-<li>没有办法直接测试一个 channel 是否关闭，但接收操作有一个变体形式：它多接收一个结果，多接收的第二个结果是一个布尔值ok，<font color="#00dd00">ture表示成功从channels接收到值，false表示channels已经被关闭并且里面没有值可接收</font>。<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 创建 channel</span></span><br><span class="line">ch := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>)</span><br><span class="line">ch &lt;- x  <span class="comment">// 将 x 发送到通过 ch 中</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 从通道 ch 中接收并赋值给 y</span></span><br><span class="line">y = &lt;-ch</span><br><span class="line">&lt;-ch <span class="comment">// 接收ch，忽略其值</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">close</span>(ch) <span class="comment">// 关闭channel</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
-goroutine 运行后，<font color="#dd00dd">写入缓冲通道的数据不会消失</font>，它可以缓冲和适配两个 goroutine 处理速率的不一致的情况; <font color="#00dd00">缓冲通道和消息队列类似，有削峰和增大吞吐量的功能</font>。</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<ul>
-<li><p>chan 可能引发 panic 的三种行为</p>
+<li><p>特殊关键字</p>
 <ol>
-<li><p><font color="#dd00dd"> 向已经关闭的 channel 写入数据</font>，会引发 panic</p>
-<ul>
-<li>改进： 最好是写入者来关闭通道。能最大程度的避免向已关闭的通道再写入而导致 panic。</li>
-</ul>
-</li>
-<li><p><font color="#dd00dd">重复关闭通道 ，会引发 panic</font></p>
-</li>
-<li></li>
-</ol>
-</li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/12/14/Go%20%E5%AD%A6%E4%B9%A0%E4%B9%8B%E7%A8%8B%E5%BA%8F%E7%BB%93%E6%9E%84/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/teemo.png">
-      <meta itemprop="name" content="Han Cheng">
-      <meta itemprop="description" content="记录平日所学">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Teemo-Tristana">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/12/14/Go%20%E5%AD%A6%E4%B9%A0%E4%B9%8B%E7%A8%8B%E5%BA%8F%E7%BB%93%E6%9E%84/" class="post-title-link" itemprop="url">Go 学习之程序结构</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-12-14 09:12:20" itemprop="dateCreated datePublished" datetime="2020-12-14T09:12:20+08:00">2020-12-14</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-12-20 17:55:23" itemprop="dateModified" datetime="2020-12-20T17:55:23+08:00">2020-12-20</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="Go-程序结构"><a href="#Go-程序结构" class="headerlink" title="Go 程序结构"></a>Go 程序结构</h1><h2 id="命名"><a href="#命名" class="headerlink" title="命名"></a>命名</h2><ol>
-<li><p>Go 语言中的函数名、变量名、常量名、类型名、语句标号和包名等所有的命名，都遵循一个简单的命名规则 : <font color="#dd00dd">以字母（Unicode字母）或下划线开头</font>。</p>
-</li>
-<li><p>Go 语言的 25 个关键字(关键字不能用于自定义名字，只能在特定的程序结构中使用)</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">break</span>      <span class="keyword">default</span>        <span class="function"><span class="keyword">func</span>       <span class="title">interface</span>       <span class="title">select</span></span>      </span><br><span class="line"><span class="keyword">case</span>       <span class="keyword">defer</span>          <span class="keyword">go</span>         <span class="keyword">map</span>             <span class="keyword">struct</span>      </span><br><span class="line"><span class="keyword">chan</span>       <span class="keyword">else</span>           <span class="keyword">goto</span>       <span class="keyword">package</span>         <span class="keyword">switch</span></span><br><span class="line"><span class="keyword">const</span>      <span class="keyword">fallthrough</span>    <span class="keyword">if</span>         <span class="keyword">range</span>           <span class="keyword">type</span></span><br><span class="line"><span class="keyword">continue</span>   <span class="keyword">for</span>            <span class="keyword">import</span>     <span class="keyword">return</span>          <span class="keyword">var</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>Go语言中，有 30 多个预定义的名字，主要是内置常量、类型和函数</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 内置常量</span></span><br><span class="line"><span class="literal">true</span>        <span class="literal">false</span>       <span class="literal">iota</span>        <span class="literal">nil</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 内置类型</span></span><br><span class="line"><span class="keyword">int</span>         <span class="keyword">int8</span>       <span class="keyword">int16</span>        <span class="keyword">int32</span>       <span class="keyword">int64</span></span><br><span class="line"><span class="keyword">uint</span>        <span class="keyword">uint8</span>      <span class="keyword">uint16</span>       <span class="keyword">uint32</span>      <span class="keyword">uint64</span>      <span class="keyword">uintptr</span></span><br><span class="line"><span class="keyword">float32</span>     <span class="keyword">float64</span>    <span class="keyword">complex128</span>  <span class="keyword">complex64</span>   <span class="keyword">bool</span>        <span class="keyword">byte</span></span><br><span class="line"><span class="keyword">rune</span>        <span class="keyword">string</span>     error</span><br><span class="line"></span><br><span class="line"><span class="comment">// 内置函数</span></span><br><span class="line"><span class="built_in">make</span>()    <span class="built_in">len</span>()     <span class="built_in">cap</span>()     <span class="built_in">new</span>()     <span class="built_in">append</span>()      <span class="built_in">copy</span>()</span><br><span class="line"><span class="built_in">close</span>()   <span class="built_in">delete</span>()  <span class="built_in">complex</span>() <span class="built_in">real</span>()    <span class="built_in">imag</span>()        <span class="built_in">panic</span>()</span><br><span class="line"><span class="built_in">recover</span>()</span><br></pre></td></tr></table></figure>
-<p>内部预定义的名字<strong>不是关键字</strong>,因此可以重新使用它们，但是尽量少重复使用，避免引起语义混乱。</p>
-</li>
-<li><p>函数名字的开头字母的大小写决定了该函数在包外的可见性，若是<strong>大写字母</strong>开头，则是可导出的，比如 fmt的Println()函数</p>
-</li>
-<li><p>推荐使用 <strong>驼峰式</strong> 命名</p>
-</li>
-</ol>
-<h1 id="声明"><a href="#声明" class="headerlink" title="声明"></a>声明</h1><p>Go 语言主要有四种类型的声明语句：</p>
-<ul>
-<li><p>var   用于 变量</p>
-</li>
-<li><p>const 用于 常量</p>
-</li>
-<li><p>type  用于 类型</p>
-</li>
-<li><p>func  用于 函数</p>
-<h2 id="变量"><a href="#变量" class="headerlink" title="变量"></a>变量</h2><p>包一级的声明可以对整个包有效，而函数内部的声明只能局部有效</p>
-</li>
-<li><p>变量的声明方式</p>
-<ol>
-<li><p>var 变量名 类型 = 表达式<br> 如果初始化表达式被省略，那么将用零值初始化该变量。 数值类型变量对应的零值是0，布尔类型变量对应的零值是false，字符串类型对应的零值是空字符串，接口或引用类型（包括slice、指针、map、chan和函数）变量对应的零值是nil。数组或结构体等聚合类型对应的零值是每个元素或字段都是对应该类型的零值。<br> 零值初始化机制可以确保每个声明的变量总是有一个值，因此  <font color="#dd00dd">Go 语言中不存在未初始化的变量</font>。</p>
-</li>
-<li><p>多种类型同时声明</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> i, j, k <span class="keyword">int</span>                 <span class="comment">// int, int, int</span></span><br><span class="line"><span class="keyword">var</span> b, f, s = <span class="literal">true</span>, <span class="number">2.3</span>, <span class="string">&quot;four&quot;</span> <span class="comment">// bool, float64, string</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>简短变量声明<br> 名字 := 表达式</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">i :&#x3D; 0</span><br></pre></td></tr></table></figure>
-
-
-</li>
-</ol>
-</li>
-</ul>
-<h2 id="指针"><a href="#指针" class="headerlink" title="指针"></a>指针</h2><p>一个指针的值是另一个变量的地址。一个指针对应变量在内存中的存储位置。并不是每一个值都会有一个内存地址，但是对于每一个变量必然有对应的内存地址</p>
-<p>任何类型的指针的零值都是 nil</p>
-<p>Go 语言中返回函数局部变量的地址也是<strong>安全的</strong></p>
-<h2 id="new函数"><a href="#new函数" class="headerlink" title="new函数"></a>new函数</h2><p>new 函数用于创建变量， new(T) 将创建一个T类型的匿名变量，并初始化为T类型的零值,并返回 变量地址(即指针), 返回类型是 T 类型的指针(T*)</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// new() 原型</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">new</span><span class="params">(Type)</span> *<span class="title">Type</span></span> </span><br><span class="line">p := <span class="built_in">new</span>(<span class="keyword">int</span>) <span class="comment">// p 是一个 int 类型的指针，指向匿名的 int 变量</span></span><br></pre></td></tr></table></figure>
-
-<p>用new创建变量和普通变量声明语句方式创建变量没有什么区别，换言之，new函数类似是一种语法糖，而不是一个新的基础概念。</p>
-<h2 id="变量的声明周期"><a href="#变量的声明周期" class="headerlink" title="变量的声明周期"></a>变量的声明周期</h2><p>变量的生命周期指的是在程序运行期间变量有效存在的时间段。对于在包一级声明的变量来说，它们的生命周期和整个程序的运行周期是一致的。而相比之下，局部变量的生命周期则是动态的：每次从创建一个新变量的声明语句开始，直到该变量不再被引用为止，然后变量的存储空间可能被回收。函数的参数变量和返回值变量都是局部变量。它们在函数每次被调用的时候创建。</p>
-<p>Go 语言的自动垃圾收集器(基本思路)：<br>    从每个包级的变量和每个当前运行函数的每一个局部变量开始，通过指针或引用的访问路径遍历，是否可以找到该变量。如果不存在这样的访问路径，那么说明该变量是不可达的，也就是说它是否存在并不会影响程序后续的计算结果</p>
-<p>编译器会自动选择在堆或栈上分配局部变量的存储空间，但是，<font color="#00dd00">并不是由 var 或 new 声明方式决定的，有编译器决定</font>。</p>
-<p><font color="#dd00dd">逃逸的变量需要额外分配内存</font>，同时对性能的优化可能会产生细微的影响。</p>
-<h2 id="类型"><a href="#类型" class="headerlink" title="类型"></a>类型</h2><p>变量或表达式的类型定义了对应存储值的属性特征</p>
-<blockquote>
-<p>type 类型名字 底层类型</p>
-</blockquote>
-<h2 id="包-和-文件"><a href="#包-和-文件" class="headerlink" title="包 和 文件"></a>包 和 文件</h2><p>Go 语言中的 包 类似其他语言的模块或库，目的是为了支持模块化、封装、单独编译和代码复用。</p>
-<h1 id="数据类型"><a href="#数据类型" class="headerlink" title="数据类型"></a>数据类型</h1><p>Go 语言将数据类型分为四类 : 基础类型、复合类型、引用类型和接口类型</p>
-<h2 id="基础类型"><a href="#基础类型" class="headerlink" title="基础类型"></a>基础类型</h2><p>基础类型比如 数字、字符串、布尔等类型 </p>
-<ul>
-<li><p>整数类型</p>
-<ul>
-<li><p>Go 提供了四种不同大小的整数类型: int8/int16/int32/int64 和 uint8/uint16/uint32/uint64。</p>
-</li>
-<li><p>也提供了特定的CPU的 int 和 uint(32bit/64bit),具体大小与编译器有关。</p>
-</li>
-<li><p>Go采用的是 Unicode 字符，UTF8 编码， 它的 rune 类型和 int32 等价，表示一个 Unicode 码点</p>
-</li>
-<li><p>byte 和 uint8 等价，一般用于数值。</p>
-</li>
-<li><p>不管它们的具体大小，int、uint和uintptr是不同类型的兄弟类型。其中int和int32也是不同的类型，即使int的大小也是32bit，在需要将int当作int32类型的地方需要一个显式的类型转换操作。</p>
-</li>
-</ul>
-</li>
-<li><p>浮点数类型</p>
-<ul>
-<li>Go语言提供了两种精度的浮点数，float32和float64</li>
-</ul>
-</li>
-<li><p>复数<br>  Go语言提供了两种精度的复数类型：complex64和complex128，分别对应float32和float64两种浮点数精度。内置的complex函数用于构建复数，内建的real()和imag()函数分别返回复数的实部和虚部</p>
-</li>
-<li><p>布尔类型</p>
-<ul>
-<li> 一个布尔类型的值只有两种：true和false。if和for语句的条件部分都是布尔类型的值，并且==和&lt;等比较操作也会产生布尔型的值。</li>
-</ul>
-</li>
-<li><p>字符串</p>
-<ul>
-<li>一个字符串是一个不可改变的字节序列(<strong>字符串是只读</strong>)。字符串可以包含任意的数据，包括byte值0，但是通常是用来包含人类可读的文本。文本字符串通常被解释为采用UTF8编码的Unicode码点（rune）序列。</li>
-<li>len() 返回字符串的<strong>字节数目</strong>(而不是 rune 字符数目)</li>
-</ul>
-<ul>
-<li>标准库中有四个包对字符串处理尤为重要：bytes、strings、strconv和unicode包<ul>
-<li>strings 提供字符串相关操作比如替换、查询、比较等</li>
-<li>bytes 功能和 strings 包类型，但是只要是争对 []byte 类型</li>
-<li>strconv包提供了布尔型、整型数、浮点数和对应字符串的相互转换，还提供了双引号转义相关的转换。</li>
-<li>unicode包提供了IsDigit、IsLetter、IsUpper和IsLower等类似功能，它们用于给字符分类</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>常量</p>
-<ul>
-<li>常量表达式的值在<strong>编译期</strong>就已经确定了，所有常量的运算都可以在编译期完成，这样可以减少运行时的工作，也方便其他编译优化</li>
-</ul>
-<ul>
-<li>iota<ul>
-<li>在一个const声明语句中，在第一个声明的常量所在的行，iota将会被置为0，然后在每一个有常量声明的行加一。</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<h2 id="复合类型"><a href="#复合类型" class="headerlink" title="复合类型"></a>复合类型</h2><p>复合类型比如数组和结构体</p>
-<h3 id="数组"><a href="#数组" class="headerlink" title="数组"></a>数组</h3><ul>
-<li><p>数组是一个由固定长度的特定类型元素组成的序列，一个数组可以由零个或多个元素组成，一旦声明了，数组的长度就固定了，不能动态变化。</p>
-</li>
-<li><p>数组的长度是数组类型的一部分，因此，长度不同的数组肯定不是一个类型的</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">arr1 := [<span class="number">3</span>] <span class="keyword">int</span> </span><br><span class="line">arr2 := [<span class="number">4</span>] <span class="keyword">int</span></span><br></pre></td></tr></table></figure>
-<p>因此，arr1 和 arr2 是不同类型的</p>
-</li>
-<li><p>数组是内置(build-in)类型,是同一类型数据的集合，它是 <font color="#00dd00">值类型</font> , 索引从 0 开始，作为参数传入时， <font color="#00ddddd">是 值传递(复制一份数据)</font>。</p>
-</li>
-<li><p><font color="#dd0000">数组是 值传递 </font></p>
-</li>
-</ul>
-<p>len() 和 cap() 返回结果始终一样。</p>
-<h3 id="结构体"><a href="#结构体" class="headerlink" title="结构体"></a>结构体</h3><p>结构体是将零个或多个任意类型的变量，组合在一起的聚合数据类型，也可以看做是数据的集合。</p>
-<h2 id="引用类型"><a href="#引用类型" class="headerlink" title="引用类型"></a>引用类型</h2><p>数组、结构体的组合<br>数组切片、字典、通道(channel)、接口</p>
-<h2 id="接口类型"><a href="#接口类型" class="headerlink" title="接口类型"></a>接口类型</h2><p>指针、切片、字典、函数、通道</p>
-<h3 id="指针-1"><a href="#指针-1" class="headerlink" title="指针"></a>指针</h3><h3 id="切片-slice"><a href="#切片-slice" class="headerlink" title="切片 slice"></a>切片 slice</h3><ul>
-<li><p>切片是一种动态数组，比数组更为灵活，长度不固定，可以进行追加和删除等，类似C++中的vector</p>
-</li>
-<li><p>切片是一个拥有相同类型元素的 <font color="#00ddd">可变长度</font> 的序列</p>
-</li>
-<li><p>切片的属性：</p>
-<ul>
-<li>指针  : 指向第一个 切片元素对于的底层数组的地址(并不一定是数组的第一个元素)</li>
-<li>长度  : 切片中元素的个数</li>
-<li>容量  : 切片从最多可以容量元素的个数</li>
-</ul>
-</li>
-<li><p>切片不需要指定大小</p>
-</li>
-<li><p>和数组不同， slice 之间是不能比较的，也即是不能使用 == 操作符来判断两个 slice 是否相等。<font color="#00ddd">nil 除外 </font></p>
-</li>
-<li><p><font color="#dd0000">切片是地址传递(指针传递)</font> </p>
-</li>
-<li><p>切片可以通过数组进行初始化，也可以通过 make() 进程初始化，若容量不足时，将按 len 的 <font color="#dd00dd">2倍扩充</font></p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 数组初始化 切片</span></span><br><span class="line">sli1 := arr[<span class="number">1</span>:<span class="number">3</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment">// make 进行初始化</span></span><br><span class="line">lenght := <span class="number">1</span></span><br><span class="line"><span class="keyword">var</span> sli1 []<span class="keyword">int</span> = <span class="built_in">make</span>([]<span class="keyword">int</span>, lenght)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-</li>
-</ul>
-<h3 id="字典map"><a href="#字典map" class="headerlink" title="字典map"></a>字典map</h3><ul>
-<li><p>map 集合是无序的 key-value数据结构，map 集合中的 key 和 value 可以是任意类型，但所有的 key 必须属于同一数据类型，所有value 也必须是同一类型， key 和 value 的类型可以不同。</p>
-</li>
-<li><p>在 Go 语言中， 一个 map 就是一个哈希表的引用</p>
-</li>
-<li><p>可以用 make () 函数创建 map 或 直接创建</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// make() 函数创建 map</span></span><br><span class="line">ages := <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="keyword">int</span>]<span class="keyword">string</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 直接创建</span></span><br><span class="line"></span><br><span class="line">age := <span class="keyword">map</span>[<span class="keyword">int</span>] <span class="keyword">string</span> &#123;&#125; <span class="comment">// 创建空间 map</span></span><br><span class="line"></span><br><span class="line">age := <span class="keyword">map</span>[<span class="keyword">int</span>] <span class="keyword">string</span>&#123;</span><br><span class="line">    <span class="number">1</span> : <span class="string">&quot;one&quot;</span>,</span><br><span class="line">    <span class="number">2</span> : <span class="string">&quot;two&quot;</span>,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>map 的迭代顺序是不确定的，</p>
-</li>
-<li><p>map 之间<font color="#00dddd">不能进行相等比较的</font>， <font color="#dd00dd">nil 除外</font>。可以通过循环来判断两个 map 是否相等。</p>
-<h3 id="函数"><a href="#函数" class="headerlink" title="函数"></a>函数</h3><p>函数形式：</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">name</span><span class="params">(parameter-list)</span> <span class="params">(result-list)</span></span> &#123;</span><br><span class="line">    body</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>实参通过** 值传递** 的方式进行传递，因此，函数的形参是实参的<strong>拷贝</strong>，对形参的改变是不会影响实参的。但是，若实参传递的是 <font color="#00dd00"> 指针、slice(切片)、map、function、channel</font>等类型时，实参可能会由于函数的间接引用而被修改</p>
-</li>
-</ul>
-<ol>
-<li>defer 函数 ：defer 声明的函数不会立即去执行，而是在函数 return 后再去执行，主要用在 异常处理、日志记录、清理数据、释放资源的等场景<h3 id="通道-Channels"><a href="#通道-Channels" class="headerlink" title="通道 Channels"></a><font color="#dd00dd">通道 Channels</font></h3></li>
-</ol>
-<h2 id="常见命令"><a href="#常见命令" class="headerlink" title="常见命令"></a>常见命令</h2><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">go</span> env      <span class="comment">// 查看 go 的环境变量</span></span><br><span class="line"><span class="keyword">go</span> run      <span class="comment">// 编译并运行 go 源码文件</span></span><br><span class="line"><span class="keyword">go</span> build    <span class="comment">// 编译源码文件、代码包、依赖包</span></span><br><span class="line"><span class="keyword">go</span> get      <span class="comment">// 动态获取远程代码包</span></span><br><span class="line"><span class="keyword">go</span> install  <span class="comment">// 编译 go 文件，并将编译结构安装到 bin、pkg 目录</span></span><br><span class="line"><span class="keyword">go</span> clean    <span class="comment">// 清理工作目录，删除编译和安装遗留的目标文件</span></span><br><span class="line"><span class="keyword">go</span> version  <span class="comment">// 查看 go 版本</span></span><br></pre></td></tr></table></figure>
-
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/12/10/learning-sql/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/teemo.png">
-      <meta itemprop="name" content="Han Cheng">
-      <meta itemprop="description" content="记录平日所学">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Teemo-Tristana">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/12/10/learning-sql/" class="post-title-link" itemprop="url">learning-sql</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-12-10 10:45:10" itemprop="dateCreated datePublished" datetime="2020-12-10T10:45:10+08:00">2020-12-10</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-12-15 10:55:41" itemprop="dateModified" datetime="2020-12-15T10:55:41+08:00">2020-12-15</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="初识数据库"><a href="#初识数据库" class="headerlink" title="初识数据库"></a>初识数据库</h2><h3 id="DBMS的种类"><a href="#DBMS的种类" class="headerlink" title="DBMS的种类"></a>DBMS的种类</h3><p>数据库是将大量数据保存起来，通过计算机加工而成的可以进行高效访问的数据集合。该数据集合称为数据库（Database，DB）。用来管理数据库的计算机系统称为数据库管理系统（Database Management System，DBMS）。</p>
-<p>DBMS 主要通过数据的保存格式（数据库的种类）来进行分类，现阶段主要有以下 5 种类型.</p>
-<ul>
-<li>Oracle Database：甲骨文公司的RDBMS</li>
-<li>SQL Server：微软公司的RDBMS</li>
-<li>DB2：IBM公司的RDBMS</li>
-<li>PostgreSQL：开源的RDBMS</li>
-<li>MySQL：开源的RDBMS</li>
-</ul>
-<h3 id="常见DBMS系统结构图"><a href="#常见DBMS系统结构图" class="headerlink" title="常见DBMS系统结构图"></a>常见DBMS系统结构图</h3><p>使用 RDBMS 时，最常见的系统结构就是客户端 / 服务器类型（C/S类型）这种结构<br><img src="https://teemo-tristana.github.io/images/%E5%B8%B8%E8%A7%81DBMS%E7%B3%BB%E7%BB%9F%E7%BB%93%E6%9E%84%E5%9B%BE.jpg" alt="常见DBMS系统结构图"></p>
-<h2 id="SQL"><a href="#SQL" class="headerlink" title="SQL"></a>SQL</h2><p>数据库中存储的表的结构类似 excel 中的行和列。在数据库中，行称为<strong>记录</strong>，也即是一条数据的记录。列称为<strong>字段</strong>，代表了表中存储的数据项目。行和列的交汇位置称为单元格。</p>
-<h3 id="SQL指令"><a href="#SQL指令" class="headerlink" title="SQL指令"></a>SQL指令</h3><p><strong>SQL的书写顺序</strong>:</p>
-<blockquote>
-<p><font color="#d0d">select -&gt; from -&gt; where -&gt; group by -&gt; having -&gt; order by </font></p>
-</blockquote>
-<p><strong>SQL的执行顺序</strong>:</p>
-<blockquote>
-<p><font color="#d0d"> from -&gt; where -&gt; group by -&gt; having -&gt; select -&gt; order by </font></p>
-</blockquote>
-<p>根据对 DBMS 赋予的指令的不同，SQL语句可以分为四类：</p>
-<ul>
-<li>DDL(Data Definition Language:数据定义语言)：用于创建或删除存储数据用的数据库或表等对象，DDL包含了以下指令：<ul>
-<li>create ： 创建数据库/表等对象</li>
-<li>drop   ： 删除数据库/表等对象</li>
-<li>alter  ： 修改数据库/表等对象。</li>
-</ul>
-</li>
-</ul>
-<ul>
-<li>DML(Data Manipulation Language:数据操作语言)：用于查询或变更<strong>表</strong>中的记录，DML 包含了以下指令：<ul>
-<li>select ：查询表中数据</li>
-<li>insert ：向表中插入数据</li>
-<li>update ：更新表中数据</li>
-<li>delete ：删除表中数据</li>
-</ul>
-</li>
-</ul>
-<ul>
-<li>DCL(Data Control Language: 数据控制语言)：用于确认或取消对数据库中的数据的变更以及权限设置等。DCL 包含了以下指令：<ul>
-<li>commit    : 确认对数据库中数据的变更</li>
-<li>rollback  : 取消对数据中的数据进行的变更(回滚)</li>
-<li>grant     : 赋予用户权限</li>
-<li>revoke    : 取消用户的操作权限</li>
-</ul>
-</li>
-</ul>
-<h3 id="数据类型"><a href="#数据类型" class="headerlink" title="数据类型"></a>数据类型</h3><p>数据库创建的表，所以列都必须指定数据类型，且每列存储的数据类型必须相符。</p>
-<ul>
-<li><p>interger ： 用来指定存储整数的列(数字类型)，不能用于存储小数</p>
-</li>
-<li><p>char     ： 用来存储<strong>指定长度</strong>的字符串，若长度不足则用空格填充，超过则会截取[由于会浪费存储空间，一般很少用]</p>
-</li>
-<li><p>varchar  ： 用于存储<strong>可变长度</strong>的字符串.</p>
-</li>
-<li><p>date     ： 用来存储日期的类型</p>
-</li>
-</ul>
-<h3 id="约束"><a href="#约束" class="headerlink" title="约束"></a>约束</h3><p>约束是除了数据类型之外，对列中的数据进行的限制(追加)条件</p>
-<blockquote>
-<p>NOT NULL     表示非空约束, 该列必须有数据输入</p>
-</blockquote>
-<blockquote>
-<p>primary key  表示主键约束, 该列是唯一值，可以通过该列取出特定的行的数。</p>
-</blockquote>
-<h3 id="表的删除与更新"><a href="#表的删除与更新" class="headerlink" title="表的删除与更新"></a>表的删除与更新</h3><h4 id="删除"><a href="#删除" class="headerlink" title="删除"></a>删除</h4><p>drop、delete、truncate</p>
-<ol>
-<li><p>一般来说，三者删除速度：drop&gt;truncate&gt;delete；</p>
-</li>
-<li><p>delete是DML，需要手动提交操作才能生效，可以回滚，可以触发触发器；truncate和drop是DDL，会隐式提交，不能回滚，不会触发触发器。</p>
-</li>
-<li><ul>
-<li><p>执行delete操作时，每次从表中删除一行，并且同时将该行的的删除操作记录日志文件中。delete可根据条件删除表中满足条件的数据，如果不指定where子句，则跟truncate一样，可以删除表中所有记录。</p>
-</li>
-<li><p>truncate会一次性删除表中所有记录，通过释放存储表数据所用的页来删除数据，不会将删除的数据记录在日志文件中，只在日志文件中记录页的释放，使用的系统和事务日志资源少，所以执行速度比delete快。对于外键（foreignkey ）约束引用的表，不能使用 truncate table，而应使用不带 where 子句的 delete 语句。</p>
-</li>
-<li><p>drop则删除整个表的结构和数据，但是被依赖的约束、触发器、索引、依赖于该表的存储过程、函数将被保留，但其状态会变为invalid。</p>
-</li>
-</ul>
-</li>
-<li><p>删除后，表和索引所占空间：</p>
-<ul>
-<li>delete操作不会减少表或索引所占用的空间；</li>
-<li>当表被truncate后，这个表和索引所占用的空间会恢复到初始大小，但表结构及其列、约束、索引的定义等保持不变。</li>
-<li>drop语句将表所占用的空间全释放掉。</li>
-</ul>
-</li>
-<li><p>使用场景：</p>
-</li>
-</ol>
-<ul>
-<li><p>如果想删除表，当然用drop； </p>
-</li>
-<li><p>如果想保留表而将所有数据删除，而且和事务无关，用truncate即可；</p>
-</li>
-<li><p>果和事务有关，或者想触发trigger，还是用delete；</p>
-</li>
-</ul>
-<ul>
-<li><p>删除表：</p>
-<blockquote>
-<p>drop table &lt;表名&gt;<br>  drop table product; //删除 produtc 表<br>  Note: drop删除的表是无法恢复的，只能通过新插入恢复。</p>
-</blockquote>
-</li>
-<li><p>给已有的表新增加列</p>
-<blockquote>
-<p>alter table &lt;表名&gt;  add column &lt;列的定义&gt;<br>alter table product add column product_name_pingyin varchar(100);// 添加一列可以存储100位的可变长字符串的 product_name_pinyin 列</p>
-</blockquote>
-</li>
-<li><p>删除列</p>
-<blockquote>
-<p>alter table &lt;表名&gt; drop column &lt;列名&gt;;<br>  alter table product drop column product_pingyin;//删除 product_name_pinyin 列(删除后无法恢复)</p>
-</blockquote>
-</li>
-<li><p>清空表的内容</p>
-<blockquote>
-<p>truncate table &lt;表名&gt;\</p>
-<pre><code>truncate table product; // 清空product表\
-相比drop / delete，truncate用来清除数据时，速度最快。(可恢复？)</code></pre>
-</blockquote>
-</li>
-</ul>
-<h4 id="更新"><a href="#更新" class="headerlink" title="更新"></a>更新</h4><p>使用 update 更新数据时需要添加 where 条件，否则将按 SQL语句改变所有行。</p>
-<blockquote>
-<p>UPDATE &lt;表名&gt;<br>    SET &lt;列名&gt; = &lt;表达式&gt; [, &lt;列名2&gt;=&lt;表达式2&gt;…];<br> WHERE &lt;条件&gt;;  – 可选，非常重要。<br> ORDER BY 子句;  –可选<br> LIMIT 子句; –可选</p>
-</blockquote>
-<h3 id="对表的聚合查询"><a href="#对表的聚合查询" class="headerlink" title="对表的聚合查询"></a>对表的聚合查询</h3><p>聚合函数<br>5个聚合函数</p>
-<blockquote>
-<p>count(): 计算表中记录数目(行数)<br>sum(): 计算表中数值列的总和<br>avg(): 计算表中数值的平均值<br>max(): 计算指定列的最大值<br>min(): 计算指定列的最小值</p>
-</blockquote>
-<ul>
-<li>COUNT函数的结果根据参数的不同而不同。<font color="#dd0000">COUNT(*)</font>会得到<strong>包含NULL</strong>的数据行数，而<font color="#dd0000">COUNT(&lt;列名&gt;)</font>会得到<strong>NULL之外</strong>的数据行数。</li>
-<li><font color="#00dd00">聚合函数会将NULL排除在外。但COUNT(*)例外，并不会排除NULL</font>。</li>
-<li>MAX/MIN函数几乎适用于所有数据类型的列。SUM/AVG函数只适用于数值类型的列。</li>
-<li>想要计算值的种类时，可以在COUNT函数的参数中使用DISTINCT。</li>
-<li>在聚合函数的参数中使用DISTINCT，可以删除重复数据。</li>
-</ul>
-<h3 id="对表进行分组"><a href="#对表进行分组" class="headerlink" title="对表进行分组"></a>对表进行分组</h3><h4 id="group-by"><a href="#group-by" class="headerlink" title="group by"></a>group by</h4><ul>
-<li><p>在 GROUP BY 子句中指定的列称为聚合键或分组列。</p>
-</li>
-<li><p>顺序：</p>
-<blockquote>
-<p>select -&gt; from -&gt; where -&gt; group by</p>
-</blockquote>
-</li>
-<li><p>group by 子句不能使用 select 子句定义的别名，但是在 order by 中却可以使用。</p>
-</li>
-</ul>
-<blockquote>
-<p>原因: 在 SQL 中使用 having 子句时，select 语句的顺序为:<br>from -&gt; where -&gt; group by -&gt; having -&gt; select -&gt; order by<br>其中 select 的执行顺序在 group by 之后，在 order by 之前，也就是说，当在ORDER BY中使用别名时，已经知道了SELECT设置的别名存在，但是在GROUP BY中使用别名时还不知道别名的存在，所以不能在ORDER BY中可以使用别名，但是在GROUP BY中不能使用别名</p>
-</blockquote>
-<h4 id="having"><a href="#having" class="headerlink" title="having"></a>having</h4><p>having 子句用于对<font color="#dd0000">分组</font>进行过滤，可以使用数字、聚合数和group by 中指定的列名(聚合键)</p>
-<h4 id="order-by"><a href="#order-by" class="headerlink" title="order by"></a>order by</h4><p>SQL 执行的结果是随机排序的，当需要指定顺序排序时，可使用 order by 子句进行排序。</p>
-<ul>
-<li>SQL 默认是升序排列(asc), 降序排列则为(desc)</li>
-</ul>
-<h2 id="视图"><a href="#视图" class="headerlink" title="视图"></a>视图</h2><p>表面上来看视图和表是相同的，两者大部分操作相同。那为什么会有视图呢？</p>
-<h3 id="什么是视图"><a href="#什么是视图" class="headerlink" title="什么是视图"></a>什么是视图</h3><p><font color="#00dd00">视图是一张虚拟的表</font>, 不同于实际存在的表，视图是由 select 语句创建而来，因此，视图是由 select 语句生成的一张虚拟的表，操作视图即操作这张虚拟的表[零时缓存?]</p>
-<h3 id="视图与表"><a href="#视图与表" class="headerlink" title="视图与表"></a>视图与表</h3><p>视图与表的区别:<font color="#00dd00">是否保存了实际的数据</font>，视图和数据表的本质，即视图是基于真实表的一张虚拟的表，其数据来源均建立在真实表的基础上。 视图并不是真正存储数据，它是一个窗口，通过这个窗口可以看到表中的真实数据。<br><img src="https://teemo-tristana.github.io/images/%E8%A7%86%E5%9B%BE%E4%B8%8E%E8%A1%A8.png" alt="视图与表"><br>“视图不是表，视图是虚表，视图依赖于表”</p>
-<h3 id="视图存在的原因："><a href="#视图存在的原因：" class="headerlink" title="视图存在的原因："></a>视图存在的原因：</h3><ul>
-<li>通过视图可以将频繁使用的select 语句保存以提高效率。</li>
-<li>通过视图可以使用户看到的数据更加清晰(?)</li>
-<li>通过视图可以不对外公开表的全部字段，增强数据的保密性。</li>
-<li>通过视图可以降低数据的冗余</li>
-</ul>
-<h3 id="创建视图"><a href="#创建视图" class="headerlink" title="创建视图"></a>创建视图</h3><p><font color="#00dd00">视图中保存的是 select语句</font>。</p>
-<blockquote>
-<p>CREATE VIEW &lt;视图名称&gt;(&lt;列名1&gt;,&lt;列名2&gt;,…) AS &lt;SELECT语句&gt; //SELECT 语句中列的排列顺序和视图中列的排列顺序相同</p>
-</blockquote>
-<p><font color="#00dd00">视图名称在数据中必须唯一，不能与其他视图或表重名</font>，视图可以基于表，也可以基于其他视图。但是多重视图会降低 SQL的性能，因此，一般少用。</p>
-<p><img src="https://teemo-tristana.github.io/images/%E8%A7%86%E5%9B%BE%E5%AD%98%E5%9C%A8%E5%9F%BA%E7%A1%80.png" alt="视图存在基础"></p>
-<h3 id="视图操作"><a href="#视图操作" class="headerlink" title="视图操作"></a>视图操作</h3><p>因为视图是一个虚拟表，所以对视图的操作就是对底层基础表的操作，所以在修改时只有满足底层基本表的定义才能成功修改。</p>
-<p>视图本质上还是由表派生而来，若原表更新，则视图也会被更新，反之亦然(修改视图的数据，原表的数据也会更新，否则两者的数据会不一致)。</p>
-<p>视图只是原表的一个窗口，因此它只能修改通过窗口能够看到的内容(数据)[视图是一个窗口，类似临时缓存？]</p>
-<p>不推荐通过视图修改原表数据。</p>
-<h4 id="视图修改"><a href="#视图修改" class="headerlink" title="视图修改"></a>视图修改</h4><h4 id="视图删除"><a href="#视图删除" class="headerlink" title="视图删除"></a>视图删除</h4><blockquote>
-<p>DROP VIEW &lt;视图名1&gt; [ , &lt;视图名2&gt; …]</p>
-</blockquote>
-<h2 id="子查询"><a href="#子查询" class="headerlink" title="子查询"></a>子查询</h2><p> 子查询的结果其实也是一张表,只不过是一张虚拟的表, 它并不真实存在于数据库中, 只是数据库中其他表经过筛选,聚合等查询操作后得到的一个”视图”. </p>
-<p>子查询是指一个查询语句嵌套在另外一个查询语句内部的查询。在 select 子句中线计算子查询，子查询结果作为外层查询的过滤条件。</p>
-<h3 id="子查询与视图"><a href="#子查询与视图" class="headerlink" title="子查询与视图"></a>子查询与视图</h3><p>子查询就是将用来定义视图的 select 语句直接作为子句。但子句查询是一次<br>性的，而视图则可以保存在存储介质中，后续可以继续用。</p>
-<h3 id="嵌套子查询"><a href="#嵌套子查询" class="headerlink" title="嵌套子查询"></a>嵌套子查询</h3><p>嵌套子句可以查询出结果，但是随着嵌套子句层数的增加，SQL语句难以理解同时会<font color="#00ddd00"> 执行效率</font>。</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> product_type, cnt_product</span><br><span class="line"><span class="keyword">FROM</span> (<span class="keyword">SELECT</span> *</span><br><span class="line">        <span class="keyword">FROM</span> (<span class="keyword">SELECT</span> product_type, </span><br><span class="line">                      <span class="keyword">COUNT</span>(*) <span class="keyword">AS</span> cnt_product</span><br><span class="line">                <span class="keyword">FROM</span> product </span><br><span class="line">               <span class="keyword">GROUP</span> <span class="keyword">BY</span> product_type) <span class="keyword">AS</span> productsum</span><br><span class="line">       <span class="keyword">WHERE</span> cnt_product = <span class="number">4</span>) <span class="keyword">AS</span> productsum2;</span><br></pre></td></tr></table></figure>
-
-<h3 id="标量子查询"><a href="#标量子查询" class="headerlink" title="标量子查询"></a>标量子查询</h3><p>标量就是单一的意思，那么标量子查询也就是单一的子查询，那什么叫做单一的子查询呢？</p>
-<p>所谓单一就是要求我们执行的SQL语句只能返回一个值，也就是要返回表中具体的某一行的某一列</p>
-<h3 id="关联子查询"><a href="#关联子查询" class="headerlink" title="关联子查询"></a>关联子查询</h3><p>关联子查询包含了关联的两字段，因此，意味着查询与查询之间存在某种关联。</p>
-<p>关联子查询就是通过一些<strong>标志</strong>将内外层的查询连接起来起到过滤数据的目的</p>
-<ul>
-<li><p>关联子查询的执行逻辑完全不同于正常的SELECT语句。</p>
-<ul>
-<li><p>正常的select 语句(或者说简单的select语句)按照</p>
-<blockquote>
-<p>from -&gt; where -&gt; group by -&gt; having -&gt; select -&gt;  order by</p>
-</blockquote>
-<p>的来执行。</p>
-</li>
-<li><p>关联子查询，则是从先执行主查询，然后从主查询结果中逐步去执行子查询。</p>
-<ol>
-<li>首先执行不带 where  的主查询</li>
-<li>根据主查询结果匹配 指定条件， 获取子查询结果</li>
-<li>将子查询结果与主查询结果执行完整的 SQL 语句。<br>具体可参考<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/41844742">连接</a></li>
-</ol>
-</li>
-</ul>
-</li>
-</ul>
-<h2 id="函数"><a href="#函数" class="headerlink" title="函数"></a>函数</h2><h3 id="算术函数"><a href="#算术函数" class="headerlink" title="算术函数"></a>算术函数</h3><p>用来进行数值计算的函数</p>
-<ul>
-<li><p>ABS() : 取绝对值<br>当 ABS() 的参数是 NULL 时， 返回值也是 NULL。</p>
-</li>
-<li><p>MOD()   : 取余<br>MOD  是计算除法余数的函数，即 modulo， 只能对整数求余。</p>
-</li>
-<li><p>ROUDN() : 四舍五入<br>round() 用来进行四舍五入</p>
-</li>
-</ul>
-<h3 id="字符串函数"><a href="#字符串函数" class="headerlink" title="字符串函数"></a>字符串函数</h3><ul>
-<li><p>concat()    : 拼接</p>
-</li>
-<li><p>lenght()    : 字符串长度</p>
-</li>
-<li><p>lower()     : 小写转大写</p>
-</li>
-<li><p>upper()     : 大小转小写</p>
-</li>
-<li><p>replace()   : 字符串替换</p>
-</li>
-<li><p>substring() : 字符串截取</p>
-</li>
-<li><p>SUBSTRING_INDEX (原始字符串， 分隔符，n) : 字符串按索引截取</p>
-</li>
-</ul>
-<h3 id="日期函数"><a href="#日期函数" class="headerlink" title="日期函数"></a>日期函数</h3><ul>
-<li><p>current_data() :      当前日期</p>
-</li>
-<li><p>current_time() :      当前时间</p>
-</li>
-<li><p>current_timestamp() : 当前日期和时间</p>
-</li>
-</ul>
-<h3 id="转换函数"><a href="#转换函数" class="headerlink" title="转换函数"></a>转换函数</h3><p>“转换”这个词的含义非常广泛，在 SQL 中主要有两层意思：一是数据类型的转换，简称为类型转换，在英语中称为cast；另一层意思是值的转换。</p>
-<ul>
-<li>cast()<h3 id="聚合函数"><a href="#聚合函数" class="headerlink" title="聚合函数"></a>聚合函数</h3></li>
-</ul>
-<h2 id="谓词"><a href="#谓词" class="headerlink" title="谓词"></a>谓词</h2><h3 id="什么是谓词"><a href="#什么是谓词" class="headerlink" title="什么是谓词"></a>什么是谓词</h3><p>谓词就是返回值为真值的函数，包括 TRUE / FALSE / UNKOWN</p>
-<ul>
-<li>主要谓词<ul>
-<li>LIKE      : 用于字符串的部分一致查询<ul>
-<li> 当需要进行字符串的部分一致查询时需要使用该谓词。</li>
-<li>部分一致大体可以分为前方一致、中间一致和后方一致三种类型。</li>
-</ul>
-</li>
-<li>BETWEEN<ul>
-<li>使用 BETWEEN 可以进行范围查询。该谓词与其他谓词或者函数的不同之处在于它使用了 3 个参数。</li>
-<li>between … and … 包含边界</li>
-</ul>
-</li>
-<li>IS NULL</li>
-<li>IS NOT NULL</li>
-<li>IN 和 NOT IN <ul>
-<li>使用IN 和 NOT IN 时是无法选取出NULL数据的</li>
-<li> NULL 只能使用 IS NULL 和 IS NOT NULL 来进行判断。</li>
-</ul>
-</li>
-<li>EXISTS</li>
-</ul>
-</li>
-</ul>
-<h2 id="case-表达式"><a href="#case-表达式" class="headerlink" title="case 表达式"></a>case 表达式</h2><p>case 表达式是函数的一种， 是 SQL 中比较重要的功能。</p>
-<p>case 表达式是区分情况时使用的，常用作 条件分支</p>
-<p>case 表达式可以分为 简单 case 表达式 和 搜索 case 表达式</p>
-<p>语法：</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 依次判断 when 表达式是否为真值，是则执行 THEN 后的语句，如果所有的 when 表达式均为假，则执行 ELSE 后的语句。 无论多么庞大的 CASE 表达式，最后也只会返回一个值。</span></span><br><span class="line">CASE WHEN &lt;求值表达式&gt; THEN &lt;表达式&gt;</span><br><span class="line">     WHEN &lt;求值表达式&gt; THEN &lt;表达式&gt;</span><br><span class="line">     WHEN &lt;求值表达式&gt; THEN &lt;表达式&gt;</span><br><span class="line">     .</span><br><span class="line">     .</span><br><span class="line">     .</span><br><span class="line">ELSE &lt;表达式&gt;</span><br><span class="line"><span class="keyword">END</span>  </span><br></pre></td></tr></table></figure>
-
-
-<h2 id="连接-JOIN"><a href="#连接-JOIN" class="headerlink" title="连接(JOIN)"></a>连接(JOIN)</h2><p>连接就是使用某种关联条件将其他表中的列添加过来，进行”添加列”的集合运算。</p>
-<p>连接操作在 SQL 操作中十分重要。</p>
-<p>内连接（inner join）：取出两张表中匹配到的数据，匹配不到的不保留</p>
-<p>外连接（outer join）：取出连接表中匹配到的数据，匹配不到的也会保留，其值为NULL</p>
-<h3 id="内连接-inner-join"><a href="#内连接-inner-join" class="headerlink" title="内连接(inner join)"></a>内连接(inner join)</h3><p><font color="#00dd00">内连接只能选取同时存在于两张表的数据</font><br>内连接的语法:</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">FROM &lt;tb_1&gt; inner join &lt;tb_2&gt; on &lt;condition(s)&gt;</span><br></pre></td></tr></table></figure>
-<ol>
-<li>进行连接时需要在 FROM 子句中使用多张表</li>
-<li>必须使用 on 子句来指定连接条件</li>
-<li>selec 子句中的列最好按照 表名 列名 的格式来使用</li>
-</ol>
-<h4 id="自联结-self-join"><a href="#自联结-self-join" class="headerlink" title="自联结(self join)"></a>自联结(self join)</h4><p>一张表与自身做连接，自连结并不是区分于内连结和外连结的第三种连结, 自连结可以是外连结也可以是内连结, 它是不同于内连结外连结的另一个连结的分类方法.</p>
-<h4 id="自然连结-natural-join"><a href="#自然连结-natural-join" class="headerlink" title="自然连结(natural join)"></a>自然连结(natural join)</h4><p>内连结的一种特例–当两个表进行自然连结时, 会按照两个表中都包含的列名来进行等值内连结, 此时无需使用 ON 来指定连接条件.</p>
-<h3 id="外连接-out-join"><a href="#外连接-out-join" class="headerlink" title="外连接(out join)"></a>外连接(out join)</h3><p><font color="#00dd00">取出连接表中匹配到的数据，匹配不到的也会保留，其值为NULL</font><br>内连结会丢弃两张表中不满足 ON 条件的行,和内连结相对的就是外连结. 外连结会根据外连结的种类有选择地保留无法匹配到的行.</p>
-<p>由于连结时可以交换左表和右表的位置, 因此左连结和右连结并没有本质区别</p>
-<p>left 和 right 关键字则是指定那边的表为主表，外连接会将包含主表的所有数据。</p>
-<h4 id="左外连接"><a href="#左外连接" class="headerlink" title="左外连接"></a>左外连接</h4><p>左连结会保存左表中无法按照 ON 子句匹配到的行</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 左连结     </span></span><br><span class="line">FROM &lt;tb_1&gt; LEFT  OUTER JOIN &lt;tb_2&gt; ON &lt;condition(s)&gt;</span><br></pre></td></tr></table></figure>
-
-
-<h4 id="右外连接"><a href="#右外连接" class="headerlink" title="右外连接"></a>右外连接</h4><p> 右连结则会保存右表中无法按照 ON 子句匹配到的行</p>
- <figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 右连结     </span></span><br><span class="line">FROM &lt;tb_1&gt; RIGHT OUTER JOIN &lt;tb_2&gt; ON &lt;condition(s)&gt;</span><br></pre></td></tr></table></figure>
-<h4 id="全外连接"><a href="#全外连接" class="headerlink" title="全外连接"></a>全外连接</h4><p>外连结则会同时保存两个表中无法按照 ON子句匹配到的行, </p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 全外连结</span></span><br><span class="line">FROM &lt;tb_1&gt; FULL  OUTER JOIN &lt;tb_2&gt; ON &lt;condition(s)&gt;</span><br></pre></td></tr></table></figure>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/12/06/C++-%E5%90%8E%E5%8F%B0%E9%9D%A2%E8%AF%95%E5%A4%8D%E4%B9%A0%E7%B4%A2%E5%BC%95/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/teemo.png">
-      <meta itemprop="name" content="Han Cheng">
-      <meta itemprop="description" content="记录平日所学">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Teemo-Tristana">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/12/06/C++-%E5%90%8E%E5%8F%B0%E9%9D%A2%E8%AF%95%E5%A4%8D%E4%B9%A0%E7%B4%A2%E5%BC%95/" class="post-title-link" itemprop="url">C++后台面试复习索引</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-12-06 20:53:24" itemprop="dateCreated datePublished" datetime="2020-12-06T20:53:24+08:00">2020-12-06</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-12-10 10:44:31" itemprop="dateModified" datetime="2020-12-10T10:44:31+08:00">2020-12-10</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="C-语言知识"><a href="#C-语言知识" class="headerlink" title="C++语言知识"></a>C++语言知识</h2><h3 id="C-语言的基础"><a href="#C-语言的基础" class="headerlink" title="C++ 语言的基础"></a>C++ 语言的基础</h3><p>C/C++语言特性和实现原理，比如关键字及其实现原理等</p>
-<ol>
-<li><p>指针、引用、数组、内存</p>
-</li>
-<li><p>C 和 C++ 的区别，比如 new/delete、malloc/free</p>
-</li>
-<li><p>C++ 中引用与指针的区别</p>
-</li>
-<li><p>继承、虚继承、多重继承、菱形继承等</p>
-</li>
-<li><p>C++虚函数机制: 虚函数原理、作用、虚函数表、虚指针、纯虚函数</p>
-<ul>
-<li>虚函数作用：<ul>
-<li>虚函数主要用于实现多态</li>
-<li>在封装和抽象上也有应用，比如 抽象工厂模式</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>C++的三大特性：封装、继承、多态</p>
-</li>
-<li><p>多态是是什么？ 动态多态、静态多态</p>
-<ul>
-<li><p>静态多态：</p>
-<ul>
-<li>通过函数重载/模板技术实现的，在编译期间就确定了</li>
-</ul>
-</li>
-<li><p>动态多态：</p>
-<ul>
-<li>通过虚函数技术实现在运行期动态绑定的技术</li>
-</ul>
-</li>
-<li><p>虚函数表：</p>
-<ul>
-<li>编译器为每一个类维护一个虚函数表，每个对象的首地址保存着该虚函数表的指针(虚指针vptr)，同一个类的不同对象实际上指向的是同一张虚函数表</li>
-<li>虚函数表是一个指针数组，每个成员都是函数指针</li>
-</ul>
-</li>
-<li><p>纯虚函数</p>
-<ul>
-<li>纯虚函数如何定义，为什么对于存在虚函数的类中析构函数要定义成虚函数</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>继承的本质是什么？ 抽象</p>
-</li>
-<li><p>重载、重写、覆盖的概念与区别？</p>
-</li>
-<li><p>C++ 中一些常见关键字：</p>
-<ul>
 <li>static</li>
-<li>const </li>
+<li>const 作用</li>
+<li>const和define</li>
+<li>内联(inline)函数有什么优点？内联函数与宏定义的区别？</li>
 <li>volatile</li>
 <li>extern</li>
-<li>expilicit</li>
-</ul>
+<li>decltype</li>
+<li>auto </li>
+</ol>
 </li>
-<li><p>内联函数与宏定义的区别</p>
-</li>
-<li><p>C++11的新特性，</p>
-<ul>
-<li>lambda</li>
-<li>右值引用</li>
-<li>完美转发</li>
-</ul>
-</li>
-<li><p>C++的强制类型转换与C++11引入的强制类型转换: static_cast、dynamic_cast、const_cast、reinterpret_castl</p>
-</li>
-<li><p>C++11中引入的强枚举</p>
-</li>
-<li><p>RAII 资源获取即初始化的概念及其应用(比如智能指针)</p>
-</li>
-<li><p>C++11的智能指针：share_ptr、unique_ptr、weak_ptr</p>
-</li>
-<li><p>STL的组成及其应用</p>
-</li>
-<li><p>STL 常用容器原理及其应用：vector、list、stack、deque、set(multiset)、map(multimap)等。</p>
-</li>
-<li><p>模板特化、偏特化、萃取traits技巧</p>
-</li>
-<li><p>STL 内存分配策略</p>
-<ul>
-<li>STL 内存池实现</li>
-</ul>
-</li>
-<li><p>源程序到可执行文件过程(程序编译链接机制)</p>
-</li>
-<li><p>C++ 内存布局（memory layout)</p>
-</li>
-<li><p>C++ 对象模型</p>
-</li>
-<li><p>C++ 类的默认函数（6个）</p>
-</li>
-<li><p>C++ 内存管理、堆、栈、指针、野指针、内存泄漏(内存检测工具)等</p>
-<ul>
-<li>内存泄漏定位<ul>
-<li>windows下，通过 CRT 中的库函数进行检测</li>
-<li>在可能泄漏的调用前后生成快快照，比较前后状态，定位泄漏位置</li>
-<li>Linux 通过 valgrind 检测</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>析构函数能抛出异常吗</p>
-</li>
-<li><p>构造函数和析构函数中调用虚函数吗？</p>
-</li>
-<li><p>指针与数组千丝万缕的联系</p>
-</li>
-<li><p>智能指针是怎么实现的？什么时候改变引用计数？</p>
-<ul>
+<li><p>指针相关</p>
+<ol start="0">
+<li>数组名和指针区别</li>
+<li>常量指针与指针常量 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> *a ;</span><br><span class="line"><span class="keyword">int</span> <span class="keyword">const</span> *a ; </span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span>; </span><br><span class="line"><span class="keyword">int</span> *<span class="keyword">const</span> a; </span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> *<span class="keyword">const</span> a;</span><br></pre></td></tr></table></figure></li>
+<li>函数指针与指针函数</li>
+<li>指针与引用</li>
+<li>智能指针: shared_ptr、weak_ptr、unique_ptr<ul>
+<li>原理和引用技术</li>
+<li>RAII(资源获取即初始化)思想</li>
+<li>智能指针的使用</li>
+<li>智能指针是怎么实现的？什么时候改变引用计数？<ol>
 <li>构造函数中计数初始化为1；</li>
 <li>拷贝构造函数中计数值加1；</li>
 <li>赋值运算符中，左边的对象引用计数减一，右边的对象引用计数加一；</li>
 <li>析构函数中引用计数减一；</li>
 <li>在赋值运算符和析构函数中，如果减一后为0，则调用delete释放对象。</li>
+</ol>
+</li>
 </ul>
 </li>
-<li><p><font color="#00dd00"> 内存对齐 </font></p>
-</li>
-<li><p><font color="#00dd00">必须在构造函数初始化式中进行初始化的成员 </font>?</p>
-</li>
-<li><p>手写strcpy，memcpy，strcat，strcmp等函数</p>
-<h3 id="书籍"><a href="#书籍" class="headerlink" title="书籍"></a>书籍</h3></li>
-<li><p>&lt;&lt;C++ Primer&gt;&gt;</p>
-</li>
-<li><p>&lt;&lt;effective C++&gt;&gt;、&lt;&lt;more effective C++&gt;&gt; 、&lt;<effective stl>&gt;</effective></p>
-</li>
-<li><p>&lt;&lt;STL 源码剖析&gt;&gt;、 &lt;&lt;深度探索C++对象模型&gt;&gt;</p>
-</li>
 </ol>
-<h2 id="计算机基础知识"><a href="#计算机基础知识" class="headerlink" title="计算机基础知识"></a>计算机基础知识</h2><h2 id="计算机网络"><a href="#计算机网络" class="headerlink" title="计算机网络"></a>计算机网络</h2><h3 id="计算机网络基础知识"><a href="#计算机网络基础知识" class="headerlink" title="计算机网络基础知识"></a>计算机网络基础知识</h3><p>主要把握整个网络的脉络主干，不要被纷繁错杂的网络协议搞晕，只要找到主干，不断细化，再填充细节，最后就成体系了。</p>
+</li>
+<li><p>内存相关</p>
 <ol>
-<li><p>OSI七层模型与五层模型</p>
-</li>
-<li><p>常见协议的概念、原理及其应用</p>
-<ul>
-<li>应用层：<ul>
-<li>区分同一个主机的不同应用，因此，引入了传输层，并使用不同的端口号来区别(不同的应用)</li>
-<li>HTTP</li>
+<li>内存(字节)对齐的原则</li>
+<li>C++ 内存管理</li>
+<li><font color="dd00dd"> new和malloc的区别 </font><ul>
+<li>new和malloc区别</li>
+<li>有了malloc，为什么还需要new ？</li>
+<li>new内存分配原理<ul>
+<li>new开辟的位置(new创建的函数是在内存的哪个位置)</li>
 </ul>
 </li>
-<li>传输层<ul>
-<li>TCP</li>
-<li>UDP<ul>
-<li>NAT(UDP打洞)</li>
+<li>malloc实现原理?</li>
 </ul>
 </li>
-</ul>
-</li>
-<li>网络层<ul>
-<li>为了在不同子网间参数数据引入了网路层，并使用 IP 地址来寻址</li>
-<li>ICMP</li>
-</ul>
-</li>
-<li>数据链路层<ul>
-<li>网络层解决了不同子网间路由的问题，但是同一个局域网内确定主机却是通过 MAC 地址，所以引入了链路层来承载 IP 数据包;</li>
-<li>为了将 IP 地址和 MAC 地址相互转换，就引入了以下两个协议：<ul>
-<li>ARP ： IP地址 转为 MAC 地址<ul>
-<li>ARP 原理</li>
-<li>ARP 工作过程</li>
-</ul>
-</li>
-<li>RARP： MAC地址 转为 IP 地址 </li>
-</ul>
-</li>
-<li>DNS</li>
-</ul>
-</li>
-<li>物理层</li>
-</ul>
-</li>
-<li><p>IP地址与MAC地址</p>
-<ul>
-<li><p>IP 地址</p>
-<ul>
-<li>IP地址产生的原理</li>
-<li>IP地址分类</li>
-<li>IP 分配</li>
-</ul>
-</li>
-<li><p>为什么有了MAC地址还要IP地址？</p>
-</li>
-<li><p>IP 地址与MAC 地址的区别是什么？</p>
-</li>
-</ul>
-</li>
-<li><p>常见网络攻击</p>
-<ul>
-<li>局域网ARP洪泛攻击</li>
-<li>DDos</li>
-<li>TCP SYN Flood</li>
-<li>XSS</li>
-</ul>
-</li>
-<li><p>HTTP与HTTPS</p>
-<ul>
-<li><p>常见的状态码：1XX、2XX、3XX、4XX</p>
-</li>
-<li><p>HTTP</p>
-<ul>
-<li>GET/POST的区别</li>
-<li>HTTP常见返回码</li>
-</ul>
-</li>
-<li><p>HTTPS</p>
-<ul>
-<li>TLS/SSL的概念及原理</li>
-<li>数字签名的概念及原理</li>
-<li>数字证数的概念及原理</li>
-</ul>
-</li>
-<li><p>COOKIE/SESSION的区别</p>
-</li>
-</ul>
-</li>
-<li><p>HTTP1.0、HTTP2.0 与 HTTP3.0的区别与联系</p>
-</li>
-<li><p><font color="#dd0000"> TCP相关知识 </font><br>整个TCP的核行围绕 <font color="#dd0000"> 可靠传输 + 高效传输(流量控制/拥塞控制) </font> 来进行</p>
-<ul>
-<li>三次握手与四次挥手</li>
-<li>TCP状态转移图(建立、断开连接过程中的状态转换)</li>
-<li>TCP 状态的 TIME_WAIT</li>
-<li>拥塞控制</li>
-<li>流量控制</li>
-<li>重发机制</li>
-<li>Nagle算法</li>
-</ul>
-<ul>
-<li>相关问题:<ul>
-<li>TCP 如何实现可靠传输的（画外音：如何基于 UDP 实现可靠传输</li>
-<li>第二次和第三次之间的等待是什么?</li>
-<li>TCP 连接建立为什么不是两次握手（画外音：三次握手的充分必要性说明?</li>
-<li>TIME_WAIT 的存在解决了什么问题，等待时间为什么是 2 MSL</li>
-<li>为什么不是四次握手?</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>常见端口与服务：</p>
-<ul>
-<li>FTP(文件传输协议)，      基于 TCP ，端口号： 21</li>
-<li>TELNET(远程登陆协议)，   基于 TCP， 端口号： 23</li>
-<li>SMTP(简单邮件传输协议)， 基于 TCP， 端口号： 25</li>
-<li>HTTP(超文本传输协议)，   基于 TCP， 端口号： 80</li>
-<li>DNS(域名系统)，          基于 UDP， 端口号： 53</li>
-</ul>
-</li>
-<li><p><font color="#00dd00"> 从URL输入到页面的过程? </font></p>
-</li>
-<li><p>如何理解广播域和冲突域？</p>
-</li>
-<li><p>路由器和交换机有什么区别？</p>
-</li>
-<li><p>TCP 连接的本质是什么，真的是“链接”吗？</p>
-</li>
-<li><p>抓住一条主线 <font color="#00dd00">一个数据包是如何发送出去的？</font></p>
-</li>
+<li>内存泄漏的原因？怎么定位？<ul>
+<li>原因</li>
+<li>内存泄漏定位:<ol>
+<li>在windows平台下通过CRT中的库函数进行检测；</li>
+<li>在可能泄漏的调用前后生成块的快照，比较前后的状态，定位泄漏的位置</li>
+<li>Linux下通过工具valgrind检测</li>
 </ol>
-<p>###</p>
+</li>
+</ul>
+</li>
+<li>c++的共享内存实现</li>
+</ol>
+</li>
+<li><p>多态相关    </p>
 <ol>
-<li>《网络是怎样连接的》</li>
-<li>《计算机网络：自顶向下方法》</li>
-<li>《TCP/IP详解卷1：协议》</li>
-<li>《图解HTTP》</li>
-<li>《网络是怎样连接的》</li>
-</ol>
-<h2 id="操作系统"><a href="#操作系统" class="headerlink" title="操作系统"></a>操作系统</h2><h3 id="操作系统的构成及相关基本概念"><a href="#操作系统的构成及相关基本概念" class="headerlink" title="操作系统的构成及相关基本概念"></a>操作系统的构成及相关基本概念</h3><ol>
-<li><p>操作系统由哪些构成</p>
-</li>
-<li><p>进程和线程的区别进程间通信方式（共享内存、管道、消息）</p>
-</li>
-<li><p>并发经典的问题：读者写者、哲学家就餐问题</p>
-</li>
-<li><p>文件系统是如何组织的</p>
-</li>
-<li><p>互斥与同步（信号量、管程、锁）</p>
-</li>
-<li><p>死锁检测与避免虚拟</p>
-</li>
-<li><p>文件系统（VFS）是如何抽象的线程的实现方式（一对一、多对一等）</p>
-</li>
-<li><p>为什么需要虚拟内存，MMU 具体如何做地址转换的</p>
-</li>
-<li><p>内存为什么分段、分页</p>
-</li>
-<li><p>页面置换算法</p>
-</li>
-<li><p>进程的状态、切换、调度</p>
-</li>
-<li><p><font color="#00dd00">fork/vfork/clone 的区别及应用场景(产生的原因)</font></p>
-</li>
-<li><p>线程相关pthread_create等</p>
-</li>
-<li><p>OS的四大模块： </p>
+<li><p>多态原理及其作用</p>
 <ul>
-<li>进程与线程及其管理</li>
-<li>内存管理</li>
-<li>IO与文件管理</li>
-<li>设备管理</li>
+<li>静态多态: 是指通过模板技术或者函数重载技术实现的多态,在编译使其就确定了。</li>
+<li>动态多态: 指通过虚函数技术实现在运行期动态绑定的技术,在动态才确定。</li>
 </ul>
 </li>
-<li><p>进程与线程的区别？</p>
+<li><p>虚机制： 虚函数、虚函数表、纯虚函数</p>
 <ul>
-<li>常规回答<ul>
-<li>进程是资源分配的最小单位，线程是CPU调度的最小单位</li>
+<li>虚函数表是针对类的还是针对对象的？同一个类的两个对象的虚函数表是怎么维护的？</li>
+<li>编译器为每一个类维护一个虚函数表，每个对象的首地址保存着该虚函数表的指针，同一个类的不同对象实际上指向同一张虚函数表。</li>
 </ul>
+<ol start="3">
+<li>纯虚函数如何定义，为什么对于存在虚函数的类中析构函数要定义成虚函数?</li>
+</ol>
 </li>
-<li>深入回答<ul>
-<li>从 Linux 内核实现出发， Linux 中进程与线程是如何创建的，区别在哪儿？<ul>
-<li>Linux 中，进程和线程实际上都是用 task_struct 结构体来执行一个进程实体；但是进程创建使用的是<font color="#00dd00"> fork() </font> 系统调用，而线程创建则用的是<font color="#00dd00"> pthread_create() </font>, 这两种方法在内部都是调用 <font color="#00dd00"> do_fork() </font> 来执行创建操作，但是它会根据<font color="#00dd00">传入的参数</font>不同执行不同的操作。</li>
-<li>Linux实现线程的方式很巧妙，从使用者角度来讲，有线程与进程之分，但是<font color="#FF00FF">实际上根本没有线程</font>：pthread_create()调用do_fork()时，创建的仍然是进程，但是通过参数指定了多个进程(线程)之间共享某系资源(<font color="#00dddd">比如虚拟内存、页表、文件描述符等</font>)，函数调用font color=”#00dddd”&gt;栈、寄存器等则为线程私有的数据。<br>###</li>
-</ul>
+</ol>
 </li>
-</ul>
+<li><p>C和C++的区别</p>
+<ol>
+<li>C++中struct与class区别</li>
+<li>C++和C相比的最大特点</li>
+<li>C++面向对象的三大特性</li>
+</ol>
 </li>
-</ul>
+</ol>
+<ol start="6">
+<li><p>新特性</p>
+<ol>
+<li>左值和右值</li>
+<li>右值引用的意义:移动语义和完美转发    </li>
+<li>四种类型转换(与传统类型转换对比)<blockquote>
+<p>向上转型/向下转型</p>
+</blockquote>
 </li>
-<li><p>《现代操作系统》</p>
+<li>atomic及内存顺序</li>
+<li>move和forward</li>
+<li>lambad</li>
+<li>模板特化、偏特化、萃取traits</li>
+</ol>
 </li>
-<li><p>《操作系统—精髓与设计原理》</p>
+<li><p>继承相关</p>
+<ol>
+<li>继承、虚继承、菱形继承等</li>
+</ol>
 </li>
-<li><p>《Linux内核设计与实现》(重点推荐)</p>
+</ol>
+<ol start="8">
+<li><p>类相关</p>
+<ol>
+<li>父类和子类构造函数析构函数调用顺序</li>
+<li><font color="#00dddd">class的内存模型? </font></li>
+<li>空类大小,为什么是1,默认实现了什么?</li>
+<li>类默认函数有哪写</li>
+<li>定义析构函数，会自动生成哪些构造函数。<br>（不会)</li>
+<li>讲一讲构造函数、拷贝构造函数和移动构造函数的区别。</li>
+<li>构造函数和析构函数中调用虚函数吗？</li>
+<li>析构函数能抛出异常吗?</li>
+<li>nullptr调用成员函数（不会）</li>
+<li>为什么对于存在虚函数的类中析构函数要定义成虚函数?</li>
+<li>为什么要虚析构,为什么不能虚构造</li>
+<li>构造函数有几种</li>
+<li>C++的this指针</li>
+</ol>
+</li>
+<li><p>STL </p>
+<ol>
+<li><p>stl的vector、list以及区别？ </p>
 <ul>
-<li>第 3 章进程管理</li>
-<li>第 5 章系统调用</li>
-<li>第12章内存管理</li>
-<li>第13章虚拟文件系统</li>
-<li>第 15 章进程地址空间</li>
-</ul>
-</li>
-<li><p>《深入理解计算机系统》</p>
-</li>
-</ol>
-<h2 id="网络编程和服务器开发"><a href="#网络编程和服务器开发" class="headerlink" title="网络编程和服务器开发"></a>网络编程和服务器开发</h2><h3 id="Linux下网络编程主要包含网络I-O和系统编程两部分"><a href="#Linux下网络编程主要包含网络I-O和系统编程两部分" class="headerlink" title="Linux下网络编程主要包含网络I/O和系统编程两部分"></a>Linux下网络编程主要包含网络I/O和系统编程两部分</h3><ol>
-<li>进程间通信方式： <ul>
-<li>信号量</li>
-<li>管道</li>
-<li>共享内存</li>
-<li>socket </li>
-<li>消息队列</li>
-</ul>
-</li>
-<li>五大 IO 模型：<ul>
-<li>同步</li>
-<li>异步</li>
-<li>阻塞</li>
-<li>非阻塞</li>
-<li>信号驱动</li>
-</ul>
-</li>
-<li>高性能 IO 两种模式：Reactor 和 Proactor（ 但是 Linux 下由于缺少异步 IO 支持，基本没有 Proactor</li>
-<li>IO 复用机制：epoll、select、poll（破解 C10K 问题的利器）<ul>
-<li>select</li>
-<li>poll</li>
-<li>epoll(kqueue)</li>
-</ul>
-</li>
-<li>多线程编程<ul>
-<li>锁<ul>
-<li>互斥锁锁</li>
-<li>读写锁</li>
-</ul>
-</li>
-<li>信号量</li>
-<li>条件变量</li>
-<li>线程池等</li>
-</ul>
-</li>
-<li>高性能I/O两种模式：<ul>
-<li>Reactor</li>
-<li>Proactor(但是 Linux 下由于缺少异步 IO 支持，基本没有 Proactor)</li>
-</ul>
-</li>
-<li>了解 Linux 内核部分实现原理(<font color="#00dd00">内存、进程、IO是重点</font>)：<ul>
-<li>内存管理</li>
-<li>进程管理</li>
-<li>虚拟文件系统</li>
-</ul>
-</li>
-<li>Linux常见命令的使用</li>
-</ol>
-<h3 id="书籍-1"><a href="#书籍-1" class="headerlink" title="书籍"></a>书籍</h3><ol>
-<li>《Linux高性能服务器编程》</li>
-<li>《Unix网络编程》</li>
-<li>《Unix环境高级编程》</li>
-<li>《Linux多线程服务器端编程》</li>
-</ol>
-<h2 id="系统知识"><a href="#系统知识" class="headerlink" title="系统知识"></a>系统知识</h2><ol>
-<li>《深入理解计算机系统》</li>
-<li>《程序员自我修养》<h2 id="算法与数据结构"><a href="#算法与数据结构" class="headerlink" title="算法与数据结构"></a>算法与数据结构</h2><h3 id="常见的数据结构"><a href="#常见的数据结构" class="headerlink" title="常见的数据结构"></a>常见的数据结构</h3></li>
-<li>线性表、数组、链表</li>
-<li>栈与队列</li>
-<li>散列函数和散列表</li>
-<li>树、二叉树、多叉树实现和遍历方式，AVL树实现以及插入删除过程、红黑树（了解定义即可）</li>
-<li>图，以及图的实现方式、遍历</li>
-<li>堆</li>
-<li>B树、B+树<h3 id="常见的算法"><a href="#常见的算法" class="headerlink" title="常见的算法"></a>常见的算法</h3></li>
-<li>排序算法：冒泡、插入、堆排、基数、快速、希尔、归并等</li>
-<li>字符串匹配算法：KMP</li>
-<li>常见算法思想：递推、分治、贪心、递归、枚举、动态规划等</li>
-</ol>
-<h2 id="数据库"><a href="#数据库" class="headerlink" title="数据库"></a>数据库</h2><p>MySQL关系型数据库与 NoSQL 非关系型数据库</p>
-<h3 id="MySQL-常见面试题"><a href="#MySQL-常见面试题" class="headerlink" title="MySQL 常见面试题"></a>MySQL 常见面试题</h3><ol>
-<li>索引存储结构：B树、B+树索引、Hash索引 </li>
-<li>索引的使用：主键索引、覆盖索引、最左前缀原则、索引下推等 </li>
-<li>锁：乐观锁、悲观锁、表锁，行锁，意向锁，读锁，写锁等等 MySQL InnoDB MVCC 实现机制 </li>
-<li>存储引擎：InnoDB、MyISAM等，各自的优缺点 </li>
-<li>事务：ACID理论</li>
-<li>并发控制<ul>
-<li>锁</li>
-<li>MVCC</li>
-</ul>
-</li>
-<li>MySQL的 Inno DB 和 MVCC 实现机制<h3 id="常见NoSQL组件"><a href="#常见NoSQL组件" class="headerlink" title="常见NoSQL组件"></a>常见NoSQL组件</h3></li>
-<li>Redis</li>
-<li>Memcached</li>
-</ol>
-<h3 id="书籍-2"><a href="#书籍-2" class="headerlink" title="书籍"></a>书籍</h3><ol>
-<li>《MySQL必知必会》</li>
-<li>《高性能MySQL》</li>
-<li>《MySQL技术内幕》</li>
-</ol>
-<h2 id="other"><a href="#other" class="headerlink" title="other"></a>other</h2><ol>
-<li><p>版本控制 Git</p>
-</li>
-<li><p>分布式相关</p>
+<li><p>vector</p>
 <ul>
-<li>一致性协议<ul>
-<li>Raft算法</li>
-<li>分布式存储</li>
+<li>讲一下vector你了解的知识？（主要是底层实现，动态扩容）动态扩容的过程是怎么样的？（申请新空间，拷贝原有数据，释放原有空间）</li>
 </ul>
 </li>
-</ul>
+<li><p>list</p>
 </li>
-<li><p>分布式系统</p>
+<li><p>区别:</p>
 <ul>
-<li>map_reduce原理</li>
-<li>负载均衡</li>
-<li>CDN</li>
+<li>主要从底层实现的数据结构，插入、删除、访问的效率来解释）</li>
 </ul>
 </li>
-<li><p>docker、k8s 等虚拟化和云计算相关</p>
+</ul>
 </li>
-<li><p>系统设计能力</p>
+<li><p>map底层实现是什么?<a href="%E7%BA%A2%E9%BB%91%E6%A0%91%E6%98%AF%E4%BB%80%E4%B9%88%E5%91%A2%EF%BC%9F%E6%9C%89%E4%BB%80%E4%B9%88%E7%89%B9%E7%82%B9%EF%BC%9F%E7%BA%A2%E9%BB%91%E6%A0%91%E8%87%AA%E5%B9%B3%E8%A1%A1%E6%98%AF%E8%87%AA%E5%8A%A8%E5%B9%B3%E8%A1%A1%E5%90%97%EF%BC%9F%E6%80%8E%E4%B9%88%E5%AE%9E%E7%8E%B0%E8%87%AA%E5%B9%B3%E8%A1%A1%E7%9A%84%EF%BC%9F%E7%BA%A2%E9%BB%91%E6%A0%91%E5%92%8C%E6%99%AE%E9%80%9A%E7%9A%84%E4%BA%8C%E5%8F%89%E6%A0%91%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%E5%91%A2%EF%BC%9F">红黑树</a></p>
+</li>
+<li><p>红黑树讲一下，怎么翻转？ <a href="%E4%BB%8B%E7%BB%8D%E4%BA%86%E4%B8%8B%E5%AE%9A%E4%B9%89,%E7%84%B6%E5%90%8E%E5%88%86%E6%83%85%E5%86%B5%E7%BF%BB%E8%BD%AC">红黑树基本特征，avl和红黑树的优缺点</a></p>
+</li>
+<li><p>unordered_map底层实现是什么？ （哈希表）</p>
+</li>
+<li><p>这个实现和map有什么区别，谈谈优劣势</p>
+</li>
+<li><p>讲一下vector和迭代器</p>
+</li>
+<li><p>vector扩容机制了解吗？（扩容1.5倍或2倍，数据复制等）</p>
+</li>
+<li><p>pair是个什么？什么情况下使用的？</p>
+</li>
+<li><p>STL的 vector、dequeue、list、deque、queue、stack、map、multismap、set的实现和原理</p>
+</li>
+<li><p>stl 的map hashtable、deque、list 请说一下,每个实现原理说一下</p>
+<blockquote>
+<p>用过哪些STL，对STL源码了解吗？deque是怎么设计的？</p>
+</blockquote>
+</li>
+<li><p>迭代器失效问题,如何解决,it++ 和 ++it区别?(++it传引用,it++传值复制)[迭代器相关]</p>
+</li>
+<li><p>hashtable扩容和如何解决冲突,解决冲突的办法？</p>
+</li>
+<li><p><font color="#00dddd">push_back和emplace_back</font></p>
+</li>
+<li><p>STL配置器</p>
+</li>
+<li><p>STL里的内存池实现</p>
+</li>
+<li><p>STL里set和map是基于什么实现的。红黑树的特点？</p>
+</li>
+</ol>
+</li>
+</ol>
+<ol start="10">
+<li><p>other </p>
+<ol>
+<li><p>重载 与 重写</p>
+</li>
+<li><p>编译连接机制</p>
+</li>
+<li><p>++的内存是怎么分配的[内存布局](memory layout)</p>
+</li>
+<li><p>对象模型</p>
+</li>
+<li><p>如何在堆上分配内存</p>
+</li>
+<li><p>讲一讲内存中堆和栈的区别。</p>
+</li>
+<li><p>深拷贝与浅拷贝</p>
+</li>
+<li><p>堆和栈哪个会产生碎片，为什么</p>
+</li>
+<li><p>变量的声明和定义有什么区别呢？变量的声明和定义再编译和链接阶段有什么区别呢？链接的时候怎么找到这个变量呢？</p>
+<blockquote>
+<p>声明可以有多处，定义只有一处，用来分配空间，编译的时候只需要声明知道有这个东西，链接的时候要知道这个变量的具体位置</p>
+</blockquote>
+</li>
+<li><p>c++怎么进行多线程编程</p>
+</li>
+<li><p>c++或go用什么数据库框架（应该是用什么库，怎么用的意思）</p>
+</li>
+<li><p>C++有虚构造器吗，如果有，什么时候不能用？</p>
+</li>
+<li><p>堆和栈各存储什么变量，各有什么特点，为什么要分stack和heap，还有什么存储空间？</p>
+</li>
+<li><p>一个线程占多大内存,</p>
+</li>
+<li><p>重载和重写(重点虚函数的实现机制)</p>
 <ul>
-<li>短服务</li>
-<li>评论服务</li>
-<li>Feed流服务</li>
-<li>抢红包</li>
-<li>秒杀</li>
+<li>如何使用c来实现重载和重写(重点虚函数的实现机制)?</li>
+<li>重载函数是怎么实现？函数返回值不同能重载吗？（仅有函数返回值类型不同，是不能重载的，只有参数列表不一样时，才能重载）</li>
 </ul>
+</li>
+<li><p>初始化为0的全局变量在bss还是data（答错，在bss段）</p>
+</li>
+<li><p>面向对象的含义 ? 面向过程和面向对象各自的优缺点?</p>
+</li>
+</ol>
 </li>
 </ol>
 
@@ -1429,7 +463,7 @@ goroutine 运行后，<font color="#dd00dd">写入缓冲通道的数据不会消
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/11/28/Redis%E5%AD%A6%E4%B9%A005/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/01/21/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/teemo.png">
@@ -1443,157 +477,7 @@ goroutine 运行后，<font color="#dd00dd">写入缓冲通道的数据不会消
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2020/11/28/Redis%E5%AD%A6%E4%B9%A005/" class="post-title-link" itemprop="url">Redis的客户端与服务端</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-11-28 21:22:30" itemprop="dateCreated datePublished" datetime="2020-11-28T21:22:30+08:00">2020-11-28</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-12-05 10:48:39" itemprop="dateModified" datetime="2020-12-05T10:48:39+08:00">2020-12-05</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="Redis-服务器与客户端"><a href="#Redis-服务器与客户端" class="headerlink" title="Redis 服务器与客户端"></a>Redis 服务器与客户端</h1><p>Reis 服务器是典型的一对多服务器程序，一个服务器可与多个客户端通过网络建立连接，然后相互通信。<br>通过使用I/O多路复用技术实现的文件事件处理器<br>Redis 服务器使用单线程的进程来处理命令并与多个客户端进行网络通信(在 Redis6.0 之后使用多线程来进行网络I/O)</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/11/28/Redis%E5%AD%A6%E4%B9%A005/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/11/24/Redis%E5%AD%A6%E4%B9%A004/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/teemo.png">
-      <meta itemprop="name" content="Han Cheng">
-      <meta itemprop="description" content="记录平日所学">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Teemo-Tristana">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/11/24/Redis%E5%AD%A6%E4%B9%A004/" class="post-title-link" itemprop="url">Redis事件</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-11-24 10:24:40" itemprop="dateCreated datePublished" datetime="2020-11-24T10:24:40+08:00">2020-11-24</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-11-29 14:41:30" itemprop="dateModified" datetime="2020-11-29T14:41:30+08:00">2020-11-29</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="Redis事件"><a href="#Redis事件" class="headerlink" title="Redis事件"></a>Redis事件</h1><p>在 Redis 中， 事件分为两大类：文件事件和时间时间。</p>
-<h1 id="文件事件（file-event）"><a href="#文件事件（file-event）" class="headerlink" title="文件事件（file event）"></a>文件事件（file event）</h1><p>Redis 服务器通过套接字与客户端进行连接，文件事件就是服务器对套接字操作的抽象。<br>服务器与客户端的通信会产生相应的文件事件，而服务器则通过监听并处理这些事件来完成一些列网络操作。</p>
-<ul>
-<li>文件事件指代的是主要包含以下三类：<ul>
-<li>客户端的网络连接请求达到事件(ae_readable)</li>
-<li>客户端发来的命令请求达到事件(ae_readable)</li>
-<li>服务端发出命令应答事件(ae_writable)</li></ul></li></ul>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/11/24/Redis%E5%AD%A6%E4%B9%A004/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/11/20/RPC/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/teemo.png">
-      <meta itemprop="name" content="Han Cheng">
-      <meta itemprop="description" content="记录平日所学">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Teemo-Tristana">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/11/20/RPC/" class="post-title-link" itemprop="url">RPC</a>
+            <a href="/2021/01/21/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/" class="post-title-link" itemprop="url">未命名</a>
         </h2>
 
         <div class="post-meta">
@@ -1604,7 +488,7 @@ goroutine 运行后，<font color="#dd00dd">写入缓冲通道的数据不会消
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2020-11-20 10:39:15 / 修改时间：11:08:19" itemprop="dateCreated datePublished" datetime="2020-11-20T10:39:15+08:00">2020-11-20</time>
+              <time title="创建时间：2021-01-21 18:05:11 / 修改时间：17:54:09" itemprop="dateCreated datePublished" datetime="2021-01-21T18:05:11+08:00">2021-01-21</time>
             </span>
 
           
@@ -1618,37 +502,951 @@ goroutine 运行后，<font color="#dd00dd">写入缓冲通道的数据不会消
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="RPC"><a href="#RPC" class="headerlink" title="RPC"></a>RPC</h1><h2 id="相关概念"><a href="#相关概念" class="headerlink" title="相关概念"></a>相关概念</h2><h3 id="什么叫RPC？"><a href="#什么叫RPC？" class="headerlink" title="什么叫RPC？"></a>什么叫RPC？</h3><p>RPC全称是Remote Procedure Call，即远程服务调用:两台服务器A、B，一个部署在A服务器上，<br>想要调用B服务器上的提供的函数/方法，由于不在不同的服务器上，需要通过网络来传数据<br>从而实现调用。<br>RPC不是一种协议，而是一种概念或方法。RPC就是要像调用本地函数一样去调用远程函数</p>
-<h3 id="为什么要用RPC？"><a href="#为什么要用RPC？" class="headerlink" title="为什么要用RPC？"></a>为什么要用RPC？</h3><p>RPC的主要目标是让构建的分布式计算应用更容易、更透明，让使用者不必显式的区分<br>本地调用和远程调用。</p>
-<h3 id="RPC-远程过程调用-带来的问题？"><a href="#RPC-远程过程调用-带来的问题？" class="headerlink" title="RPC(远程过程调用)带来的问题？"></a>RPC(远程过程调用)带来的问题？</h3><p>在远程调用时，需要执行的函数体是在远程的机器上的，这几带来几个问题：</p>
-<ol>
-<li>Call ID 映射<br> 怎么告知远程机器(服务端)哪一个才是需要被调用的函数(寻址问题)?</li>
+          <h1 id="网路编程"><a href="#网路编程" class="headerlink" title="网路编程"></a>网路编程</h1><ol>
+<li><p><font color="#dd00dd">IO多路复用技术 区别？ </font></p>
+</li>
+<li><p>epoll水平触发和边缘触发的区别</p>
+</li>
+<li><p>时间处理模式reactor和proreactor的区别</p>
+</li>
+<li><p> IO多路复用怎么实现，服务端怎么处理，写一下整个过程（类似伪代码之类的吧）</p>
+</li>
+<li><p><font color="#dd00000">select，poll，epoll的区别是什么？ </font></p>
+</li>
+<li><p>epoll的实现方式哪两种？讲一讲对Epoll的理解？ [epoll的实现]</p>
+<blockquote>
+<p>水平触发LT和边缘触发ET<br>ET模式必须是非阻塞IO吗，为什么?</p>
+</blockquote>
+</li>
+<li><p>说一下Linux的零拷贝？</p>
+</li>
+<li><p><font color="#00dddd">s客户端向服务端发送数据，服务端没有收到。如何检测？</font></p>
+</li>
+<li><p>socket的阻塞和非阻塞</p>
+</li>
+<li><p>什么是僵尸进程？什么是孤儿进程？</p>
+</li>
 </ol>
-<blockquote>
-<p>在本地调用中，函数体是通过函数指针来指定的，调用某个函数比如add()，是<br>直接通过<strong>函数指针</strong>来指定的，具体由编译器实现，编译器自动调用相应的函数指针。</p>
-</blockquote>
-<blockquote>
-<p>远程调用时，是在不同的机器上，不同直接使用函数指针,因此在不同的机器上上，<br>两个进程的地址空间是有可能不一样的。<br>因此，在 RPC 中，每个函数拥有一个ID，这个ID在所有进程中是唯一的，<br>在远程过程调用时，附带上这个ID。同时，在客户端和服务端分别维护一个 {函数 &lt;–&gt; Call ID}<br>对应表，两者的表可以不同，但是相同的函数对应的ID必须时相同的。<br>当客户端需要进行远程调用时，查询该表，获取相应函数的ID，然后将其传给服务端<br>服务端通过ID查询该表，来确定客户端需要调用的函数，然后执行相应的代码。</p>
-</blockquote>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/01/21/%E5%88%B7%E9%A2%98/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/teemo.png">
+      <meta itemprop="name" content="Han Cheng">
+      <meta itemprop="description" content="记录平日所学">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Teemo-Tristana">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/01/21/%E5%88%B7%E9%A2%98/" class="post-title-link" itemprop="url">未命名</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-01-21 18:05:11" itemprop="dateCreated datePublished" datetime="2021-01-21T18:05:11+08:00">2021-01-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-01-22 15:39:58" itemprop="dateModified" datetime="2021-01-22T15:39:58+08:00">2021-01-22</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="刷题："><a href="#刷题：" class="headerlink" title="刷题："></a>刷题：</h1><ol>
+<li><p>LC4</p>
+</li>
+<li><p>LC136</p>
+</li>
+<li><p>两个栈实现一个队列</p>
+</li>
+<li><p>在不知道头节点的情况下删除某个节点</p>
+</li>
+<li><p>奇偶链表</p>
+</li>
+<li><p>二叉搜索树找到第K大的节点，不能转存</p>
+</li>
+<li><p>接雨水</p>
+</li>
+<li><p>rand35()实现rand47()</p>
+</li>
+<li><p>两个链表相加</p>
+</li>
+<li><p>数组循环移动K位</p>
+</li>
+<li><p>最长无重复子串</p>
+</li>
+<li><p>K个一组反转链表</p>
+</li>
+<li><p>二叉搜索树</p>
+</li>
+<li><p>回形矩阵</p>
+</li>
+<li><p>广告位概率问题</p>
+</li>
+<li><p>实现小顶堆</p>
+</li>
+<li><p>leetcode237</p>
+</li>
+<li><p>统计1~n中每个数二进制下1的个数</p>
+</li>
+<li><p>如何找一个链表里第2/3大的数</p>
+</li>
+<li><p>如何在数据流中维护第2/3大的数，大根堆+小根堆</p>
+</li>
+<li><p>20亿个数排序</p>
+</li>
+<li><p>实现链表的快速排序</p>
+</li>
+<li><p>每隔m个进行链表反转。</p>
+</li>
+<li><p>最长公共子序列</p>
+</li>
+<li><p>反转链表实现一下(一种双指针，一种用递归)</p>
+</li>
+<li><p><font color="#00dd00">leetcode 146[实现LRU(哈希表+双向链)]</font></p>
+</li>
+<li><p>二叉树的先序遍历(递归、迭代)</p>
+</li>
+<li><p>求一个数字的比它大的最小数字 （要求相邻两位数字不相等）<br>如1120 -&gt; 1201, 19925-&gt;20101</p>
+</li>
+<li><p>NC15 二叉树的层序遍历</p>
+</li>
+<li><p>有序数组查找所有和为目标的二元组</p>
+</li>
+<li><p>手撕删除(查找)链表倒数第k个节点</p>
+</li>
+<li><p>链表合并（简单）节点和链表数据结构+合并</p>
+</li>
+<li><p>实现map（只写了增删和下标运算符重载），采用哈希表进行实现，用的链表的数据结构</p>
+</li>
+<li><p>输入123456输出十二万三千四百五十六</p>
+</li>
+<li><p>给一段序列,a[i] 为当前人的身高, 能向左看右看比他高的人 和 第一个比他矮的(递减序列看不到), 问每个人都能最大看到的人数是几个?<br>解决思路:单调栈遍历,向左能看多少人写一个单调递减栈,向右能看多少人,倒序遍历,单调递减栈</p>
+</li>
+<li><p>随机数生成函数互相转换</p>
+</li>
+<li><p>不均匀硬币变成等概率</p>
+</li>
+<li><p>连续最大子数组和（会，但是描述的不好）</p>
+</li>
+<li><p>快排相关 </p>
+</li>
+<li><p>leetcode64最短路径和   </p>
+</li>
+<li><p>100亿个数中找最大的5万个数？</p>
+</li>
+<li><p>海量数据中如何找出频率最高的5个数</p>
+</li>
+<li><p>设计并实现整数转字符串函数 char * itoa ( int value, char * str, int base ); base表示转换的进制，如17进制</p>
+</li>
+<li><p>给定uint32_t A[n] (1&lt;n)，求max(A[i] &amp; A[j]),其中i != j</p>
+</li>
+<li><p>超过100亿的无序可重复的unsigned int，给定4G的内存，如果找到中位数？</p>
+</li>
+<li><p>定n个样本文件（每个文件从书籍、报刊等提取），平均长度为k个字节。根据给定的样本，给出判断一个输入的数据串是否为随机串的算法。</p>
+</li>
+<li><p>实现大小写无关的C字符串比较<br>int strcasecmp(const char *s1, const char *s2);</p>
+</li>
+<li></li>
+</ol>
+<h2 id="实现类："><a href="#实现类：" class="headerlink" title="实现类："></a>实现类：</h2><ol>
+<li>简单实现string类，实现  带参构造函数，拷贝构造函数，析构函数，‘=’运算符重载函数。（面试官坐着看我手撕代码，确实挺紧张的，还好很快写出来了）</li>
+</ol>
+<p>代码中给指针分配的空间的时候用了new关键字，面试官问如果new失败了怎么办？什么情况下会new失败？失败之后会抛出异常吗？（抛出异常这个我真不知道，就说不清楚）</p>
 <ol start="2">
-<li>序列化与反序列化(XML/JSON/二进制)<br>客户端怎么把参数值传给远程的函数?</li>
+<li>简单实现智能指针类</li>
+<li>手写strcpy，memcpy，strcat，strcmp等函数</li>
 </ol>
-<blockquote>
-<p>在本地调用中，通常是将参数压栈，然后被函数进行读取(弹栈)即可(本地函数调用<br>时，不一定使用栈，编译器可以进行优化，比如使用寄存器或将函数进行内联(inline))。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/01/21/%E6%95%B0%E6%8D%AE%E5%BA%93/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/teemo.png">
+      <meta itemprop="name" content="Han Cheng">
+      <meta itemprop="description" content="记录平日所学">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Teemo-Tristana">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/01/21/%E6%95%B0%E6%8D%AE%E5%BA%93/" class="post-title-link" itemprop="url">未命名</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-01-21 18:05:11 / 修改时间：17:55:27" itemprop="dateCreated datePublished" datetime="2021-01-21T18:05:11+08:00">2021-01-21</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="数据库"><a href="#数据库" class="headerlink" title="数据库"></a>数据库</h1><h2 id="MySQL"><a href="#MySQL" class="headerlink" title="MySQL"></a>MySQL</h2><ol start="0">
+<li>mysql的引擎（全部都问</li>
+<li>介绍一下数据库的mysql的引擎[主要是MyISMDB、InnoDB],有什么区别</li>
+<li>Mysql和Myisam使用select * 查询的过程的区别（MyIsam是非聚集索引）</li>
+<li>Mysql使用索引查询和不使用索引查询的查询流程，效率差多少（B+树）</li>
+<li>数据库的索引如何加速查询过程，为什么不用红黑树</li>
+<li>MySQL主从同步方式，强同步</li>
+<li>mysql主从模式</li>
+<li>mysql的sql命令了解么，left join和right join的区别</li>
+<li>mysql的索引，底层实现</li>
+<li>join、left join、right join</li>
+<li><font color="#00dddd">隔离级别与特点</font><blockquote>
+<p>（脏读，不可重复读 ，幻读）<br>事务的特征</p>
 </blockquote>
-<blockquote>
-<p>远程过程调用时，客户端和服务端时不同的进程，是不能通过内存来传递参数的，<br>甚至客户端和服务端使用都不是同一种编程语言。<br>因此，通常采用的方法是将客户端的参数转为字节流(序列化)，然后传递给服务端后，<br>再把字节流转为它能读取的格式(反序列化)，也即是序列化和反序列化。同理，<br>服务端的返回值也会有序列化与反序列化的过程。</p>
+</li>
+<li>B树和B+树的区别</li>
+<li>ACID</li>
+<li>mysql 几种索引,事务</li>
+<li>mysql 事务隔离级别,</li>
+<li>索引优化,查询优化</li>
+<li>索引失效</li>
+<li>索引为什么用B+树,不用avl/ RB树</li>
+<li>说一下RB树和AVL区别</li>
+<li>聚簇索引/非聚簇,innodb和myisam用的哪个?好处?</li>
+<li>mvcc的实现原理</li>
+<li>知道几种锁,说一下  <blockquote>
+<p>乐观锁,悲观锁,行锁,表锁</p>
 </blockquote>
-<ol start="3">
-<li>网络传输<br>RPC(远程过程调用)通常通过网络将客户端和服务端连起来，两者之间的数据需要通过网络<br>参数；因此，就会需要用到一个网络传输层。</li>
+</li>
+<li>讲一讲对MySQL索引的理解。</li>
+<li>MySQL中主键索引和唯一索引的区别；</li>
+<li>innodb引擎中索引的底层数据结构；</li>
+<li>B树和B+树的区别；</li>
+<li>一亿个数据，找最大的一千个，应该怎样解决；</li>
+<li>Mysql性能如何，读写瓶颈是怎样的？缓存呢？</li>
+<li>Mysql常用的优化是怎样的？</li>
+<li>讲讲你见过什么情况索引设了但没用到</li>
+<li>讲讲Mysql分表吧，常用分表有哪些</li>
+<li>(我先讲了读写分离）Mysql主从同步靠什么？；</li>
 </ol>
+<h2 id="Redis"><a href="#Redis" class="headerlink" title="Redis"></a>Redis</h2><ol>
+<li><p>Redis项目里用到了嘛，Redis一般可以干啥用</p>
+</li>
+<li><p>缓存常见的问题，缓存穿透该怎么办</p>
+</li>
+<li><p>Redis的hash字典数据结构是啥样的</p>
+</li>
+<li><p>Redis中用到了哪些数据结构；</p>
+</li>
+<li><p>用过Redis的备份吗；</p>
+</li>
+<li><p>你们的Redis是单机的还是集群的；</p>
+</li>
+<li><p>hash冲突的解决办法；</p>
+</li>
+<li><p>zset底层用的什么数据结构；</p>
+</li>
+<li><ol>
+<li>edis集群有了解吗？</li>
+</ol>
+</li>
+<li><p>Redis的索引是怎么实现的？</p>
+</li>
+<li><p>Redis过期策略是咋样的？</p>
+</li>
+<li><p>Redis主从同步呢</p>
+</li>
+<li><p>Redis的数据结构有哪些？内部编码是什么？选择不同内部编码的原因是什么？</p>
+</li>
+<li><p>讲讲RDB和AOF吧，AOF怎么保证数据处理的没问题？如果同步的时候挂了丢了数据咋办？</p>
+</li>
+<li><p>高并发框架？怎么削峰？</p>
+</li>
+<li><p>对Redis有什么了解，缓存哪些文件，落地策略，单机高并发</p>
+</li>
+<li><p>Redis如何保证高并发和高可用</p>
+</li>
+<li><p>(Hash表提了红黑树)讲讲红黑树吧，Mysql索引底层啥数据结构（B+树），为啥没用红黑树？</p>
+</li>
+<li><p>(我说B+树非叶子结点只存索引，三层树高能存千万级别数据，我说三次IO就能读到最后的数据）同样情况下红黑树要几次IO？</p>
+</li>
+<li><p>redis看过源码吗，内部数据结构讲一下？</p>
+</li>
+<li><p>redis持久化的手段</p>
+</li>
+<li><p>Redis用过吗？什么场景下会用redis？说说对redis内部实现的了解？</p>
+</li>
+<li><p>redis缓存击穿，就是redis里面的key失效了，然后又有很多请求过来造成DB崩掉，怎么解决</p>
+</li>
+<li><p>Redis数据类型？</p>
+</li>
+<li><p>Redis为什么这么快？</p>
+</li>
+<li><p>Redis两种持久化方式？</p>
+</li>
+<li><p>高并发框架？怎么削峰？</p>
+</li>
+<li><p>对Redis有什么了解，缓存哪些文件，落地策略，单机高并发</p>
+</li>
+<li><p>Redis如何保证高并发和高可用</p>
+</li>
+<li><p>redis集群方式</p>
+</li>
+<li><p>redis主从复制的过程</p>
+</li>
+<li><p>如果从服务器某一时刻宕机，重启时同步主服务器的数据过程是怎样的</p>
+</li>
+<li><p><font color="#dd00dd">Redis 源码阅读</font></p>
+</li>
+<li><p>请你回答一下hash表如何rehash，以及怎么处理其中保存的资源？</p>
+</li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/01/21/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/teemo.png">
+      <meta itemprop="name" content="Han Cheng">
+      <meta itemprop="description" content="记录平日所学">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Teemo-Tristana">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/01/21/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" class="post-title-link" itemprop="url">未命名</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-01-21 18:05:11" itemprop="dateCreated datePublished" datetime="2021-01-21T18:05:11+08:00">2021-01-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-01-22 15:27:28" itemprop="dateModified" datetime="2021-01-22T15:27:28+08:00">2021-01-22</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="数据结构"><a href="#数据结构" class="headerlink" title="数据结构"></a>数据结构</h1><ol>
+<li>排序算法有哪些[时间/空间复杂度]<blockquote>
+<p>快排的思想，时间复杂度如何计算，空间复杂度是多少</p>
+</blockquote>
+</li>
+<li>说一下红黑树</li>
+<li>手撕快排</li>
+<li>数组与链表的区别</li>
+<li>了解过哪些树结构？二叉树、B+树、红黑树[红黑树的旋转怎么实现]<blockquote>
+<p>二叉树：红黑树，平衡二叉树（问的比较细，时间复杂度，特征）</p>
+</blockquote>
+</li>
+<li>各种树成为链表的情况</li>
+<li>链表的时间复杂度</li>
+<li>顺序表的两种实现在内存上的区别</li>
+<li>B树和B+树的区别和应用场景</li>
+<li>说说布隆过滤器</li>
+<li>什么是稳定排序，快排稳定吗？怎么实现稳定快排</li>
+</ol>
+<ol start="12">
+<li>Hash表<a target="_blank" rel="noopener" href="https://blog.csdn.net/shanghairuoxiao/article/details/73693458">连接</a><ul>
+<li>Hash表实现（拉链和分散地址）</li>
+<li>Hash策略常见的有哪些？</li>
+<li>STL中hash_map扩容发生什么？ <ul>
+<li>创建一个新桶，该桶是原来桶两倍大最接近的质数(判断n是不是质数的方法：用n除2到sqrt(n)范围内的数) ；</li>
+<li>将原来桶里的数通过指针的转换，插入到新桶中(注意STL这里做的很精细，没有直接将数据从旧桶遍历拷贝数据插入到新桶，而是通过指针转换) </li>
+<li>通过swap函数将新桶和旧桶交换，销毁新桶。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/01/21/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/teemo.png">
+      <meta itemprop="name" content="Han Cheng">
+      <meta itemprop="description" content="记录平日所学">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Teemo-Tristana">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/01/21/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" class="post-title-link" itemprop="url">未命名</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-01-21 18:05:11 / 修改时间：17:53:35" itemprop="dateCreated datePublished" datetime="2021-01-21T18:05:11+08:00">2021-01-21</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="计算机网路"><a href="#计算机网路" class="headerlink" title="计算机网路"></a>计算机网路</h1><h2 id="协议"><a href="#协议" class="headerlink" title="协议"></a>协议</h2><pre><code>OSI七层协议，为什么要对协议进行分层？每层有哪些协议？
+TCP和UDP的区别？为什么TCP是可靠的？</code></pre>
+<h2 id="TCP-与-UDP"><a href="#TCP-与-UDP" class="headerlink" title="TCP 与 UDP"></a>TCP 与 UDP</h2><ol start="0">
+<li><p><font color="dd00dd">TCP如何实现可靠传输？ </font></p>
+</li>
+<li><p>TCP为什么要三次握手，四次挥手，time_wait有什么用，为什么需要，一般多长时间，在很多人同时访问时，time_wait会带来什么问题，画图</p>
 <blockquote>
-<p>网络传输层的功能是将Call ID 和序列化后的参数的通过网络层传给服务端，服务端执行后<br>在将结果序列化并传给客户端。只要能实现这个功能的，就可以作为传输层使用。</p>
+<p>tcp的三次握手，client端如果不会ack会怎么样啊？<br>那如果大量的发syn会怎样呢</p>
+</blockquote>
+</li>
+<li><p>为什么三次握手，两次握手行不行(TCP三次握手 为什么要3次)？</p>
+</li>
+<li><p>把TCP的头部写出来看看</p>
+</li>
+<li><p>TCP为什么要有确认号</p>
+</li>
+<li><p>TCP中有一个包丢了怎么重发，接收端失序的包放在哪里</p>
+</li>
+<li><p>介绍一下拥塞控制算法？如果检测网络中出现拥塞？</p>
+</li>
+<li><p>如果服务器接受连接时负载过大，如何进行流量控制？</p>
+</li>
+<li><p><font color="dd00dd">TCP 流量控制、拥塞控制？ </font></p>
+<blockquote>
+<p><font color="00dd00">慢启动，拥塞避免，快重传，快恢复 </font><br>TCP怎么保证报文的顺序<a href="%E5%BA%8F%E5%88%97%E5%8F%B7seq,ack">tcp的可靠性实现tcp三次握手</a><br>滑动窗口<br>确认机制<br>重传机制</p>
+</blockquote>
+</li>
+<li><p><font color="dd00dd">TCP建立三次握手的过程，为什么初始化序列号要随机取，从0开始会出现什么问题</font></p>
+<ol>
+<li><font color="00ddd"> tcp半连接队列 ?</font></li>
+<li>SYNflood以及解决方法</li>
+</ol>
+</li>
+<li><p>TIME_WAIT是什么？为什么要2倍timewait?</p>
+</li>
+<li><p>close_wait出现的原因?怎么解决？TIME_WAIT？</p>
+</li>
+<li><p><font color="dd0000">TCP可靠性的原因是什么？ </font></p>
+</li>
+<li><p>socket通信可以发1K的UDP数据包吗？TCP可以吗？</p>
+</li>
+<li><p>讲下TCP断开链接的过程？然后我讲了四次握手，后续追问TCP四次握手在哪一步骤真正断开了链接呢？</p>
+</li>
+<li><p>tcp粘包了解嘛？为什么会粘包？拆包和粘包问题怎么解决？</p>
+</li>
+<li><p>如何统计time_wait的次数</p>
+</li>
+<li><p>CLOSED_WAIT出现在主动端还是被动端？大量CLOSED_WAIT会是什么原因？</p>
+</li>
+<li><p>TCP与UDP的区别</p>
+</li>
+<li><p>设计reliable UDP</p>
+</li>
+<li><p>udp报文最大发送大小</p>
+</li>
+<li><p>解释一下TCP/UDP的异同？（有无连接、可靠性、速度等方面来对比分析）？</p>
+</li>
+<li><p>TCP和UDP包的大小？怎样理解TCP是一种流式协议？</p>
+</li>
+<li><p><font color="dd0000">为什么音频或者视频通话要用UDP协议？ </font></p>
+</li>
+</ol>
+<h2 id="IP"><a href="#IP" class="headerlink" title="IP"></a>IP</h2><ol>
+<li>如果有一个包1M，怎么分片</li>
+</ol>
+<h2 id="http"><a href="#http" class="headerlink" title="http"></a>http</h2><ol>
+<li> 浏览器输入URL之后的所有过程，客户端怎么处理，服务端怎么处理<a href="%E5%9C%A8%E6%B5%8F%E8%A7%88%E5%99%A8%E8%BE%93%E5%85%A5www.qq.com%EF%BC%8C%E4%BC%9A%E6%89%93%E5%BC%80%E8%85%BE%E8%AE%AF%E7%9A%84%E9%A6%96%E9%A1%B5%EF%BC%8C%E5%9C%A8%E8%BF%99%E4%B8%AA%E6%93%8D%E4%BD%9C%E4%B8%AD%E7%94%A8%E4%BA%86%E4%BB%80%E4%B9%88%E5%8D%8F%E8%AE%AE%E5%91%A2%EF%BC%9F%E7%BB%8F%E8%BF%87%E4%BA%86%E5%93%AA%E4%BA%9B%E6%AD%A5%E9%AA%A4%E5%91%A2%EF%BC%9F">example</a></li>
+<li><font color="00dd00">服务端怎么解析http请求 </font></li>
+<li>服务端在处理http请求的时候会有什么问题，怎么解决</li>
+<li>服务端怎么同时处理多个请求</li>
+<li>为了进一步提高并发量，客户端可以怎么做，服务端可以怎么做</li>
+<li>为了保证通信之间的安全要怎么做（https）</li>
+<li><font color="00dd00">https的TLS握手过程 </font><blockquote>
+<p><font color="00dddd"> ssl的过程 </font></p>
+</blockquote>
+</li>
+<li>https会不会出现中间人攻击</li>
+<li>为了加速磁盘的存取速度，一般会使用缓存，缓存要使用什么数据结构才能保证效率最高（LRU）</li>
+<li>LRU怎么实现的，要用什么数据结构</li>
+<li>https的具体过程 or 简述一下http的过程</li>
+<li>HTTP的结构、HTTP的版本、http和https的区别？<blockquote>
+<p><font color="00dddd">对称加密与非对称加密 </font></p>
+</blockquote>
+</li>
+<li>http2.0知道吗？</li>
+<li>正向代理和反向代理知道吗？</li>
+<li>nginx的配置做过吗？</li>
+<li>http请求方法有哪些，有什么区别</li>
+<li>get post的区别</li>
+<li>http的应答码有什么</li>
+</ol>
+<h2 id="Other"><a href="#Other" class="headerlink" title="Other"></a>Other</h2><ol>
+<li>网络断开怎么感知，有没有处理，如果两个连接断开了但是没有数据交互怎么感知断开?</li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/01/21/%E5%B8%B8%E8%A7%81%E7%9F%A5%E8%AF%86%E7%82%B9/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/teemo.png">
+      <meta itemprop="name" content="Han Cheng">
+      <meta itemprop="description" content="记录平日所学">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Teemo-Tristana">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/01/21/%E5%B8%B8%E8%A7%81%E7%9F%A5%E8%AF%86%E7%82%B9/" class="post-title-link" itemprop="url">未命名</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-01-21 18:05:11 / 修改时间：17:56:30" itemprop="dateCreated datePublished" datetime="2021-01-21T18:05:11+08:00">2021-01-21</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="基础知识"><a href="#基础知识" class="headerlink" title="基础知识"></a>基础知识</h1><ol>
+<li>内存泄漏？</li>
+<li>软链接和硬链接的区别？</li>
+<li>从源代码到可执行文件的过程？</li>
+<li>程序运行的虚拟内存划分？</li>
+<li>单例模式</li>
+<li>懒汉饿汉线程安全</li>
+<li>说一下new 4G的过程,会不会实际分配,32G电脑new 128G呢,</li>
+<li>32位电脑内核空间和用户空间?64位呢?</li>
+<li>服务器IO延时高怎么排查？</li>
+<li>服务器CPU高怎么排查？可能有什么原因？</li>
+<li>服务配置多少线程比较合适？</li>
+<li>内存溢出</li>
+<li>如何调试段错误</li>
+<li>多线程中，为什么要用共享内存进行通信？在堆上自己申请的空间和共享内存有什么区别？二者的使用场景有哪些？（这个扯了一堆我对共享内存的理解？</li>
+</ol>
+<h1 id="Other"><a href="#Other" class="headerlink" title="Other"></a>Other</h1><ol>
+<li>将一个文件从内存中写入磁盘，设计一种数据结构来加速这个过程（应该是LSM树）</li>
+<li>给微信朋友圈设计一个表的结构来存储，怎么查询某一条朋友圈</li>
+<li>负载均衡的算法</li>
+<li>40亿个QQ号存储QQ状态<blockquote>
+<p>用到了bitmap<a target="_blank" rel="noopener" href="https://www.sohu.com/a/300039010_114877">参考1</a><br> <a target="_blank" rel="noopener" href="https://www.cnblogs.com/cjsblog/p/11613708.html">参考2</a></p>
+</blockquote>
+</li>
+</ol>
+<ol start="5">
+<li><p>根据王者荣耀段位（青铜，白银，etc.，每个段位人数非常庞大），设计一个系统，每个段位显示前1000名,每个人可以查看自己的排名</p>
+</li>
+<li><p>设计一个微博功能：给你的1000w粉丝推送消息（发布-订阅模式+分批推送）</p>
+</li>
+<li><p>给你两篇文章，怎么计算两篇文章的相似度？</p>
+</li>
+<li><p>分布式系统id生成器，如何保证生成的id不相同并且使递增的</p>
+</li>
+</ol>
+<h1 id="git"><a href="#git" class="headerlink" title="git"></a>git</h1><ol>
+<li>git中Merge和rebase区</li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/01/21/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/teemo.png">
+      <meta itemprop="name" content="Han Cheng">
+      <meta itemprop="description" content="记录平日所学">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Teemo-Tristana">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/01/21/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" class="post-title-link" itemprop="url">未命名</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-01-21 18:05:11 / 修改时间：17:54:25" itemprop="dateCreated datePublished" datetime="2021-01-21T18:05:11+08:00">2021-01-21</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="操作系统"><a href="#操作系统" class="headerlink" title="操作系统"></a>操作系统</h1><ol>
+<li><p>内核态和用户态的区别？说说你的理解？</p>
+</li>
+<li><p>什么情况下会从用户态到内核态( 系统调用，外设中断，异常）用户态到内核态的堆栈切换？</p>
+</li>
+<li><p><font color="#dd00000">进程同步与通信的方法 </font></p>
+<ul>
+<li><p><font color="#00dd000">管道PIPE </font>: 管道又可以分为无名管道和有名管道；我们常说的管道默认是指无名管道。</p>
+<blockquote>
+<p>无名管道(pipe) 只能用于具有亲属关系的进程之间[匿名管道]。</p>
+<blockquote>
+<p>匿名管道本质上由 <font color="#00dd000">内核 </font> 管理的一块缓冲区，本质是一个文件[Linux下一切皆文件]，但是该文件<font color="#00dddd">没有名字</font>, 位于 <font color="#dd0000">内存 </font>中<br>只能用于具有亲属关系的进程之间[由于是无名的，对外进程不知道，因而只能用于亲属间进程]</p>
+</blockquote>
+</blockquote>
+<ul>
+<li><p>有名管道(fifo) 可用任意两个进程间通信,可以通过 mkfifo()来创建,,位于 <font color="#dd0000">文件系统</font>[磁盘]中。</p>
+</li>
+<li><p><font color="#00dd00">无名管道(pipe)和 有名fifo 的区别 </font>?</p>
+<ol>
+<li>匿名管道只能用于具有亲缘关系的进程间通信，而命名管道可以用于任意两个进程间通<a href="%E5%8C%BF%E5%90%8D%E7%AE%A1%E9%81%93%E6%B2%A1%E6%9C%89%E5%90%8D%E5%AD%97%EF%BC%8C%E4%B8%80%E8%88%AC%E8%BF%9B%E7%A8%8B%E8%AE%BF%E9%97%AE%E5%AE%83%E6%97%B6%EF%BC%8C%E4%B8%8D%E7%9F%A5%E9%81%93%E8%AF%A5%E8%AE%BF%E9%97%AE%E9%82%A3%E4%B8%80%E5%9D%97%E5%86%85%E5%AD%98,%E8%8B%A5%E4%B8%A4%E8%BF%9B%E7%A8%8B%E4%B9%8B%E9%97%B4%E7%94%B1%E4%BA%B2%E7%BC%98%E5%85%B3%E7%B3%BB,%E6%AF%94%E5%A6%82%E6%98%AF%E7%88%B6%E5%AD%90%E5%85%B3%E7%B3%BB,%E9%80%9A%E8%BF%87PCB%5B%E8%BF%9B%E7%A8%8B%E6%8E%A7%E5%88%B6%E5%9D%97%5D(task_struct(PCB))%E5%B0%B1%E5%8F%AF%E4%BB%A5%E8%8E%B7%E5%8F%96%E7%9B%B8%E5%85%B3%E4%BF%A1%E6%81%AF,%E4%BB%8E%E8%80%8C%E5%AE%8C%E6%88%90%E8%AE%BF%E9%97%AE%E3%80%82%E5%91%BD%E5%90%8D%E7%AE%A1%E9%81%93%E5%88%99%E5%8F%AF%E4%BB%A5%E9%80%9A%E8%BF%87%E7%AE%A1%E9%81%93%E7%9A%84%E5%90%8D%E5%AD%97%E7%9B%B4%E6%8E%A5%E8%BF%9B%E7%A8%8B%E8%AE%BF%E9%97%AE%E3%80%82">原因</a></li>
+<li>匿名管道只存在于 <font color="#dd0000">内存 </font>中，而命名管道是一种特殊的文件系统，存在于 <font color="#dd0000">文件系统 </font>(磁盘)中</li>
+</ol>
+</li>
+</ul>
+</li>
+<li><p>消息队列</p>
+</li>
+<li><p>共享内存</p>
+</li>
+<li><p><font color="#00dd000">Socket </font>: </p>
+<ul>
+<li>socket 一般用于网络进程间的通信</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<ol start="4">
+<li><font color="#dd00000">线程同步与通信的方法 </font></li>
+<li><font color="#dd00000">虚拟地址和物理地址 </font><blockquote>
+<p>说一下页缓存</p>
+</blockquote>
+</li>
+<li>进程、线程、协程的区别，分配给进程的资源是什么？协程，什么时候用到过，协程与线程的区别，协程什么时候释放CPU？<blockquote>
+<p>进程切换和线程切换分别有什么开销呢?</p>
+</blockquote>
+</li>
+<li>进程空间</li>
+<li>线程之间共享哪些资源</li>
+<li>多进程和多线程了解吗？</li>
+<li>多线程变量共享怎么操作</li>
+<li>线程之间的同步方式，自旋锁和可重入锁的区别，什么时候使用</li>
+<li>静态库、动态库</li>
+<li>并发和并行的区别？</li>
+<li>说一说字节序吗？字节序如何转化？</li>
+<li>节对齐是什么？为什么要进行字节对齐？什么因素会影响字节对齐呢？可以让字节以1对齐么？</li>
+<li>说一下操作系统内存管</li>
+<li><font color="#dd0000"> 操作系统的虚拟内存是什么? 虚拟内存的结构 </font><blockquote>
+<p>缺页对换机制<br>物理地址转换</p>
+</blockquote>
+</li>
+<li>操作系统的写时复制了解嘛?</li>
+<li>临界区</li>
+<li>锁（普通锁和读写锁的区别）</li>
+<li>互斥量能不能在进程中使用（不会）</li>
+</ol>
+<ol start="21">
+<li><font color="#dd00000">操作系统的进程调度算法？页面调度算法？ </font></li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/01/21/Note/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/teemo.png">
+      <meta itemprop="name" content="Han Cheng">
+      <meta itemprop="description" content="记录平日所学">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Teemo-Tristana">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/01/21/Note/" class="post-title-link" itemprop="url">未命名</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-01-21 18:05:11 / 修改时间：17:53:51" itemprop="dateCreated datePublished" datetime="2021-01-21T18:05:11+08:00">2021-01-21</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Ready-For-春招"><a href="#Ready-For-春招" class="headerlink" title="Ready For 春招"></a>Ready For 春招</h1><h2 id="简历"><a href="#简历" class="headerlink" title="简历"></a>简历</h2><blockquote>
+<p>要点: 教育经历、技术栈、项目经历、实习经历</p>
+<blockquote>
+<p>简明扼要、简历内最好和岗位匹配</p>
+</blockquote>
 </blockquote>
 <blockquote>
-<p>大部分RPC框架使用的是TCP协议，但UDP也是可以的，google的gRPC使用的是HTTP2.0。</p>
+<p>在项目中所作贡献、用到的技术<a href="%E9%9D%A2%E8%AF%95%E5%AE%98%E8%8B%A5%E6%98%AF%E8%AF%A5%E6%96%B9%E5%90%91%EF%BC%8C%E5%88%99%E5%BE%88%E6%9C%89%E5%8F%AF%E8%83%BD%E6%B7%B1%E5%85%A5%E9%97%AE%E9%97%AE%E9%A2%98">自己要熟悉</a></p>
+<blockquote>
+<p>比如简历上 TinyWeb 服务器项目: 该项目涉及到 <font color="#00dd00"> 网络编程、多线程、I/O多路复用</font>等方面知识<br>可能问题:</p>
+<blockquote>
+<p>该项目遇到的网络问题？<br>线程与进程？多(进)线程同步与通信？<br>I/O 复用是怎么实现的以及底层原理？</p>
 </blockquote>
-<p> <img src="https://teemo-tristana.github.io/images/RPC%E8%B0%83%E7%94%A8%E6%A8%A1%E5%9E%8B.jpg" alt="RPC调用过程模型"></p>
+</blockquote>
+</blockquote>
+<blockquote>
+<p>涉及到的知识点要做到 <font color="#dd0000">娴熟、游刃有余，了解原理和为什么这样做</font></p>
+</blockquote>
+<h2 id="基础知识"><a href="#基础知识" class="headerlink" title="基础知识"></a>基础知识</h2><h3 id="语言类知识-C-Golang"><a href="#语言类知识-C-Golang" class="headerlink" title="语言类知识(C++/Golang)"></a>语言类知识(C++/Golang)</h3><h4 id="C"><a href="#C" class="headerlink" title="C++"></a>C++</h4><blockquote>
+<p>对于C++，主要是是封装、继承、多态 、STL及其底层原理和实现和 新特性(C++11/C++14/C++17/C++20)</p>
+</blockquote>
+<h3 id="课程类知识"><a href="#课程类知识" class="headerlink" title="课程类知识"></a>课程类知识</h3><p>这些需要深入了解其概念、原理和为什么</p>
+<blockquote>
+<p>计算机网络<br>操作系统<br>数据库 </p>
+<blockquote>
+<p>MySQL<br>Redis</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<p>Linux 知识</p>
+</blockquote>
+<blockquote>
+<p>网络编程</p>
+</blockquote>
+<h2 id="刷题-LeetCode"><a href="#刷题-LeetCode" class="headerlink" title="刷题 LeetCode"></a>刷题 LeetCode</h2><blockquote>
+<p>不需要追求数量，但是一定要囊括所有可能用到的技术点，包括，数组类题目，树相关题目，链表相关题目，栈，队列，堆，动态规划，贪心，单调栈等等。</p>
+</blockquote>
+<h2 id="项目"><a href="#项目" class="headerlink" title="项目"></a>项目</h2><blockquote>
+<p>项目经历也是比较重要的一个部分，如果有比较好的项目经历，面试官就会提出偏向于项目相关的问题。</p>
+</blockquote>
+<blockquote>
+<p>即使没有很对口的项目，至少也要写上一些用到的技术点与求职方向比较相关的项目，比如我在找实习时，只有实验室一些小项目，也尽量在项目中标注出和后台相关的一些技术点，这样可以让面试官在面试的时候有相关的技术可以和你探讨。</p>
+</blockquote>
+<blockquote>
+<p><font color="#dd0000">项目可以巩固基础知识</font>，所以我在秋招前花了一部分时间在一个Web后台服务器项目上，基本上涵盖了网络编程，多线程编程，I/O多路复用，HTTP状态机以及reactor模型等等，另一方面该项目也比较易于理解，对于刚刚尝试C++后台开发的同学用处是非常大的。</p>
+</blockquote>
+<blockquote>
+<p>当然，看懂了原理之后必须自己实现一遍，只有真正实践了才知道其中会出现什么问题，有什么难点，这个在看别人写的项目时是没办法获取的，所以我也花了一段时间复现了Web服务器，并且进行了压力测试，还在项目上增加了其他的技术来提高并发。</p>
+</blockquote>
+<blockquote>
+<p>对于项目里，自己负责的部分的知识点要做到<font color="#00dd00">熟悉、信手拈来</font></p>
+</blockquote>
 
       
     </div>
@@ -1668,7 +1466,7 @@ goroutine 运行后，<font color="#dd00dd">写入缓冲通道的数据不会消
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/11/13/%E8%A7%A3%E5%AF%86Redis%E6%8C%81%E4%B9%85%E5%8C%96/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/01/21/Linux%E7%9B%B8%E5%85%B3/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/teemo.png">
@@ -1682,7 +1480,7 @@ goroutine 运行后，<font color="#dd00dd">写入缓冲通道的数据不会消
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2020/11/13/%E8%A7%A3%E5%AF%86Redis%E6%8C%81%E4%B9%85%E5%8C%96/" class="post-title-link" itemprop="url">解密Redis持久化</a>
+            <a href="/2021/01/21/Linux%E7%9B%B8%E5%85%B3/" class="post-title-link" itemprop="url">未命名</a>
         </h2>
 
         <div class="post-meta">
@@ -1691,16 +1489,10 @@ goroutine 运行后，<font color="#dd00dd">写入缓冲通道的数据不会消
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
+              
 
-              <time title="创建时间：2020-11-13 14:32:19" itemprop="dateCreated datePublished" datetime="2020-11-13T14:32:19+08:00">2020-11-13</time>
+              <time title="创建时间：2021-01-21 18:05:11 / 修改时间：17:54:59" itemprop="dateCreated datePublished" datetime="2021-01-21T18:05:11+08:00">2021-01-21</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-11-19 11:31:55" itemprop="dateModified" datetime="2020-11-19T11:31:55+08:00">2020-11-19</time>
-              </span>
 
           
 
@@ -1713,163 +1505,35 @@ goroutine 运行后，<font color="#dd00dd">写入缓冲通道的数据不会消
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="解密Redis持久化"><a href="#解密Redis持久化" class="headerlink" title="解密Redis持久化"></a>解密Redis持久化</h1><p>查看博客、论坛及推特上Redis相关问题也是我所做的Redis工作的一部分。对于开发者来说，关注社区和非社区用户对你开发的产品看法是很有必要的。从自身感受来说，在Redis的所有特性里面，Redis的持久化是被误解最深。</p>
-<p>在本篇博客中，我将尽可能公正、不偏不倚地阐述Redis的持久化：不吹不黑，不跳过可能导致陷入Redis困境的细节.尽量做到以清晰易懂的方式来阐述Redis的持久化工作原理,可靠性以及与其他数据库的对比。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/11/13/%E8%A7%A3%E5%AF%86Redis%E6%8C%81%E4%B9%85%E5%8C%96/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
+          <h1 id="Linux相关"><a href="#Linux相关" class="headerlink" title="Linux相关"></a>Linux相关</h1><ol>
+<li> Linux命令 awk，strace，gdb调试相关</li>
+<li>常用的一些命令 top free 文本处理命令 shell脚本</li>
+<li>linux如何查看进程流量/状态</li>
+<li>Linux知道哪些命令？</li>
+<li>查看cpu占用命令</li>
+<li>假如有一个端口占用100% CPU，怎么查看原因</li>
+<li>Linux下用什么工具排查问题呢？<blockquote>
+<p>主要用GDB，也会用Linux相关命令查询系统状态，比如netstat、tcpdump、free、df等</p>
+</blockquote>
+</li>
+<li>tcpdump命令</li>
+<li>程序中出现coredump问题该怎么解决</li>
+<li>Linux下怎么看计算机的资源，比如端口、进程？</li>
+<li>gdb了解么</li>
+<li>如何查看网络连接</li>
+<li>如何查看进程</li>
+<li>如何查看端口占用</li>
+<li>如何查看系统中的内存状态</li>
+<li>如果查看tcp连接的网络状态</li>
+<li><font color="#00dddd">top能查看什么？</font></li>
+<li>查看网络的命令？netstat怎么查看端口？</li>
+<li>了解Linux常用的命令有哪些？（拷贝、删除、移动、vi、ftp等等、查看共享内存……）</li>
+<li>了解top命令和free命令吗？说一下你记得的一些字段（自己很少用，就再没有问了）</li>
+<li>Linux常用的命令(说了ps,top,netstat,ifconfig等等) 问tcpdump用过吗(用过，抓包的)</li>
+<li>问linux命令，怎么判断一个服务存活?</li>
+<li>说ping，后面面试官才说ping是网络层的，只能判断一个ip是否可达，判断服务即进程可以用curl或者telnet</li>
+</ol>
 
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/11/13/Redis%E5%AD%A6%E4%B9%A003/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/teemo.png">
-      <meta itemprop="name" content="Han Cheng">
-      <meta itemprop="description" content="记录平日所学">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Teemo-Tristana">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/11/13/Redis%E5%AD%A6%E4%B9%A003/" class="post-title-link" itemprop="url">Redis持久化</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-11-13 09:03:10" itemprop="dateCreated datePublished" datetime="2020-11-13T09:03:10+08:00">2020-11-13</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-12-08 20:59:32" itemprop="dateModified" datetime="2020-12-08T20:59:32+08:00">2020-12-08</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="Redis持久化"><a href="#Redis持久化" class="headerlink" title="Redis持久化"></a>Redis持久化</h1><ul>
-<li>Redis是内存数据库，其数据保存在内存中，若不保存到磁盘，则一旦服务器宕机，则数据会丢失</li>
-<li>为了让这些数据在 Redis 重启之后仍然可用， Redis 分别提供了 RDB 和 AOF 两种持久化模式。</li></ul>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/11/13/Redis%E5%AD%A6%E4%B9%A003/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/11/03/Redis%E5%AD%A6%E4%B9%A002/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/teemo.png">
-      <meta itemprop="name" content="Han Cheng">
-      <meta itemprop="description" content="记录平日所学">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Teemo-Tristana">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/11/03/Redis%E5%AD%A6%E4%B9%A002/" class="post-title-link" itemprop="url">Redis学习02</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-11-03 10:34:41" itemprop="dateCreated datePublished" datetime="2020-11-03T10:34:41+08:00">2020-11-03</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-11-21 17:40:03" itemprop="dateModified" datetime="2020-11-21T17:40:03+08:00">2020-11-21</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="高性能IO模型：为什么单线程Redis能那么快？"><a href="#高性能IO模型：为什么单线程Redis能那么快？" class="headerlink" title="高性能IO模型：为什么单线程Redis能那么快？"></a>高性能IO模型：为什么单线程Redis能那么快？</h1><h2 id="Redis单线程"><a href="#Redis单线程" class="headerlink" title="Redis单线程"></a>Redis单线程</h2><ul>
-<li>通常所说 Redis 的单线程，主要是指 <font color="#00dd0">Redis的网路IO和键值对的读写是由一个线程来完成的</font>。但是Redis的其他功能比如持久化、异步删除、集群数据同步等，其实是用了额外线程来完成的，</li></ul>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/11/03/Redis%E5%AD%A6%E4%B9%A002/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
       
     </div>
 
@@ -1887,7 +1551,7 @@ goroutine 运行后，<font color="#dd00dd">写入缓冲通道的数据不会消
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -1955,7 +1619,7 @@ goroutine 运行后，<font color="#dd00dd">写入缓冲通道的数据不会消
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">21</span>
+          <span class="site-state-item-count">31</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1987,7 +1651,7 @@ goroutine 运行后，<font color="#dd00dd">写入缓冲通道的数据不会消
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2020</span>
+  <span itemprop="copyrightYear">2021</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

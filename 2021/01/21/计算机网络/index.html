@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="计算机网路协议OSI七层协议，为什么要对协议进行分层？每层有哪些协议？ TCP和UDP的区别？为什么TCP是可靠的？ TCP 与 UDP TCP如何实现可靠传输？   TCP为什么要三次握手，四次挥手，time_wait有什么用，为什么需要，一般多长时间，在很多人同时访问时，time_wait会带来什么问题，画图  tcp的三次握手，client端如果不会ack会怎么样啊？那如果大量的发syn会怎">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Teemo-Tristana">
+<meta property="og:url" content="http://example.com/2021/01/21/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/index.html">
+<meta property="og:site_name" content="Teemo-Tristana">
+<meta property="og:description" content="计算机网路协议OSI七层协议，为什么要对协议进行分层？每层有哪些协议？ TCP和UDP的区别？为什么TCP是可靠的？ TCP 与 UDP TCP如何实现可靠传输？   TCP为什么要三次握手，四次挥手，time_wait有什么用，为什么需要，一般多长时间，在很多人同时访问时，time_wait会带来什么问题，画图  tcp的三次握手，client端如果不会ack会怎么样啊？那如果大量的发syn会怎">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-01-21T10:05:11.605Z">
+<meta property="article:modified_time" content="2021-01-21T09:53:35.435Z">
+<meta property="article:author" content="Han Cheng">
+<meta property="article:tag" content="C++,python，图像处理">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2021/01/21/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title> | Teemo-Tristana</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Teemo-Tristana</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">每日进步一点</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="user fa-fw"></i>关于</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/01/21/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/teemo.png">
+      <meta itemprop="name" content="Han Cheng">
+      <meta itemprop="description" content="记录平日所学">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Teemo-Tristana">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-01-21 18:05:11 / 修改时间：17:53:35" itemprop="dateCreated datePublished" datetime="2021-01-21T18:05:11+08:00">2021-01-21</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="计算机网路"><a href="#计算机网路" class="headerlink" title="计算机网路"></a>计算机网路</h1><h2 id="协议"><a href="#协议" class="headerlink" title="协议"></a>协议</h2><pre><code>OSI七层协议，为什么要对协议进行分层？每层有哪些协议？
+TCP和UDP的区别？为什么TCP是可靠的？</code></pre>
+<h2 id="TCP-与-UDP"><a href="#TCP-与-UDP" class="headerlink" title="TCP 与 UDP"></a>TCP 与 UDP</h2><ol start="0">
+<li><p><font color="dd00dd">TCP如何实现可靠传输？ </font></p>
+</li>
+<li><p>TCP为什么要三次握手，四次挥手，time_wait有什么用，为什么需要，一般多长时间，在很多人同时访问时，time_wait会带来什么问题，画图</p>
+<blockquote>
+<p>tcp的三次握手，client端如果不会ack会怎么样啊？<br>那如果大量的发syn会怎样呢</p>
+</blockquote>
+</li>
+<li><p>为什么三次握手，两次握手行不行(TCP三次握手 为什么要3次)？</p>
+</li>
+<li><p>把TCP的头部写出来看看</p>
+</li>
+<li><p>TCP为什么要有确认号</p>
+</li>
+<li><p>TCP中有一个包丢了怎么重发，接收端失序的包放在哪里</p>
+</li>
+<li><p>介绍一下拥塞控制算法？如果检测网络中出现拥塞？</p>
+</li>
+<li><p>如果服务器接受连接时负载过大，如何进行流量控制？</p>
+</li>
+<li><p><font color="dd00dd">TCP 流量控制、拥塞控制？ </font></p>
+<blockquote>
+<p><font color="00dd00">慢启动，拥塞避免，快重传，快恢复 </font><br>TCP怎么保证报文的顺序<a href="%E5%BA%8F%E5%88%97%E5%8F%B7seq,ack">tcp的可靠性实现tcp三次握手</a><br>滑动窗口<br>确认机制<br>重传机制</p>
+</blockquote>
+</li>
+<li><p><font color="dd00dd">TCP建立三次握手的过程，为什么初始化序列号要随机取，从0开始会出现什么问题</font></p>
+<ol>
+<li><font color="00ddd"> tcp半连接队列 ?</font></li>
+<li>SYNflood以及解决方法</li>
+</ol>
+</li>
+<li><p>TIME_WAIT是什么？为什么要2倍timewait?</p>
+</li>
+<li><p>close_wait出现的原因?怎么解决？TIME_WAIT？</p>
+</li>
+<li><p><font color="dd0000">TCP可靠性的原因是什么？ </font></p>
+</li>
+<li><p>socket通信可以发1K的UDP数据包吗？TCP可以吗？</p>
+</li>
+<li><p>讲下TCP断开链接的过程？然后我讲了四次握手，后续追问TCP四次握手在哪一步骤真正断开了链接呢？</p>
+</li>
+<li><p>tcp粘包了解嘛？为什么会粘包？拆包和粘包问题怎么解决？</p>
+</li>
+<li><p>如何统计time_wait的次数</p>
+</li>
+<li><p>CLOSED_WAIT出现在主动端还是被动端？大量CLOSED_WAIT会是什么原因？</p>
+</li>
+<li><p>TCP与UDP的区别</p>
+</li>
+<li><p>设计reliable UDP</p>
+</li>
+<li><p>udp报文最大发送大小</p>
+</li>
+<li><p>解释一下TCP/UDP的异同？（有无连接、可靠性、速度等方面来对比分析）？</p>
+</li>
+<li><p>TCP和UDP包的大小？怎样理解TCP是一种流式协议？</p>
+</li>
+<li><p><font color="dd0000">为什么音频或者视频通话要用UDP协议？ </font></p>
+</li>
+</ol>
+<h2 id="IP"><a href="#IP" class="headerlink" title="IP"></a>IP</h2><ol>
+<li>如果有一个包1M，怎么分片</li>
+</ol>
+<h2 id="http"><a href="#http" class="headerlink" title="http"></a>http</h2><ol>
+<li> 浏览器输入URL之后的所有过程，客户端怎么处理，服务端怎么处理<a href="%E5%9C%A8%E6%B5%8F%E8%A7%88%E5%99%A8%E8%BE%93%E5%85%A5www.qq.com%EF%BC%8C%E4%BC%9A%E6%89%93%E5%BC%80%E8%85%BE%E8%AE%AF%E7%9A%84%E9%A6%96%E9%A1%B5%EF%BC%8C%E5%9C%A8%E8%BF%99%E4%B8%AA%E6%93%8D%E4%BD%9C%E4%B8%AD%E7%94%A8%E4%BA%86%E4%BB%80%E4%B9%88%E5%8D%8F%E8%AE%AE%E5%91%A2%EF%BC%9F%E7%BB%8F%E8%BF%87%E4%BA%86%E5%93%AA%E4%BA%9B%E6%AD%A5%E9%AA%A4%E5%91%A2%EF%BC%9F">example</a></li>
+<li><font color="00dd00">服务端怎么解析http请求 </font></li>
+<li>服务端在处理http请求的时候会有什么问题，怎么解决</li>
+<li>服务端怎么同时处理多个请求</li>
+<li>为了进一步提高并发量，客户端可以怎么做，服务端可以怎么做</li>
+<li>为了保证通信之间的安全要怎么做（https）</li>
+<li><font color="00dd00">https的TLS握手过程 </font><blockquote>
+<p><font color="00dddd"> ssl的过程 </font></p>
+</blockquote>
+</li>
+<li>https会不会出现中间人攻击</li>
+<li>为了加速磁盘的存取速度，一般会使用缓存，缓存要使用什么数据结构才能保证效率最高（LRU）</li>
+<li>LRU怎么实现的，要用什么数据结构</li>
+<li>https的具体过程 or 简述一下http的过程</li>
+<li>HTTP的结构、HTTP的版本、http和https的区别？<blockquote>
+<p><font color="00dddd">对称加密与非对称加密 </font></p>
+</blockquote>
+</li>
+<li>http2.0知道吗？</li>
+<li>正向代理和反向代理知道吗？</li>
+<li>nginx的配置做过吗？</li>
+<li>http请求方法有哪些，有什么区别</li>
+<li>get post的区别</li>
+<li>http的应答码有什么</li>
+</ol>
+<h2 id="Other"><a href="#Other" class="headerlink" title="Other"></a>Other</h2><ol>
+<li>网络断开怎么感知，有没有处理，如果两个连接断开了但是没有数据交互怎么感知断开?</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/01/21/%E5%B8%B8%E8%A7%81%E7%9F%A5%E8%AF%86%E7%82%B9/" rel="prev" title="">
+      <i class="fa fa-chevron-left"></i> 
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/01/21/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="next" title="">
+       <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E8%B7%AF"><span class="nav-number">1.</span> <span class="nav-text">计算机网路</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%8F%E8%AE%AE"><span class="nav-number">1.1.</span> <span class="nav-text">协议</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP-%E4%B8%8E-UDP"><span class="nav-number">1.2.</span> <span class="nav-text">TCP 与 UDP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#IP"><span class="nav-number">1.3.</span> <span class="nav-text">IP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#http"><span class="nav-number">1.4.</span> <span class="nav-text">http</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Other"><span class="nav-number">1.5.</span> <span class="nav-text">Other</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Han Cheng"
+      src="/images/teemo.png">
+  <p class="site-author-name" itemprop="name">Han Cheng</p>
+  <div class="site-description" itemprop="description">记录平日所学</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">31</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Han Cheng</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
