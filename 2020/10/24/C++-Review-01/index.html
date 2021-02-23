@@ -29,7 +29,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://teemo-tristana.github.io/images/malloc-new.png">
 <meta property="article:published_time" content="2020-10-24T15:26:17.000Z">
-<meta property="article:modified_time" content="2021-01-22T15:23:59.821Z">
+<meta property="article:modified_time" content="2021-02-23T03:13:54.239Z">
 <meta property="article:author" content="Han Cheng">
 <meta property="article:tag" content="C++">
 <meta name="twitter:card" content="summary">
@@ -199,7 +199,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-01-22 23:23:59" itemprop="dateModified" datetime="2021-01-22T23:23:59+08:00">2021-01-22</time>
+                <time title="修改时间：2021-02-23 11:13:54" itemprop="dateModified" datetime="2021-02-23T11:13:54+08:00">2021-02-23</time>
               </span>
 
           
@@ -295,7 +295,10 @@
 <h4 id="智能指针特征"><a href="#智能指针特征" class="headerlink" title="智能指针特征"></a>智能指针特征</h4><ul>
 <li><p><strong>智能指针(smart pointer)是模板类，是行为类似指针的类对象</strong>，用于生存期控制，能够确保自动正确的销毁动态分配的对象，防止内存泄露（利用自动调用类的析构函数来释放内存）。它是C++ RAII的一种应用。它可以使用使用引用计数(shared_ptr)和所有权模式(unique_ptr)两种方式。</p>
 </li>
-<li><p>默认初始化的指针指针保存着一个空指针:</p>
+<li><p>默认初始化的指针指针保存着一个空指针</p>
+</li>
+<li><p>不能将常规指针(内置指针)隐式地转为智能置指，因为<font color="#00dddd"> 智能指针类中接收指针参数的构造函数是 explicit 的</font></p>
+  <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 错误， 必须使用直接初始化形式</span></span><br><span class="line"><span class="comment">// new 返回的是常规指针，而常规指针(内置指针)到智能指针不能进行隐式转换。</span></span><br><span class="line"><span class="built_in">shared_ptr</span>&lt;<span class="keyword">int</span>&gt; p1 = <span class="keyword">new</span> <span class="keyword">int</span>(<span class="number">1024</span>);</span><br><span class="line"><span class="comment">// 正确 : 使用了直接初始化形式</span></span><br><span class="line"><span class="function"><span class="built_in">shared_ptr</span>&lt;<span class="keyword">int</span>&gt; <span class="title">p2</span><span class="params">(<span class="keyword">new</span> <span class="keyword">int</span>(<span class="number">1024</span>))</span></span>;</span><br></pre></td></tr></table></figure>
 <h4 id="shared-ptr"><a href="#shared-ptr" class="headerlink" title="shared_ptr"></a><font color="#00dd00">shared_ptr</font><br></h4></li>
 <li><p>std::shared_ptr 是一种基于计数的智能指针，它能够记录多少个shared_ptr 共同指向一个对象，并维护一个共享的计数器。</p>
 </li>
@@ -320,14 +323,45 @@
 </li>
 <li><p>shared_ptr 的析构函数会递减它指向的对象，若引用计数变为0，则shared_ptr的析构函数就会销毁对象，释放资源。</p>
 <h4 id="weak-ptr"><a href="#weak-ptr" class="headerlink" title="weak_ptr"></a><font color="#00dd00">weak_ptr</font><br></h4></li>
-<li><p>shared_ptr有一个问题即循环引用问题，若存在循环引用，会导致shared_ptr的引用计数不能变为0，从而不能释放资源。为了解决该问题，就引入了weak_ptr,weak_ptr是一种弱引用，用于配合shared_ptr的使用，弱引用不会引起引用计数的增加且并不影响对象的生命周期，也即是weak_ptr存在与否不影响对引用计数。</p>
+</ul>
+<ul>
+<li><p>weak_ptr 是一个伴随类指针，主要用于解决shared_ptr的循环引用问题，若存在循环引用，会导致shared_ptr的引用计数不能变为0，从而不能释放资源。</p>
+</li>
+<li><p>weak_ptr 是一种不控制所指向对象生存周期的智能指针，指向一个 shared_ptr 对象。</p>
+</li>
+<li><p>将一个 weak_ptr 对象绑定 shared_ptr 对象上，不会改变 shared_ptr 引用计数。</p>
+</li>
+<li><p>一旦 shared_ptr 对象被销毁，即使 weak_ptr 指向该对象，该对象还是会被释放，这就体现了 <font color="#00dddd"> weak_ptr “弱” 共享</font><br>的特点, 也即是weak_ptr存在与否不影响对引用计数</p>
+</li>
+<li><p>创建 weak_ptr 时，需要用一个 shared_ptr 来初始化它</p>
+</li>
+</ul>
+<ul>
+<li>由于对象可能不存在， 不能直接使用 weak_ptr 访问对象，必须调用 lock() 函数来检查 weak_ptr 指向的对象释放存在。<ul>
+<li>weak_ptr 类的 lock() 方法用来检查 weak_ptr 指向的对象是否存在，<ul>
+<li>若存在，则返回一个指向共享对象的 shared_ptr</li>
+<li>不存在，则返回一个空指针 nullptr</li>
+</ul>
+</li>
+</ul>
 </li>
 </ul>
 <h4 id="unique-ptr"><a href="#unique-ptr" class="headerlink" title="unique_ptr"></a><font color="#00dd00">unique_ptr</font><br></h4><ul>
-<li>是一种独占的智能指针，基于所有权模式，任意时刻只能有一个拥有者，不支持拷贝构造和赋值， 但是<font color="#66dd00">可以利用 std::move() 将其转移给其他 unique_ptr</font>。</li>
+<li>是一种独占的智能指针，基于所有权模式，一个 unique_ptr “拥有” 它所指向的对象。</li>
+<li>任意时刻只能有一个拥有者，<strong>不支持(普通的)拷贝构造和赋值</strong>。<ul>
+<li>但是可以通过调用 release 或 reset 将 unique_ptr 指针的所有权从一个(非const) unique_ptr 转给另外一个 unique_ptr。<ul>
+<li>release() 会切断 unique_ptr 和 它原来管理的对象间的关系， release() 返回的指针通常用来初始化另外一个对象或给另外一个智能指针赋值。</li>
+<li>reset(可选项)</li>
+</ul>
+</li>
 </ul>
 <ul>
-<li>C++14 中引入了 std::make_unique(),来创建 unique_ptr 指针</li>
+<li><font color="#66dd00">可以利用 std::move() 将其转移给其他 unique_ptr</font>。<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="built_in">unique_ptr</span>&lt;<span class="built_in">string</span>&gt; <span class="title">p1</span><span class="params">(<span class="keyword">new</span> <span class="built_in">string</span>(<span class="string">&quot;hello&quot;</span>))</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// unique_ptr是基于所有权模式，不能直接赋值和拷贝</span></span><br><span class="line"><span class="function"><span class="built_in">unique_ptr</span>&lt;<span class="built_in">string</span>&gt; <span class="title">p2</span><span class="params">(p1)</span></span>; <span class="comment">//❌  </span></span><br><span class="line"><span class="built_in">unique_ptr</span>&lt;<span class="built_in">string</span>&gt; p3;</span><br><span class="line">p3 = p2; <span class="comment">//❌ </span></span><br><span class="line"></span><br><span class="line"><span class="comment">// unique_ptr() 方法 放弃对指针的控制权， 返回指针，将原指针置为空</span></span><br><span class="line"><span class="comment">// 返回 p1 指向的对象(返回指针),并将 p1 置为空</span></span><br><span class="line"><span class="comment">// 因此， 所有权从 p1 转移给 p2</span></span><br><span class="line"><span class="function"><span class="built_in">unique_ptr</span>&lt;<span class="built_in">string</span>&gt; <span class="title">p4</span><span class="params">(p1.release())</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="built_in">unique_ptr</span>&lt;<span class="built_in">string</span>&gt; p5;</span><br><span class="line"><span class="comment">// 释放 p5 原来指向的内存，然后将所有权从 p4 转给 p5 </span></span><br><span class="line">p5.reset(p4.release());</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li>类似 shared_ptr,初始化 uniqu_ptr 必须采用<strong>直接初始化</strong>形式,在C++11中没有类 make_shared()函数，因此，需要绑定到一个 new 返回的 指针上。(<em>C++14 中引入了 std::make_unique(),来创建 unique_ptr 指针。</em>)</li>
 </ul>
 <h4 id="是否线程安全？"><a href="#是否线程安全？" class="headerlink" title="是否线程安全？"></a>是否线程安全？</h4><h4 id="原理和引用技术"><a href="#原理和引用技术" class="headerlink" title="原理和引用技术"></a>原理和引用技术</h4><h4 id="RAII-Resource-Acquisition-Is-Initialization-资源获取即初始化-思想"><a href="#RAII-Resource-Acquisition-Is-Initialization-资源获取即初始化-思想" class="headerlink" title="RAII(Resource Acquisition Is Initialization)资源获取即初始化 思想"></a><font color="#006666">RAII(Resource Acquisition Is Initialization)资源获取即初始化</font><br> 思想</h4><ul>
 <li><ul>
@@ -395,6 +429,66 @@
 </ul>
 </li>
 </ul>
+<ul>
+<li>内存指针[常规指针]管理的内存在被<strong>显示释放</strong>前一直都会存在。</li>
+</ul>
+<ul>
+<li><p>new </p>
+<ul>
+<li>用于动态分配内存。new <font color="#00dddd">在自由空间(heap)</font> 内存分配，分配的内存是无名的；因此 new 无法为其分配的对象命名，而是<font color="#66FFdd">返回一个指向该对象的指针</font>。</li>
+</ul>
+<ul>
+<li><p>动态分配的对象是默认初始化的</p>
+<ul>
+<li>内置类型或组合的对象值是未定义的</li>
+<li>类类型对象则使用默认构造函数进行初始化的<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">string</span>*p = <span class="keyword">new</span> <span class="built_in">string</span>;  <span class="comment">// 使用 string 类的默认构造函数初始化</span></span><br><span class="line"><span class="keyword">int</span>* pi = <span class="keyword">new</span> <span class="keyword">int</span>;  <span class="comment">// pi 指向一个未初始化的 int</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p>new 分配空间失败:</p>
+<ul>
+<li><p>一旦内存耗尽， new 表达式就会失败，则会抛出一个类型为 <font color="#dd00dd">bad_alloc</font> 的异常</p>
+</li>
+<li><p>若是 new 一个 数组时，初始化数目大于指定数目，则会 new 失败，不会分配任何内存，而且会抛出一个 bad_array_new_length 异常</p>
+</li>
+<li><p>可以使用 <font color="#00dd00">定位new(placement new)</font> 阻止抛出异常, 定位 new 表达式允许向 new 传递额外的参数。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> *p1 = <span class="keyword">new</span> <span class="keyword">int</span> ; <span class="comment">// 若分配失败， new 抛出 bad::alloc 异常</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 向 new 传递一个额外的参数 nothrow, 告诉它不允许抛出异常，若分配内存失败，不抛出 bad_alloc, 而是返回一个空指针 nullptr</span></span><br><span class="line"><span class="keyword">int</span> *p2 = <span class="keyword">new</span> (nothrow) <span class="keyword">int</span>; <span class="comment">// 若分配失败，new 返回一个空指针nullptr</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>new 数组时，若大小为 0， 则是合法的，但是不能解引用。 new 分配一个大小为 0 的数组时 new 返回一个非空的指针，该指针与 new 返回的任何指针都不同。</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>delete </p>
+<ul>
+<li>delete 用于释放 new 分配的内存</li>
+<li>delete 一个指针后，该指针变成了 悬空指针[danling-pointer]: 指向曾经保存数据对象但现在已经无效的内存空间的指针</li>
+<li>为避免成为悬空指针，应该在 delete 之后，将该指针置为 nullptr,清楚地指出该指针不在指向任何对象[只能提供有限的保护]。</li>
+</ul>
+<ul>
+<li>delete 释放动态数组时，空方括号是必须的: 它告知编译器此指针指向数组的第一个元素。<ul>
+<li><font color="#00dddd"> 若 忘记方括号 或 delete 单一元素时使用了方括号，则其行为是未定义的</font>。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>new/delete 管理动态内存的三个常见问题  </p>
+<ul>
+<li>忘记 delete<ul>
+<li>忘记释放动态内存会导致 “内存泄漏”,因为这类内存在程序结束之前永远不可能被释放，可能会导致内存耗尽</li>
+</ul>
+</li>
+<li>使用已经释放的对象<ul>
+<li>这会导致非法访问</li>
+</ul>
+</li>
+<li>同一内存被释放多次[两次及以上]<ul>
+<li>行为未定义</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
 <h4 id="有了malloc，为什么还需要new-？"><a href="#有了malloc，为什么还需要new-？" class="headerlink" title="有了malloc，为什么还需要new ？"></a><font color="#dd00dd">有了malloc，为什么还需要new ？</font><br></h4><pre><code>    - 对于非内置的数据类型的对象而言，使用malloc/free是无法满足要求的，对象在创建时要自动执行构造函数，在对象消亡前要自动执行析构函数，而malloc/free是库函数，不在编译器的控制权限之内，不能够把执行构造函数和析构函数的任务强加给mallo/free。因此，C++需要一个能完成动态内存分配和初始化的运算符和清理与释放内存工作的运算符。
     + new操作符分配内存时会经历三个过程：
         - 第一步是调用 operator new函数，分配一块合适的，原始的，未命名的内存空间。
@@ -405,15 +499,27 @@
 </ul>
 <h4 id="new、operator-new-和-placement-new的区别"><a href="#new、operator-new-和-placement-new的区别" class="headerlink" title="new、operator new 和 placement new的区别"></a><font color="#dd0000">new、operator new 和 placement new的区别</font><br></h4><ul>
 <li><p>  new operator: 不能被重载，</p>
-<pre><code>  + new的执行过程如下：
-      - 调用operator new 分配内存
-      - 调用并执行构造函数
-      - 返回相应类型的指针
-  + delete过程 ：
-      - 调用析构函数 
-      - 调用operator delete,释放空间</code></pre>
-  <!--more-->
 <ul>
+<li><p>new的执行过程如下：</p>
+<ul>
+<li>调用operator new 分配内存</li>
+<li>调用并执行构造函数</li>
+<li>返回相应类型的指针</li>
+</ul>
+</li>
+<li><p>delete</p>
+<ul>
+<li>只能释放动态分配的内存或空指针</li>
+<li>若释放非 new 分配的内存或同一指针释放多次，其行为是未定义的。</li>
+</ul>
+<ul>
+<li>delete 的执行分为两步:<ul>
+<li>调用析构函数,销毁给定指针指向的对象</li>
+<li>调用operator delete,释放空间<!--more--></li>
+</ul>
+</li>
+</ul>
+</li>
 <li><p>operator new </p>
 <ul>
 <li>实现内存分配，重载时new时，实际上重载的是operator new,</li>
@@ -848,7 +954,7 @@
 </ul>
 <ul>
 <li><p>为此，C++11中引入了枚举类(enumeration class)</p>
-  <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line">        <span class="class"><span class="keyword">enum</span> <span class="keyword">class</span> <span class="title">test</span>:</span> <span class="keyword">unsigned</span> <span class="keyword">int</span>&#123;</span><br><span class="line">            v1,</span><br><span class="line">            v2,</span><br><span class="line">            v3 = <span class="number">100</span>,</span><br><span class="line">            v4 = <span class="number">100</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (test::value3 == test::value4) &#123;</span><br><span class="line">    <span class="comment">// 会输出</span></span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">&quot;new_enum::value3 == new_enum::value4&quot;</span> &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//在这个语法中，枚举类型后面使用了冒号及类型关键字来指定枚举中枚举值的类型，这使得我们能够为枚举赋值（未指定时将默认使用int）。</span></span><br><span class="line">    </span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">## STL </span><br><span class="line">### 容器</span><br><span class="line">#### 顺序容器</span><br><span class="line"><span class="number">1.</span> stl的<span class="built_in">vector</span>、<span class="built_in">list</span>以及区别？ </span><br><span class="line">    + <span class="built_in">vector</span></span><br><span class="line">        - 讲一下<span class="built_in">vector</span>你了解的知识？（主要是底层实现，动态扩容）动态扩容的过程是怎么样的？（申请新空间，拷贝原有数据，释放原有空间）</span><br><span class="line">    + <span class="built_in">list</span></span><br><span class="line"></span><br><span class="line">    + 区别:</span><br><span class="line">        - 主要从底层实现的数据结构，插入、删除、访问的效率来解释）</span><br><span class="line"><span class="number">2.</span> <span class="built_in">map</span>底层实现是什么?[红黑树](红黑树是什么呢？有什么特点？红黑树自平衡是自动平衡吗？怎么实现自平衡的？红黑树和普通的二叉树有什么区别呢？)</span><br><span class="line"></span><br><span class="line"><span class="number">3.</span> 红黑树讲一下，怎么翻转？ [红黑树基本特征，avl和红黑树的优缺点](介绍了下定义,然后分情况翻转)</span><br><span class="line"><span class="number">4.</span> <span class="built_in">unordered_map</span>底层实现是什么？ （哈希表）</span><br><span class="line"><span class="number">5.</span> 这个实现和<span class="built_in">map</span>有什么区别，谈谈优劣势</span><br><span class="line"><span class="number">6.</span> 讲一下<span class="built_in">vector</span>和迭代器</span><br><span class="line"><span class="number">7.</span> <span class="built_in">vector</span>扩容机制了解吗？（扩容<span class="number">1.5</span>倍或<span class="number">2</span>倍，数据复制等）</span><br><span class="line"><span class="number">8.</span> <span class="built_in">pair</span>是个什么？什么情况下使用的？</span><br><span class="line"><span class="number">9.</span> STL的 <span class="built_in">vector</span>、dequeue、<span class="built_in">list</span>、<span class="built_in">deque</span>、<span class="built_in">queue</span>、<span class="built_in">stack</span>、<span class="built_in">map</span>、multismap、<span class="built_in">set</span>的实现和原理</span><br><span class="line"></span><br><span class="line"><span class="number">9.</span> stl 的<span class="built_in">map</span> hashtable、<span class="built_in">deque</span>、<span class="built_in">list</span> 请说一下,每个实现原理说一下</span><br><span class="line">    &gt; 用过哪些STL，对STL源码了解吗？<span class="built_in">deque</span>是怎么设计的？</span><br><span class="line"><span class="number">10.</span> 迭代器失效问题,如何解决,it++ 和 ++it区别?(++it传引用,it++传值复制)[迭代器相关]</span><br><span class="line"><span class="number">11.</span> hashtable扩容和如何解决冲突,解决冲突的办法？</span><br><span class="line"><span class="number">12.</span> &lt;font color=<span class="string">&quot;#00dddd&quot;</span>&gt;push_back和emplace_back&lt;/font&gt;</span><br><span class="line"><span class="number">13.</span> STL配置器</span><br><span class="line"><span class="number">14.</span> STL里的内存池实现</span><br><span class="line"><span class="number">15.</span> STL里<span class="built_in">set</span>和<span class="built_in">map</span>是基于什么实现的。红黑树的特点？</span><br><span class="line"></span><br><span class="line">#### 关联容器</span><br><span class="line">#### ## 容器</span><br><span class="line">+ 线程容器：</span><br><span class="line">    + <span class="built_in">std</span>::<span class="built_in">array</span>  : C++<span class="number">11</span> 引入的， <span class="built_in">std</span>::<span class="built_in">array</span>对象的大小是固定的</span><br><span class="line">        - 为什么要引入 <span class="built_in">std</span>::<span class="built_in">array</span> 而不是直接使用 <span class="built_in">std</span>::<span class="built_in">vector</span>?</span><br><span class="line">            - <span class="built_in">std</span>::<span class="built_in">array</span>对象大小是固定的，若容器大小是固定的，推荐使用<span class="built_in">std</span>::<span class="built_in">array</span>.</span><br><span class="line">            - <span class="built_in">std</span>::<span class="built_in">vector</span>是动态数组，可以自动扩容，当容量不够时，会自动扩容，但是删除元素后，容量不会自动释放，要手动调用 shrink_to_fit() 释放内存。<span class="built_in">std</span>::<span class="built_in">vector</span>动态数组，但是是有代价的，每次扩容都活涉及到申请内存，拷贝，释放原空间。</span><br><span class="line">        - 已经有传统的数组，为什么要用 <span class="built_in">std</span>::<span class="built_in">array</span>?</span><br><span class="line">            - <span class="built_in">std</span>::<span class="built_in">array</span>能够让代码更加<span class="string">&quot;现代化&quot;</span>，也即是封装了一些操作函数，比如检查数组大小，判空等，同时支持标准库的一些容器算法，比如 <span class="built_in">std</span>::sort等。</span><br><span class="line">        - <span class="built_in">std</span>::<span class="built_in">array</span> 只需要只要指定类型和大小即可</span><br><span class="line">        ```C++</span><br><span class="line">        <span class="built_in">std</span>::<span class="built_in">array</span>&lt;<span class="keyword">int</span>, <span class="number">4</span>&gt; arr&#123;<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>&#125;;</span><br></pre></td></tr></table></figure>
+  <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br></pre></td><td class="code"><pre><span class="line">        <span class="class"><span class="keyword">enum</span> <span class="keyword">class</span> <span class="title">test</span>:</span> <span class="keyword">unsigned</span> <span class="keyword">int</span>&#123;</span><br><span class="line">            v1,</span><br><span class="line">            v2,</span><br><span class="line">            v3 = <span class="number">100</span>,</span><br><span class="line">            v4 = <span class="number">100</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (test::value3 == test::value4) &#123;</span><br><span class="line">    <span class="comment">// 会输出</span></span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">&quot;new_enum::value3 == new_enum::value4&quot;</span> &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//在这个语法中，枚举类型后面使用了冒号及类型关键字来指定枚举中枚举值的类型，这使得我们能够为枚举赋值（未指定时将默认使用int）。</span></span><br><span class="line">    </span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">## STL </span><br><span class="line">### 容器</span><br><span class="line">#### 顺序容器</span><br><span class="line">#### 关联容器</span><br><span class="line">&gt; 关联容器和顺序容器有着根本不同。关联容器的元素是按&lt;font color=<span class="string">&quot;#dd00dd&quot;</span>&gt; 关键字&lt;/font&gt; 来保存和访问的，而顺序容器是按元素在容器中的&lt;font color=<span class="string">&quot;#dd00dd&quot;</span>&gt; 位置 &lt;/font&gt;来保存和访问的。</span><br><span class="line"></span><br><span class="line">&gt; 关联容器支持高效的**关键字**查询，主要有 <span class="built_in">map</span> 和 <span class="built_in">set</span> 两类关联容器，从是否允许关键字重复、元素保存是否有效、是 <span class="built_in">map</span> 还是 <span class="built_in">set</span> 三个维度，标准库提供 <span class="number">8</span> 个 关联容器:</span><br><span class="line">    &gt;&gt; 按关键字 有序 保存元素</span><br><span class="line">        &gt;&gt;&gt; <span class="built_in">map</span>  关联数组：保存键值对\</span><br><span class="line">        &gt;&gt;&gt; <span class="built_in">set</span>  关键字即值 只保存关键字的容器\</span><br><span class="line">        &gt;&gt;&gt; <span class="built_in">multimap</span> 关键字可重复出现的<span class="built_in">map</span>\</span><br><span class="line">        &gt;&gt;&gt; <span class="built_in">multiset</span> 关键字可重复出现的<span class="built_in">set</span></span><br><span class="line">    &gt;&gt; 无序集合</span><br><span class="line">        &gt;&gt;&gt; <span class="built_in">unordered_map</span> 用哈希表函数组织的<span class="built_in">map</span></span><br><span class="line">        &gt;&gt;&gt; <span class="built_in">unordered_set</span> 用哈休函数组织的<span class="built_in">set</span></span><br><span class="line">        &gt;&gt;&gt; unordered_multomap 哈希组织的<span class="built_in">map</span>、关键字可重复出现</span><br><span class="line">        &gt;&gt;&gt; <span class="built_in">unordered_multiset</span> 哈希组织的<span class="built_in">set</span>、关键字可重复出现</span><br><span class="line"></span><br><span class="line"><span class="number">1.</span> stl的<span class="built_in">vector</span>、<span class="built_in">list</span>以及区别？ </span><br><span class="line">    + <span class="built_in">vector</span></span><br><span class="line">        - 讲一下<span class="built_in">vector</span>你了解的知识？（主要是底层实现，动态扩容）动态扩容的过程是怎么样的？（申请新空间，拷贝原有数据，释放原有空间）</span><br><span class="line">    + <span class="built_in">list</span></span><br><span class="line"></span><br><span class="line">    + 区别:</span><br><span class="line">        - 主要从底层实现的数据结构，插入、删除、访问的效率来解释）</span><br><span class="line"><span class="number">2.</span> <span class="built_in">map</span>底层实现是什么?[红黑树](红黑树是什么呢？有什么特点？红黑树自平衡是自动平衡吗？怎么实现自平衡的？红黑树和普通的二叉树有什么区别呢？)</span><br><span class="line"></span><br><span class="line"><span class="number">3.</span> 红黑树讲一下，怎么翻转？ [红黑树基本特征，avl和红黑树的优缺点](介绍了下定义,然后分情况翻转)</span><br><span class="line"><span class="number">4.</span> <span class="built_in">unordered_map</span>底层实现是什么？ （哈希表）</span><br><span class="line"><span class="number">5.</span> 这个实现和<span class="built_in">map</span>有什么区别，谈谈优劣势</span><br><span class="line"><span class="number">6.</span> 讲一下<span class="built_in">vector</span>和迭代器</span><br><span class="line"><span class="number">7.</span> <span class="built_in">vector</span>扩容机制了解吗？（扩容<span class="number">1.5</span>倍或<span class="number">2</span>倍，数据复制等）</span><br><span class="line"><span class="number">8.</span> <span class="built_in">pair</span>是个什么？什么情况下使用的？</span><br><span class="line"><span class="number">9.</span> STL的 <span class="built_in">vector</span>、dequeue、<span class="built_in">list</span>、<span class="built_in">deque</span>、<span class="built_in">queue</span>、<span class="built_in">stack</span>、<span class="built_in">map</span>、multismap、<span class="built_in">set</span>的实现和原理</span><br><span class="line"></span><br><span class="line"><span class="number">9.</span> stl 的<span class="built_in">map</span> hashtable、<span class="built_in">deque</span>、<span class="built_in">list</span> 请说一下,每个实现原理说一下</span><br><span class="line">    &gt; 用过哪些STL，对STL源码了解吗？<span class="built_in">deque</span>是怎么设计的？</span><br><span class="line"><span class="number">10.</span> 迭代器失效问题,如何解决,it++ 和 ++it区别?(++it传引用,it++传值复制)[迭代器相关]</span><br><span class="line"><span class="number">11.</span> hashtable扩容和如何解决冲突,解决冲突的办法？</span><br><span class="line"><span class="number">12.</span> &lt;font color=<span class="string">&quot;#00dddd&quot;</span>&gt;push_back和emplace_back&lt;/font&gt;</span><br><span class="line"><span class="number">13.</span> STL配置器</span><br><span class="line"><span class="number">14.</span> STL里的内存池实现</span><br><span class="line"><span class="number">15.</span> STL里<span class="built_in">set</span>和<span class="built_in">map</span>是基于什么实现的。红黑树的特点？</span><br><span class="line"></span><br><span class="line">#### 关联容器</span><br><span class="line">#### ## 容器</span><br><span class="line">+ 线程容器：</span><br><span class="line">    + <span class="built_in">std</span>::<span class="built_in">array</span>  : C++<span class="number">11</span> 引入的， <span class="built_in">std</span>::<span class="built_in">array</span>对象的大小是固定的</span><br><span class="line">        - 为什么要引入 <span class="built_in">std</span>::<span class="built_in">array</span> 而不是直接使用 <span class="built_in">std</span>::<span class="built_in">vector</span>?</span><br><span class="line">            - <span class="built_in">std</span>::<span class="built_in">array</span>对象大小是固定的，若容器大小是固定的，推荐使用<span class="built_in">std</span>::<span class="built_in">array</span>.</span><br><span class="line">            - <span class="built_in">std</span>::<span class="built_in">vector</span>是动态数组，可以自动扩容，当容量不够时，会自动扩容，但是删除元素后，容量不会自动释放，要手动调用 shrink_to_fit() 释放内存。<span class="built_in">std</span>::<span class="built_in">vector</span>动态数组，但是是有代价的，每次扩容都活涉及到申请内存，拷贝，释放原空间。</span><br><span class="line">        - 已经有传统的数组，为什么要用 <span class="built_in">std</span>::<span class="built_in">array</span>?</span><br><span class="line">            - <span class="built_in">std</span>::<span class="built_in">array</span>能够让代码更加<span class="string">&quot;现代化&quot;</span>，也即是封装了一些操作函数，比如检查数组大小，判空等，同时支持标准库的一些容器算法，比如 <span class="built_in">std</span>::sort等。</span><br><span class="line">        - <span class="built_in">std</span>::<span class="built_in">array</span> 只需要只要指定类型和大小即可</span><br><span class="line">        ```C++</span><br><span class="line">        <span class="built_in">std</span>::<span class="built_in">array</span>&lt;<span class="keyword">int</span>, <span class="number">4</span>&gt; arr&#123;<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>&#125;;</span><br></pre></td></tr></table></figure>
 
 <ul>
 <li>std::forward_list ： C++11 引入的单向链表，和 std::list 类似，只不过std::list是双向链表。<ul>
