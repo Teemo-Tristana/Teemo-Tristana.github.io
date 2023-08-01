@@ -4,17 +4,17 @@
   <meta charset="utf-8">
   
   
-  <title>Hexo</title>
+  <title>韩城的日常记录</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta property="og:type" content="website">
-<meta property="og:title" content="Hexo">
+<meta property="og:title" content="韩城的日常记录">
 <meta property="og:url" content="http://example.com/index.html">
-<meta property="og:site_name" content="Hexo">
+<meta property="og:site_name" content="韩城的日常记录">
 <meta property="og:locale" content="en_US">
-<meta property="article:author" content="John Doe">
+<meta property="article:author" content="Hancheng">
 <meta name="twitter:card" content="summary">
   
-    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+    <link rel="alternate" href="/atom.xml" title="韩城的日常记录" type="application/atom+xml">
   
   
     <link rel="shortcut icon" href="/favicon.png">
@@ -43,7 +43,7 @@
   <div id="header-outer" class="outer">
     <div id="header-title" class="inner">
       <h1 id="logo-wrap">
-        <a href="/" id="logo">Hexo</a>
+        <a href="/" id="logo">韩城的日常记录</a>
       </h1>
       
     </div>
@@ -73,10 +73,10 @@
       <div class="outer">
         <section id="main">
   
-    <article id="post-Redis的hmget与hmget对比分析" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+    <article id="post-Redis之hmget与hgetAll对比" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
-    <a href="/2023/08/01/Redis%E7%9A%84hmget%E4%B8%8Ehmget%E5%AF%B9%E6%AF%94%E5%88%86%E6%9E%90/" class="article-date">
-  <time class="dt-published" datetime="2023-08-01T09:20:59.000Z" itemprop="datePublished">2023-08-01</time>
+    <a href="/2023/08/01/Redis%E4%B9%8Bhmget%E4%B8%8EhgetAll%E5%AF%B9%E6%AF%94/" class="article-date">
+  <time class="dt-published" datetime="2023-08-01T09:48:18.000Z" itemprop="datePublished">2023-08-01</time>
 </a>
     
   </div>
@@ -87,7 +87,7 @@
         
   
     <h1 itemprop="name">
-      <a class="p-name article-title" href="/2023/08/01/Redis%E7%9A%84hmget%E4%B8%8Ehmget%E5%AF%B9%E6%AF%94%E5%88%86%E6%9E%90/">Redis的hmget与hmget对比分析</a>
+      <a class="p-name article-title" href="/2023/08/01/Redis%E4%B9%8Bhmget%E4%B8%8EhgetAll%E5%AF%B9%E6%AF%94/">Redis之hmget与hgetAll对比</a>
     </h1>
   
 
@@ -95,11 +95,16 @@
     
     <div class="e-content article-entry" itemprop="articleBody">
       
+        <h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>redis获取哈希类型的值有三种方式，分别是 hget、hmget 和 hgetall；目前负责的服务，强依赖于Redis，Redis的任意波动都会影响到接口的耗时(p99)，使用的多是Redis的基本类型，比如<br>String、Hash、List、Bitmap、SortedSet，Set，其中Set很少使用。对于Hash类型的读取操作，主要用了hmget和hgetall了，在选取哪一种读取方式遇到了困惑，因此就阅读了hash类型hmget和hgetall并分析，并记录。</p>
+        
+          <p class="article-more-link">
+            <a href="/2023/08/01/Redis%E4%B9%8Bhmget%E4%B8%8EhgetAll%E5%AF%B9%E6%AF%94/#more">Read More</a>
+          </p>
         
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2023/08/01/Redis%E7%9A%84hmget%E4%B8%8Ehmget%E5%AF%B9%E6%AF%94%E5%88%86%E6%9E%90/" data-id="clks41rkr000073ydhnh4euzt" data-title="Redis的hmget与hmget对比分析" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2023/08/01/Redis%E4%B9%8Bhmget%E4%B8%8EhgetAll%E5%AF%B9%E6%AF%94/" data-id="clks53ez80000wnyd62zx91ls" data-title="Redis之hmget与hgetAll对比" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -150,7 +155,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2023/08/01/hello-world/" data-id="clks41rku000173ydb2666nyq" data-title="Hello World" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2023/08/01/hello-world/" data-id="clks53ezb0001wnyddvrc9eis" data-title="Hello World" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -193,7 +198,7 @@
       <ul>
         
           <li>
-            <a href="/2023/08/01/Redis%E7%9A%84hmget%E4%B8%8Ehmget%E5%AF%B9%E6%AF%94%E5%88%86%E6%9E%90/">Redis的hmget与hmget对比分析</a>
+            <a href="/2023/08/01/Redis%E4%B9%8Bhmget%E4%B8%8EhgetAll%E5%AF%B9%E6%AF%94/">Redis之hmget与hgetAll对比</a>
           </li>
         
           <li>
@@ -213,7 +218,7 @@
   <div class="outer">
     <div id="footer-info" class="inner">
       
-      &copy; 2023 John Doe<br>
+      &copy; 2023 Hancheng<br>
       Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>

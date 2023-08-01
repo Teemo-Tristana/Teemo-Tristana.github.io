@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>Redis之hmget与hgetAll对比 | 韩城的日常记录</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="背景redis获取哈希类型的值有三种方式，分别是 hget、hmget 和 hgetall；目前负责的服务，强依赖于Redis，Redis的任意波动都会影响到接口的耗时(p99)，使用的多是Redis的基本类型，比如String、Hash、List、Bitmap、SortedSet，Set，其中Set很少使用。对于Hash类型的读取操作，主要用了hmget和hgetall了，在选取哪一种读取方式遇">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis之hmget与hgetAll对比">
+<meta property="og:url" content="http://example.com/2023/08/01/Redis%E4%B9%8Bhmget%E4%B8%8EhgetAll%E5%AF%B9%E6%AF%94/index.html">
+<meta property="og:site_name" content="韩城的日常记录">
+<meta property="og:description" content="背景redis获取哈希类型的值有三种方式，分别是 hget、hmget 和 hgetall；目前负责的服务，强依赖于Redis，Redis的任意波动都会影响到接口的耗时(p99)，使用的多是Redis的基本类型，比如String、Hash、List、Bitmap、SortedSet，Set，其中Set很少使用。对于Hash类型的读取操作，主要用了hmget和hgetall了，在选取哪一种读取方式遇">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2023-08-01T09:48:18.000Z">
+<meta property="article:modified_time" content="2023-08-01T10:08:08.055Z">
+<meta property="article:author" content="Hancheng">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="韩城的日常记录" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/typeface-source-code-pro@0.0.71/index.min.css">
+
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">韩城的日常记录</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS Feed"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="Search"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://example.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-Redis之hmget与hgetAll对比" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2023/08/01/Redis%E4%B9%8Bhmget%E4%B8%8EhgetAll%E5%AF%B9%E6%AF%94/" class="article-date">
+  <time class="dt-published" datetime="2023-08-01T09:48:18.000Z" itemprop="datePublished">2023-08-01</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      Redis之hmget与hgetAll对比
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>redis获取哈希类型的值有三种方式，分别是 hget、hmget 和 hgetall；目前负责的服务，强依赖于Redis，Redis的任意波动都会影响到接口的耗时(p99)，使用的多是Redis的基本类型，比如<br>String、Hash、List、Bitmap、SortedSet，Set，其中Set很少使用。对于Hash类型的读取操作，主要用了hmget和hgetall了，在选取哪一种读取方式遇到了困惑，因此就阅读了hash类型hmget和hgetall并分析，并记录。</p>
+<span id="more"></span>
+<h2 id="hash-类型取值方式"><a href="#hash-类型取值方式" class="headerlink" title="hash 类型取值方式"></a>hash 类型取值方式</h2><p>redis获取哈希类型的值有三种方式，分别是 hget、hmget 和 hgetall。三者的用法如下：</p>
+<ol>
+<li>hget 取单个field的值， 时间复杂度 O(1)<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">redis&gt; HGET key field  </span><br><span class="line">redis&gt; HSET myhash field1 <span class="string">&quot;foo&quot;</span>  </span><br><span class="line">(integer) <span class="number">1</span>  </span><br><span class="line">redis&gt; HGET myhash field1  </span><br><span class="line"><span class="string">&quot;foo&quot;</span>  </span><br><span class="line">redis&gt; <span class="function">HGET myhash <span class="title">field2</span>  </span></span><br><span class="line"><span class="function"><span class="params">(nil)</span>  </span></span><br><span class="line"><span class="function">redis&gt; </span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">```  </span></span><br><span class="line"><span class="function">  </span></span><br><span class="line"><span class="function">2. hmget 取多个field 的值, field 可以是1个值多个，其中若某个field不存在，该field对应的值则返回null ，时间复杂度</span></span><br><span class="line"><span class="function">：<span class="title">O</span><span class="params">(N)</span>， 其中 N为请求的fields个数。</span></span><br><span class="line"><span class="function">```C++</span></span><br><span class="line"><span class="function">    </span></span><br><span class="line"><span class="function">redis&gt; HMGET key field [field ...]  </span></span><br><span class="line"><span class="function">redis&gt; HSET myhash field1 &quot;Hello&quot;  </span></span><br><span class="line"><span class="function"><span class="params">(integer)</span> 1  </span></span><br><span class="line"><span class="function">redis&gt; HSET myhash field2 &quot;World&quot;  </span></span><br><span class="line"><span class="function"><span class="params">(integer)</span> 1  </span></span><br><span class="line"><span class="function">redis&gt; HMGET myhash field1 field2 nofield  </span></span><br><span class="line"><span class="function">1) &quot;Hello&quot;  </span></span><br><span class="line"><span class="function">2) &quot;World&quot;  </span></span><br><span class="line"><span class="function">3) <span class="params">(nil)</span>  </span></span><br><span class="line"><span class="function">redis&gt;   </span></span><br></pre></td></tr></table></figure></li>
+<li>hgetatll 则是将该key的所有field都返回，时间复杂度是 O(N)， 其中 N 是 hashkey的长度<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">redis&gt; HGETALL key  </span><br><span class="line">redis&gt; HSET myhash field1 <span class="string">&quot;Hello&quot;</span>  </span><br><span class="line">(integer) <span class="number">1</span>  </span><br><span class="line">redis&gt; HSET myhash field2 <span class="string">&quot;World&quot;</span>  </span><br><span class="line">(integer) <span class="number">1</span>  </span><br><span class="line">redis&gt; HGETALL myhash  </span><br><span class="line"><span class="number">1</span>) <span class="string">&quot;field1&quot;</span>  </span><br><span class="line"><span class="number">2</span>) <span class="string">&quot;Hello&quot;</span>  </span><br><span class="line"><span class="number">3</span>) <span class="string">&quot;field2&quot;</span>  </span><br><span class="line"><span class="number">4</span>) <span class="string">&quot;World&quot;</span>  </span><br><span class="line">redis&gt;   </span><br></pre></td></tr></table></figure></li>
+</ol>
+<h2 id="hmget-or-hgetall"><a href="#hmget-or-hgetall" class="headerlink" title="hmget or hgetall"></a>hmget or hgetall</h2><p>通过官网，了解到 hmget 和 hgetall 的时间复杂度都是 O(N),但是什么时候用 hmget、什么时候用<br>hgetall。在设置的获取方式的时候，常常纠结用哪种方式。系统在使用hmget的时候，正常情况下都是请求10个不到的fields，但有些特殊场景会出现一次hmget<br>50个甚至上百个fields严重时会出现1000个fields，我们在压测时发现一次请求200个fields的性能非常差，本以为200个fields的性能应该比10个fields的性能差1&#x2F;20左右，但测试的结果却远不止。</p>
+<h2 id="源码分析"><a href="#源码分析" class="headerlink" title="源码分析"></a>源码分析</h2><p>Redis官网对于hmget的操作复杂度白纸黑字写得很清楚就是O(N)，N为请求的fields个数。于是抱着好奇的心态翻出Redis关于hmget的源码(Redis<br>7.0分支，t_hash.c)：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line">    <span class="type">void</span> <span class="title function_">hmgetCommand</span><span class="params">(client *c)</span> &#123;  </span><br><span class="line">        robj *o;  </span><br><span class="line">        <span class="type">int</span> i;  </span><br><span class="line">      </span><br><span class="line">        <span class="comment">/* Don&#x27;t abort when the key cannot be found. Non-existing keys are empty  </span></span><br><span class="line"><span class="comment">         * hashes, where HMGET should respond with a series of null bulks. */</span>  </span><br><span class="line">      </span><br><span class="line">        <span class="comment">/* 当找不到 key 的时候不中止，不存在的 key 即空哈希对象 ，HMGET 应该用空值来回应 */</span>  </span><br><span class="line">        o = lookupKeyRead(c-&gt;db, c-&gt;argv[<span class="number">1</span>]);  </span><br><span class="line">        <span class="keyword">if</span> (checkType(c,o,OBJ_HASH)) <span class="keyword">return</span>;  </span><br><span class="line">      </span><br><span class="line">        <span class="comment">/* 将以列表的形式回复客户端，这里设置列表的长度 */</span>  </span><br><span class="line">        addReplyArrayLen(c, c-&gt;argc<span class="number">-2</span>);  </span><br><span class="line">      </span><br><span class="line">        <span class="comment">/**  </span></span><br><span class="line"><span class="comment">         * 调用 addHashFieldToReply 方法，查找filed的value  </span></span><br><span class="line"><span class="comment">         */</span>    </span><br><span class="line">        <span class="keyword">for</span> (i = <span class="number">2</span>; i &lt; c-&gt;argc; i++) &#123;  </span><br><span class="line">            addHashFieldToReply(c, o, c-&gt;argv[i]-&gt;ptr);  </span><br><span class="line">        &#125;  </span><br><span class="line">    &#125;  </span><br><span class="line">```     </span><br><span class="line"></span><br><span class="line">在 hmget 实现中，遍历了每个field，调用 addHashFieldToReply</span><br><span class="line">方法，查找field的value字段，调用的次数就是传入的field的个数，这里就是 O(N)</span><br><span class="line">```C</span><br><span class="line">  <span class="comment">/**  </span></span><br><span class="line"><span class="comment">     * 查找指定的 field-value 并将 value 回复给客户端   </span></span><br><span class="line"><span class="comment">     * 遍历某个key的所有filed，以便查询到指定的field  时间复杂度O(M) ,其中 M 该key的所有field  </span></span><br><span class="line"><span class="comment">     *   </span></span><br><span class="line"><span class="comment">    */</span>  </span><br><span class="line">    <span class="type">static</span> <span class="type">void</span> <span class="title function_">addHashFieldToReply</span><span class="params">(client *c, robj *o, sds field)</span> &#123;  </span><br><span class="line">        <span class="keyword">if</span> (o == <span class="literal">NULL</span>) &#123;  </span><br><span class="line">            addReplyNull(c);  </span><br><span class="line">            <span class="keyword">return</span>;  </span><br><span class="line">        &#125;  </span><br><span class="line">      </span><br><span class="line">        <span class="type">unsigned</span> <span class="type">char</span> *vstr = <span class="literal">NULL</span>;  </span><br><span class="line">        <span class="type">unsigned</span> <span class="type">int</span> vlen = UINT_MAX;  </span><br><span class="line">        <span class="type">long</span> <span class="type">long</span> vll = LLONG_MAX;  </span><br><span class="line">      </span><br><span class="line">        <span class="keyword">if</span> (hashTypeGetValue(o, field, &amp;vstr, &amp;vlen, &amp;vll) == C_OK) &#123;  </span><br><span class="line">            <span class="keyword">if</span> (vstr) &#123;  </span><br><span class="line">                addReplyBulkCBuffer(c, vstr, vlen);  </span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;  </span><br><span class="line">                addReplyBulkLongLong(c, vll);  </span><br><span class="line">            &#125;  </span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;  </span><br><span class="line">            addReplyNull(c);  </span><br><span class="line">        &#125;  </span><br><span class="line">    &#125;  </span><br></pre></td></tr></table></figure>
+<p>Redis中哈希对象有两种编码方案，当同时满足以下条件时，哈希对象采用ziplist编码(在Redis3.2之前，采用的ziplist，由于这种类型存在连锁更新的风险，在3.2之后，就被quicklist替代，不过quicklist和ziplist类型)，否则采用hashtable编码。</p>
+<p>ziplist(quiklist)可以类似理解成一个数组，而数组的查找是需要遍历里面的元素的，和hashtable的O(1)不同<br>看到这段if&#x2F;else似乎明白了什么，之前的文章Redis内存优化实践里提到的关于hash底层存储结构ziplist，其实它就是一个数组，而数组的查找是需要遍历里面的元素的，和hashtable的O(1)不同。我们系统采用的也正是ziplist的压缩结构<br>(由于数据量太大，ziplist结构可以省大量内存)。所以，对于ziplist的hmget操作复杂度应该不是O(N)。</p>
+<p>让我们来进一步看看源码，验证这个猜测，ziplist的大致形式如下</p>
+<pre><code class="C++">    &lt;zlbytes&gt;&lt;zltail&gt;&lt;zllen&gt;&lt;entry&gt;&lt;entry&gt;...&lt;entry&gt;&lt;zlend&gt;  
+</code></pre>
+<p>除掉头尾，中间都是各个entry直接拼起来，hash里的每个field和value都是一个entry，value紧临对应的filed之后。而每个entry又分为2个header和content，一个header是前一个entry的长度，另一个header是这个entry的encoding及string<br>content的长度(如果是string的话)，简单来说在ziplist里识别entry是通过长度来判断的。</p>
+<pre><code class="C">      
+    /* hashTypeGet*() 的高级函数（我认为叫通用函数更容易理解），返回 field 对应的 value   
+     * 如果查找成功，返回 C_OK ，否则为 C_ERR  
+     * 如果是以字符串形式返回，则字符串值和长度的引用存储在 *vstr 和 *vlen 中  
+     * 如果以数字形式返回，则存储在 *vll 中 (只有 listpack 会有整数编码， hashtable 依然以字符串编码保存整数）  
+     *  
+     * 如果 *vll 被赋值，*vstr 被设置为NULL ，反之亦然  
+     * 所以调用者可以通过检查返回值是否返回 C_OK ，返回C_OK后检查 vll（或 vstr）是否为 NULL  
+     */  
+    int hashTypeGetValue(robj *o, sds field, unsigned char **vstr, unsigned int *vlen, long long *vll) &#123;  
+      
+        /* 判断内部编码类型并调用相应的函数获取 value */  
+        if (o-&gt;encoding == OBJ_ENCODING_LISTPACK) &#123;  
+            *vstr = NULL;  
+            if (hashTypeGetFromListpack(o, field, vstr, vlen, vll) == 0)  
+                return C_OK;  
+        &#125; else if (o-&gt;encoding == OBJ_ENCODING_HT) &#123;  
+            sds value;  
+            if ((value = hashTypeGetFromHashTable(o, field)) != NULL) &#123;  
+                *vstr = (unsigned char*) value;  
+                *vlen = sdslen(value);  
+                return C_OK;  
+            &#125;  
+        &#125; else &#123;  
+            serverPanic(&quot;Unknown hash encoding&quot;);  
+        &#125;  
+        return C_ERR;  
+    &#125;  
+      
+      
+    /* 从 listpack 编码的哈希类型对象获取 value ,  
+     * 如果查找不到返回 -1 */  
+    int hashTypeGetFromListpack(robj *o, sds field,  
+                                unsigned char **vstr,  
+                                unsigned int *vlen,  
+                                long long *vll)  
+    &#123;  
+        unsigned char *zl, *fptr = NULL, *vptr = NULL;  
+      
+        /* 断言：o 内部编码类型一定是 OBJ_ENCODING_LISTPACK ，否则中止 */  
+        serverAssert(o-&gt;encoding == OBJ_ENCODING_LISTPACK);  
+      
+        zl = o-&gt;ptr;  
+        fptr = lpFirst(zl);  
+      
+        /* 从头开始遍历整个 listpack 来查找 field 所在的 entry */  
+        if (fptr != NULL) &#123;  
+            fptr = lpFind(zl, fptr, (unsigned char*)field, sdslen(field), 1);  
+            if (fptr != NULL) &#123;  
+                /* Grab pointer to the value (fptr points to the field) */  
+      
+                /* fptr 为指向 field 的指针， vptr 为指向 value 的指针 ,  
+                 * 对于哈希类型，value 被保存在对应的 field 的下一个 entry */  
+                vptr = lpNext(zl, fptr);  
+                serverAssert(vptr != NULL);  
+            &#125;  
+        &#125;  
+      
+        /* 找到了 value , 若 value 为字符串编码则令 vstr 指向该 value,  
+         * 若 value 为 整数编码则 vll 会指向 value */  
+        if (vptr != NULL) &#123;  
+            *vstr = lpGetValue(vptr, vlen, vll);  
+            return 0;  
+        &#125;  
+      
+        return -1;  
+    &#125;  
+      
+    /* Find pointer to the entry equal to the specified entry. Skip &#39;skip&#39; entries  
+     * between every comparison. Returns NULL when the field could not be found. */  
+    unsigned char *lpFind(unsigned char *lp, unsigned char *p, unsigned char *s,   
+                          uint32_t slen, unsigned int skip) &#123;  
+        int skipcnt = 0;  
+        unsigned char vencoding = 0;  
+        unsigned char *value;  
+        int64_t ll, vll;  
+        uint64_t entry_size = 123456789; /* initialized to avoid warning. */  
+        uint32_t lp_bytes = lpBytes(lp);  
+      
+        assert(p);  
+        while (p) &#123;  
+            if (skipcnt == 0) &#123;  
+                value = lpGetWithSize(p, &amp;ll, NULL, &amp;entry_size);  
+                if (value) &#123;  
+                    /* check the value doesn&#39;t reach outside the listpack before accessing it */  
+                    assert(p &gt;= lp + LP_HDR_SIZE &amp;&amp; p + entry_size &lt; lp + lp_bytes);  
+                    if (slen == ll &amp;&amp; memcmp(value, s, slen) == 0) &#123;  
+                        return p;  
+                    &#125;  
+                &#125; else &#123;  
+                    /* Find out if the searched field can be encoded. Note that  
+                     * we do it only the first time, once done vencoding is set  
+                     * to non-zero and vll is set to the integer value. */  
+                    if (vencoding == 0) &#123;  
+                        /* If the entry can be encoded as integer we set it to  
+                         * 1, else set it to UCHAR_MAX, so that we don&#39;t retry  
+                         * again the next time. */  
+                        if (slen &gt;= 32 || slen == 0 || !lpStringToInt64((const char*)s, slen, &amp;vll)) &#123;  
+                            vencoding = UCHAR_MAX;  
+                        &#125; else &#123;  
+                            vencoding = 1;  
+                        &#125;  
+                    &#125;  
+      
+                    /* Compare current entry with specified entry, do it only  
+                     * if vencoding != UCHAR_MAX because if there is no encoding  
+                     * possible for the field it can&#39;t be a valid integer. */  
+                    if (vencoding != UCHAR_MAX &amp;&amp; ll == vll) &#123;  
+                        return p;  
+                    &#125;  
+                &#125;  
+      
+                /* Reset skip count */  
+                skipcnt = skip;  
+                p += entry_size;  
+            &#125; else &#123;  
+                /* Skip entry */  
+                skipcnt--;  
+      
+                /* Move to next entry, avoid use `lpNext` due to `ASSERT_INTEGRITY` in  
+                * `lpNext` will call `lpBytes`, will cause performance degradation */  
+                p = lpSkip(p);  
+            &#125;  
+      
+            /* The next call to lpGetWithSize could read at most 8 bytes past `p`  
+             * We use the slower validation call only when necessary. */  
+            if (p + 8 &gt;= lp + lp_bytes)  
+                lpAssertValidEntry(lp, lp_bytes, p);  
+            else  
+                assert(p &gt;= lp + LP_HDR_SIZE &amp;&amp; p &lt; lp + lp_bytes);  
+            if (p[0] == LP_EOF) break;  
+        &#125;  
+      
+        return NULL;  
+    &#125;  
+</code></pre>
+<p>回到代码中，针对ziplist的情况，一个field的value查找分成了两步：<br>1）先通过 hashTypeGetFromListpack方法查找field对应在ziplist里的位置，从而判断出value的位置vstr<br>2）再通过value entry的header里记录的value的长度，找出对应的value值</p>
+<p>果然，猜测是对的，ziplist对field的查找就是遍历比较的方式。所以hmget对一个field的查找是O(M)复杂度，M为存储在hash里的实际field总数1，再根据field找出对应的value值就只是一个根据长度取出具体值的过程。</p>
+<p>最后，对于ziplist结构的hmget操作复杂度应该是O(N*M)，N为请求的fields数量，M为这个hash里一共有的fields数量。而对于hashtable结构的hmget操作自然是O(N)了</p>
+<h2 id="选择"><a href="#选择" class="headerlink" title="选择"></a>选择</h2><p>由于用了ziplist的结构，O(N*M)的复杂度就摆在那里，N和M也没办法减少。换个角度，既然要查那么多fields(在我们的业务场景里，很多fields可能是不存在&#x2F;没数据的)，所以我们能不能一次hgetall把M个fields都拿出来，应用再自己和N做匹配过滤，那关于hgetall的实现，有兴趣的同学可以研究下，效率比hmget<br>200个fields高很多。</p>
+<p>使用hgetall会不会有其他风险？存储在hash里的fields一旦增多了，效率也会降低；数据量大了，超过一个MTU包大小，效率也会降低；fields数量超过512个，ziplist变hashtable，怎么办？</p>
+<p>我们的做法，如果一次请求30个以下fields，继续使用hmget，75%的情况都是这种正常的请求；剩下的超过30个fields，就用hgetall一次拿出来，交给应用处理。同时，需要定期检查redis里的hash数据的长度，防止长度慢慢增加而出现其他的问题。</p>
+<h2 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h2><p>对于Hash，Set等数据结构，由于Redis所采用的底层的存储结构可能出现不同，对一些操作的使用需要格外小心。而且这个底层存储结构在数据发生变化后可能还会自我调整，比如hash的entry个数超过512(默认值)后，会从ziplist变成hashtable结构等，这些变化，不仅对存储有影响，对一些操作的效率也一样有影响，所以开发同学必须非常了解自己的应用所存放在redis的数据变化情况，避免掉坑。</p>
+<p><a href="/tags/Redis/"># Redis</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2023/08/01/Redis%E4%B9%8Bhmget%E4%B8%8EhgetAll%E5%AF%B9%E6%AF%94/" data-id="clks53ez80000wnyd62zx91ls" data-title="Redis之hmget与hgetAll对比" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2023/08/01/hello-world/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Hello World</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/08/">August 2023</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2023/08/01/Redis%E4%B9%8Bhmget%E4%B8%8EhgetAll%E5%AF%B9%E6%AF%94/">Redis之hmget与hgetAll对比</a>
+          </li>
+        
+          <li>
+            <a href="/2023/08/01/hello-world/">Hello World</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2023 Hancheng<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>
