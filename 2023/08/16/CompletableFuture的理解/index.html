@@ -20,15 +20,19 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta property="og:type" content="website">
-<meta property="og:title" content="韩城的日常记录">
-<meta property="og:url" content="http://example.com/archives/2023/index.html">
+  <meta name="description" content="CompletableFuture是JDK1.8里面引入的一个基于事件驱动的异步回调类。简单来说，就是当使用异步线程去执行一个任务的时候，我们希望在任务结束以后触发一个后续的动作。而CompletableFuture就可以实现这个功能。 举个简单的例子，比如在一个批量支付的业务逻辑里面，涉及到查询订单、支付、发送邮件通知这三个逻辑。这三个逻辑是按照顺序同步去实现的，也就是先查询到订单以后，再针对这">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CompletableFuture的理解">
+<meta property="og:url" content="http://example.com/2023/08/16/CompletableFuture%E7%9A%84%E7%90%86%E8%A7%A3/index.html">
 <meta property="og:site_name" content="韩城的日常记录">
+<meta property="og:description" content="CompletableFuture是JDK1.8里面引入的一个基于事件驱动的异步回调类。简单来说，就是当使用异步线程去执行一个任务的时候，我们希望在任务结束以后触发一个后续的动作。而CompletableFuture就可以实现这个功能。 举个简单的例子，比如在一个批量支付的业务逻辑里面，涉及到查询订单、支付、发送邮件通知这三个逻辑。这三个逻辑是按照顺序同步去实现的，也就是先查询到订单以后，再针对这">
 <meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2023-08-16T05:20:05.000Z">
+<meta property="article:modified_time" content="2023-08-16T05:26:32.078Z">
 <meta property="article:author" content="Hancheng">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="http://example.com/archives/2023/">
+<link rel="canonical" href="http://example.com/2023/08/16/CompletableFuture%E7%9A%84%E7%90%86%E8%A7%A3/">
 
 
 <script id="page-configurations">
@@ -36,12 +40,12 @@
   CONFIG.page = {
     sidebar: "",
     isHome : false,
-    isPost : false,
+    isPost : true,
     lang   : 'en'
   };
 </script>
 
-  <title>Archive | 韩城的日常记录</title>
+  <title>CompletableFuture的理解 | 韩城的日常记录</title>
   
 
 
@@ -139,110 +143,92 @@
         <div class="content-wrap">
           
 
-          <div class="content archive">
+          <div class="content post posts-expand">
             
 
+    
   
   
-  
-  <div class="post-block">
-    <div class="posts-collapse">
-      <div class="collection-title">
-        <span class="collection-header">Um..! 5 posts in total. Keep on posting.</span>
-      </div>
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/08/16/CompletableFuture%E7%9A%84%E7%90%86%E8%A7%A3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Hancheng">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="韩城的日常记录">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          CompletableFuture的理解
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2023-08-16 13:20:05 / Modified: 13:26:32" itemprop="dateCreated datePublished" datetime="2023-08-16T13:20:05+08:00">2023-08-16</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-    <div class="collection-year">
-      <span class="collection-header">2023</span>
-    </div>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2023-08-16T13:20:05+08:00"
-              content="2023-08-16">
-          08-16
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2023/08/16/CompletableFuture%E7%9A%84%E7%90%86%E8%A7%A3/" itemprop="url">
-            <span itemprop="name">CompletableFuture的理解</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2023-08-05T10:14:01+08:00"
-              content="2023-08-05">
-          08-05
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2023/08/05/Java-%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%AD%A6%E4%B9%A0/" itemprop="url">
-            <span itemprop="name">Java 多线程学习</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2023-08-01T20:02:08+08:00"
-              content="2023-08-01">
-          08-01
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2023/08/01/Python%E6%97%A5%E5%B8%B8%E8%AE%B0%E5%BD%95/" itemprop="url">
-            <span itemprop="name">Python日常记录</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2023-08-01T17:05:56+08:00"
-              content="2023-08-01">
-          08-01
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2023/08/01/hello-world/" itemprop="url">
-            <span itemprop="name">Hello World</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
+        <p>CompletableFuture是JDK1.8里面引入的一个基于事件驱动的异步回调类。简单来说，就是当使用异步线程去执行一个任务的时候，我们希望在任务结束以后触发一个后续的动作。而CompletableFuture就可以实现这个功能。</p>
+<p>举个简单的例子，比如在一个批量支付的业务逻辑里面，涉及到查询订单、支付、发送邮件通知这三个逻辑。这三个逻辑是按照顺序同步去实现的，也就是先查询到订单以后，再针对这个订单发起支付，支付成功以后再发送邮件通知。而这种设计方式导致这个方法的执行性能比较慢。</p>
+<p>可以直接使用CompletableFuture，也就是说把查询订单的逻辑放在一个异步线程池里面去处理。然后基于CompletableFuture的事件回调机制的特性，可以配置查询订单结束后自动触发支付，支付结束后自动触发邮件通知。从而极大的提升这个这个业务场景的处理性能！</p>
+<ul>
+<li><p>CompletableFuture提供了5种不同的方式，把多个异步任务组成一个具有先后关系的处理链，然后基于事件驱动任务链的执行。</p>
+<ul>
+<li>第一种，thenCombine，把两个任务组合在一起，当两个任务都执行结束以后触发事件回调。比如 两个task ： taks1 和 task2 ，两个task并行执行，待两个都执行结束后，触发后续事件的回调。</li>
+<li>thenCompose，把两个任务组合在一起，这两个任务串行执行，也就是第一个任务执行完以后自动触发执行第二个任务 </li>
+<li>thenAccept，第一个任务执行结束后触发第二个任务，并且第一个任务的执行结果作为第二个任务的参数，这个方法是纯粹接受上一个任务的结果，不返回新的计算值。</li>
+<li>thenApply，和thenAccept一样，但是它有返回值。</li>
+<li>thenRun，就是第一个任务执行完成后触发执行一个实现了Runnable接口的任务。</li>
+</ul>
+</li>
+<li><p>，CompletableFuture弥补了原本Future的不足，使得程序可以在非阻塞的状态下完成异步的回调机制。</p>
+</li>
+</ul>
 
     </div>
-  </div>
-  
-  
-  
 
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/08/05/Java-%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%AD%A6%E4%B9%A0/" rel="prev" title="Java 多线程学习">
+      <i class="fa fa-chevron-left"></i> Java 多线程学习
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
   
 
 

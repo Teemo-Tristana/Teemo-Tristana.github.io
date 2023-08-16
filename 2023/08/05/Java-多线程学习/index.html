@@ -20,28 +20,32 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta property="og:type" content="website">
-<meta property="og:title" content="韩城的日常记录">
-<meta property="og:url" content="http://example.com/index.html">
+  <meta name="description" content="interrupted 和 isInterrupted  interrupted : 判断当前线程是否已经中断，会清除状态 isInterrupted : 判断线程是否已经中断，不会清除状态   线程种类  用户线程 守护线程   比如 GC   joinjoin是把指定的线程加入到当前线程，比如 join 线程 a，会让当前线程进入等待状态，也即是 blocked ，直到线程a执行结束  锁：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java 多线程学习">
+<meta property="og:url" content="http://example.com/2023/08/05/Java-%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%AD%A6%E4%B9%A0/index.html">
 <meta property="og:site_name" content="韩城的日常记录">
+<meta property="og:description" content="interrupted 和 isInterrupted  interrupted : 判断当前线程是否已经中断，会清除状态 isInterrupted : 判断线程是否已经中断，不会清除状态   线程种类  用户线程 守护线程   比如 GC   joinjoin是把指定的线程加入到当前线程，比如 join 线程 a，会让当前线程进入等待状态，也即是 blocked ，直到线程a执行结束  锁：">
 <meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2023-08-05T02:14:01.000Z">
+<meta property="article:modified_time" content="2023-08-07T12:09:49.349Z">
 <meta property="article:author" content="Hancheng">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="http://example.com/">
+<link rel="canonical" href="http://example.com/2023/08/05/Java-%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%AD%A6%E4%B9%A0/">
 
 
 <script id="page-configurations">
   // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
-    isHome : true,
-    isPost : false,
+    isHome : false,
+    isPost : true,
     lang   : 'en'
   };
 </script>
 
-  <title>韩城的日常记录</title>
+  <title>Java 多线程学习 | 韩城的日常记录</title>
   
 
 
@@ -139,83 +143,10 @@
         <div class="content-wrap">
           
 
-          <div class="content index posts-expand">
+          <div class="content post posts-expand">
             
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2023/08/16/CompletableFuture%E7%9A%84%E7%90%86%E8%A7%A3/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Hancheng">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="韩城的日常记录">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/08/16/CompletableFuture%E7%9A%84%E7%90%86%E8%A7%A3/" class="post-title-link" itemprop="url">CompletableFuture的理解</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2023-08-16 13:20:05 / Modified: 13:26:32" itemprop="dateCreated datePublished" datetime="2023-08-16T13:20:05+08:00">2023-08-16</time>
-            </span>
-
-          
-
-        </div>
-      </header>
 
     
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>CompletableFuture是JDK1.8里面引入的一个基于事件驱动的异步回调类。简单来说，就是当使用异步线程去执行一个任务的时候，我们希望在任务结束以后触发一个后续的动作。而CompletableFuture就可以实现这个功能。</p>
-<p>举个简单的例子，比如在一个批量支付的业务逻辑里面，涉及到查询订单、支付、发送邮件通知这三个逻辑。这三个逻辑是按照顺序同步去实现的，也就是先查询到订单以后，再针对这个订单发起支付，支付成功以后再发送邮件通知。而这种设计方式导致这个方法的执行性能比较慢。</p>
-<p>可以直接使用CompletableFuture，也就是说把查询订单的逻辑放在一个异步线程池里面去处理。然后基于CompletableFuture的事件回调机制的特性，可以配置查询订单结束后自动触发支付，支付结束后自动触发邮件通知。从而极大的提升这个这个业务场景的处理性能！</p>
-<ul>
-<li><p>CompletableFuture提供了5种不同的方式，把多个异步任务组成一个具有先后关系的处理链，然后基于事件驱动任务链的执行。</p>
-<ul>
-<li>第一种，thenCombine，把两个任务组合在一起，当两个任务都执行结束以后触发事件回调。比如 两个task ： taks1 和 task2 ，两个task并行执行，待两个都执行结束后，触发后续事件的回调。</li>
-<li>thenCompose，把两个任务组合在一起，这两个任务串行执行，也就是第一个任务执行完以后自动触发执行第二个任务 </li>
-<li>thenAccept，第一个任务执行结束后触发第二个任务，并且第一个任务的执行结果作为第二个任务的参数，这个方法是纯粹接受上一个任务的结果，不返回新的计算值。</li>
-<li>thenApply，和thenAccept一样，但是它有返回值。</li>
-<li>thenRun，就是第一个任务执行完成后触发执行一个实现了Runnable接口的任务。</li>
-</ul>
-</li>
-<li><p>，CompletableFuture弥补了原本Future的不足，使得程序可以在非阻塞的状态下完成异步的回调机制。</p>
-</li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
@@ -231,10 +162,9 @@
       <meta itemprop="name" content="韩城的日常记录">
     </span>
       <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/08/05/Java-%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%AD%A6%E4%B9%A0/" class="post-title-link" itemprop="url">Java 多线程学习</a>
-        </h2>
+        <h1 class="post-title" itemprop="name headline">
+          Java 多线程学习
+        </h1>
 
         <div class="post-meta">
             <span class="post-meta-item">
@@ -264,7 +194,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <ol start="17">
+        <ol start="17">
 <li><p>interrupted 和 isInterrupted</p>
 <ul>
 <li>interrupted : 判断当前线程是否已经中断，会清除状态</li>
@@ -413,272 +343,33 @@
 </li>
 </ol>
 
-      
     </div>
 
     
     
     
+
       <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2023/08/01/Python%E6%97%A5%E5%B8%B8%E8%AE%B0%E5%BD%95/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Hancheng">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="韩城的日常记录">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/08/01/Python%E6%97%A5%E5%B8%B8%E8%AE%B0%E5%BD%95/" class="post-title-link" itemprop="url">Python日常记录</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2023-08-01 20:02:08" itemprop="dateCreated datePublished" datetime="2023-08-01T20:02:08+08:00">2023-08-01</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-08-02 10:09:18" itemprop="dateModified" datetime="2023-08-02T10:09:18+08:00">2023-08-02</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="基础"><a href="#基础" class="headerlink" title="基础"></a>基础</h1><p>Python中的一切皆对象</p>
-<h2 id="Python3-基本数据类型"><a href="#Python3-基本数据类型" class="headerlink" title="Python3 基本数据类型"></a>Python3 基本数据类型</h2><ul>
-<li>Python 中的变量不需要声明，每个变量使用前必须赋值，变量被赋值后才能被创建</li>
-<li>在 Python 中，变量就是变量，它没有类型，我们所说的**”类型”是变量所指的内存中对象的类型[type]**，判断一个变量类型的方法<ul>
-<li><p>内置的 type() 函数可以用来查询变量所指的对象类型，</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>a, b, c, d = <span class="number">20</span>, <span class="number">5.5</span>, <span class="literal">True</span>, <span class="number">4</span>+<span class="number">3j</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="built_in">print</span>(<span class="built_in">type</span>(a), <span class="built_in">type</span>(b), <span class="built_in">type</span>(c), <span class="built_in">type</span>(d))</span><br><span class="line">&lt;<span class="keyword">class</span> <span class="string">&#x27;int&#x27;</span>&gt; &lt;<span class="keyword">class</span> <span class="string">&#x27;float&#x27;</span>&gt; &lt;<span class="keyword">class</span> <span class="string">&#x27;bool&#x27;</span>&gt; &lt;<span class="keyword">class</span> <span class="string">&#x27;complex&#x27;</span>&gt;</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>可以用 isinstance 来判断</p>
-</li>
-</ul>
-</li>
-</ul>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>a = <span class="number">111</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="built_in">isinstance</span>(a, <span class="built_in">int</span>)</span><br><span class="line"><span class="literal">True</span></span><br><span class="line">&gt;&gt;&gt;</span><br></pre></td></tr></table></figure>
-<ul>
-<li>type(arg) 和 isinstance(arg1, arg2) 区别<ul>
-<li>type()不会任务子类是一种父类类型</li>
-<li>isinstance()会认为子类是一种父类类型</li>
-</ul>
-</li>
-</ul>
-<p>type()不会认为子类是一种父类类型。<br>isinstance()会认为子类是一种父类类型。</p>
-<ul>
-<li>Python3 六个标准数据类型<ul>
-<li>Number </li>
-<li>String</li>
-<li>Tuple</li>
-<li>List</li>
-<li>Set</li>
-<li>Dict</li>
-<li>bytes 类型</li>
-</ul>
-</li>
-<li>按 数据是否可可变划分<ul>
-<li>数据不可变  : Number、String、Tuple</li>
-<li>数据可变    : List、 Set、Dict</li>
-</ul>
-</li>
-</ul>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2023/08/01/Python%E6%97%A5%E5%B8%B8%E8%AE%B0%E5%BD%95/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
         
-      
-    </div>
 
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2023/08/01/hello-world/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Hancheng">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="韩城的日常记录">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/08/01/hello-world/" class="post-title-link" itemprop="url">Hello World</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2023-08-01 17:05:56" itemprop="dateCreated datePublished" datetime="2023-08-01T17:05:56+08:00">2023-08-01</time>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/10/18/Redis%E4%B9%8Bhmget%E4%B8%8EhgetAll%E5%AF%B9%E6%AF%94/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Hancheng">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="韩城的日常记录">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/10/18/Redis%E4%B9%8Bhmget%E4%B8%8EhgetAll%E5%AF%B9%E6%AF%94/" class="post-title-link" itemprop="url">Redis之hmget与hgetAll对比</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2022-10-18 17:48:18" itemprop="dateCreated datePublished" datetime="2022-10-18T17:48:18+08:00">2022-10-18</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-08-02 10:09:20" itemprop="dateModified" datetime="2023-08-02T10:09:20+08:00">2023-08-02</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>redis获取哈希类型的值有三种方式，分别是 hget、hmget 和 hgetall；目前负责的服务，强依赖于Redis，Redis的任意波动都会影响到接口的耗时(p99)，使用的多是Redis的基本类型，比如<br>String、Hash、List、Bitmap、SortedSet，Set，其中Set很少使用。对于Hash类型的读取操作，主要用了hmget和hgetall了，在选取哪一种读取方式遇到了困惑，因此就阅读了hash类型hmget和hgetall并分析，并记录。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2022/10/18/Redis%E4%B9%8Bhmget%E4%B8%8EhgetAll%E5%AF%B9%E6%AF%94/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
         
-      
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/08/01/Python%E6%97%A5%E5%B8%B8%E8%AE%B0%E5%BD%95/" rel="prev" title="Python日常记录">
+      <i class="fa fa-chevron-left"></i> Python日常记录
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/08/16/CompletableFuture%E7%9A%84%E7%90%86%E8%A7%A3/" rel="next" title="CompletableFuture的理解">
+      CompletableFuture的理解 <i class="fa fa-chevron-right"></i>
+    </a></div>
     </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
       </footer>
+    
   </article>
   
   
-  
-
-
   
 
 
